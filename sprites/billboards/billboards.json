@@ -1,0 +1,12 @@
+{
+  "brileta_trees": true,
+  "fx_frames": 4,
+  "npc_frames": [
+    "stand",
+    "idle",
+    "walk0",
+    "walk1",
+    "swing",
+    "cast"
+  ]
+}

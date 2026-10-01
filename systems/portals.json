@@ -1,0 +1,38 @@
+{
+  "types": {
+    "arch_gate": {
+      "frame": "root_arch",
+      "fill": "spiral_vortex",
+      "strips": {
+        "L1": "vortex_forest",
+        "L2": "vortex_caverns",
+        "L3": "vortex_marsh",
+        "HUB": "vortex_home"
+      },
+      "use": "village gates to each region (and back)",
+      "motif": "carved stone arch, twined roots, banded spiral fill turning slowly"
+    },
+    "spore_ring": {
+      "frame": "fairy_ring",
+      "fill": "flame_ring",
+      "strip": "ring_spore",
+      "use": "the realm gate to the Cold Forge (opens at 5 springs)",
+      "motif": "fairy ring of glowcaps with a tilted, rotating ring of spore-fire tongues above it"
+    },
+    "wall_vortex": {
+      "frame": "cliff face",
+      "fill": "wall_vortex",
+      "strip": "wall_moss",
+      "use": "way-home rifts on region cliffs",
+      "motif": "soft-edged moss-dark swirl laid over the rock"
+    },
+    "oval_rift": {
+      "frame": "none",
+      "fill": "oval_rift",
+      "strip": "rift_spring",
+      "use": "faint shimmer marking a hidden-spring entrance when you are close",
+      "motif": "tall thin oval with bright rim, dark starry interior, drifting sparkles"
+    }
+  },
+  "palette_note": "all portal art is computed in the theme palette (portal_art.py); reference images informed motifs only"
+}

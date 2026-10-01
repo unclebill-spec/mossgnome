@@ -1,0 +1,505 @@
+{
+  "rules": {
+    "encounter_per_unit": 0.012,
+    "towns": 0.0,
+    "spawn_count": [
+      1,
+      4
+    ],
+    "spawn_dist": [
+      6,
+      10
+    ],
+    "arena_shape": "octagon",
+    "arena_radius": 12,
+    "arena_color": "#829abc",
+    "node_orbs": true,
+    "escape": "leave the ring (always succeeds unless boss)",
+    "move_radius": "2 + agi/10",
+    "turn_order": "agility; enemies interleaved one per player turn",
+    "actions": [
+      "melee (staff, +1 MP on hit)",
+      "cast",
+      "item",
+      "move only"
+    ],
+    "affinity": {
+      "same": 0.5,
+      "opposite": 1.25
+    },
+    "growth": {
+      "hp_pct_per_hit_taken": 2,
+      "def_pct_per_hit_taken": 3,
+      "agi_pct_per_2u_run": 1,
+      "mp_pct_per_cast": 5,
+      "at_100": "+1 stat",
+      "diminishing": "gain * 10/stat"
+    },
+    "defeat": "teleport to last inn with HP = 1",
+    "float_text": {
+      "font": "serif",
+      "color": "#ffffff",
+      "outline": "#000000",
+      "rise_px": 12,
+      "time_s": 0.6,
+      "miss": "Miss!",
+      "escape": "Escape!"
+    },
+    "camera": {
+      "orbit": 6.0,
+      "turn_s": 0.4,
+      "static_during_cast": true
+    }
+  },
+  "hero_start": {
+    "hp": 30,
+    "mp": 12,
+    "def": 8,
+    "agi": 12,
+    "atk": 5
+  },
+  "move_radius_at_start": 3.2,
+  "simulation": [
+    {
+      "step": 149,
+      "at": [
+        19.08,
+        34.77
+      ],
+      "foes": [
+        "Trufflenub",
+        "Stalknub",
+        "Speckcap",
+        "Inkykin"
+      ],
+      "turn_order": [
+        "Stalknub",
+        "Inkykin",
+        "Speckcap",
+        "Trufflenub",
+        "hero"
+      ],
+      "arena": [
+        [
+          30.169,
+          39.358
+        ],
+        [
+          23.675,
+          45.852
+        ],
+        [
+          14.491,
+          45.852
+        ],
+        [
+          7.996,
+          39.358
+        ],
+        [
+          7.996,
+          30.173
+        ],
+        [
+          14.491,
+          23.679
+        ],
+        [
+          23.675,
+          23.679
+        ],
+        [
+          30.169,
+          30.173
+        ]
+      ],
+      "hits_taken": 7,
+      "casts": 3,
+      "stats_after": {
+        "hp": 30,
+        "mp": 12,
+        "def": 8,
+        "agi": 12,
+        "atk": 5
+      }
+    },
+    {
+      "step": 173,
+      "at": [
+        14.13,
+        12.32
+      ],
+      "foes": [
+        "Morelkin",
+        "Stalknub"
+      ],
+      "turn_order": [
+        "Stalknub",
+        "Morelkin",
+        "hero"
+      ],
+      "arena": [
+        [
+          25.217,
+          16.914
+        ],
+        [
+          18.723,
+          23.408
+        ],
+        [
+          9.539,
+          23.408
+        ],
+        [
+          3.044,
+          16.914
+        ],
+        [
+          3.044,
+          7.729
+        ],
+        [
+          9.539,
+          1.235
+        ],
+        [
+          18.723,
+          1.235
+        ],
+        [
+          25.217,
+          7.729
+        ]
+      ],
+      "hits_taken": 0,
+      "casts": 2,
+      "stats_after": {
+        "hp": 30,
+        "mp": 12,
+        "def": 8,
+        "agi": 12,
+        "atk": 5
+      }
+    },
+    {
+      "step": 204,
+      "at": [
+        -13.85,
+        0.05
+      ],
+      "foes": [
+        "Morelkin",
+        "Buttonbun"
+      ],
+      "turn_order": [
+        "Morelkin",
+        "Buttonbun",
+        "hero"
+      ],
+      "arena": [
+        [
+          -2.765,
+          4.639
+        ],
+        [
+          -9.26,
+          11.134
+        ],
+        [
+          -18.444,
+          11.134
+        ],
+        [
+          -24.938,
+          4.639
+        ],
+        [
+          -24.938,
+          -4.545
+        ],
+        [
+          -18.444,
+          -11.039
+        ],
+        [
+          -9.26,
+          -11.039
+        ],
+        [
+          -2.765,
+          -4.545
+        ]
+      ],
+      "hits_taken": 3,
+      "casts": 3,
+      "stats_after": {
+        "hp": 30,
+        "mp": 12,
+        "def": 8,
+        "agi": 12,
+        "atk": 5
+      }
+    },
+    {
+      "step": 302,
+      "at": [
+        11.51,
+        64.48
+      ],
+      "foes": [
+        "Morelkin",
+        "Buttonbun",
+        "Morelkin",
+        "Buttonbun"
+      ],
+      "turn_order": [
+        "Morelkin",
+        "Morelkin",
+        "hero",
+        "Buttonbun",
+        "Buttonbun"
+      ],
+      "arena": [
+        [
+          22.598,
+          69.071
+        ],
+        [
+          16.103,
+          75.565
+        ],
+        [
+          6.919,
+          75.565
+        ],
+        [
+          0.425,
+          69.071
+        ],
+        [
+          0.425,
+          59.887
+        ],
+        [
+          6.919,
+          53.392
+        ],
+        [
+          16.103,
+          53.392
+        ],
+        [
+          22.598,
+          59.887
+        ]
+      ],
+      "hits_taken": 1,
+      "casts": 1,
+      "stats_after": {
+        "hp": 30,
+        "mp": 12,
+        "def": 8,
+        "agi": 13,
+        "atk": 5
+      }
+    },
+    {
+      "step": 455,
+      "at": [
+        -13.62,
+        31.72
+      ],
+      "foes": [
+        "Spotpod",
+        "Spotpod"
+      ],
+      "turn_order": [
+        "Spotpod",
+        "Spotpod",
+        "hero"
+      ],
+      "arena": [
+        [
+          -2.535,
+          36.31
+        ],
+        [
+          -9.03,
+          42.804
+        ],
+        [
+          -18.214,
+          42.804
+        ],
+        [
+          -24.708,
+          36.31
+        ],
+        [
+          -24.708,
+          27.126
+        ],
+        [
+          -18.214,
+          20.631
+        ],
+        [
+          -9.03,
+          20.631
+        ],
+        [
+          -2.535,
+          27.126
+        ]
+      ],
+      "hits_taken": 1,
+      "casts": 3,
+      "stats_after": {
+        "hp": 30,
+        "mp": 12,
+        "def": 8,
+        "agi": 13,
+        "atk": 5
+      }
+    },
+    {
+      "step": 560,
+      "at": [
+        5.44,
+        29.14
+      ],
+      "foes": [
+        "Wobblecap",
+        "Bobblebun",
+        "Morelkin"
+      ],
+      "turn_order": [
+        "Morelkin",
+        "Wobblecap",
+        "hero",
+        "Bobblebun"
+      ],
+      "arena": [
+        [
+          16.522,
+          33.732
+        ],
+        [
+          10.028,
+          40.226
+        ],
+        [
+          0.843,
+          40.226
+        ],
+        [
+          -5.651,
+          33.732
+        ],
+        [
+          -5.651,
+          24.547
+        ],
+        [
+          0.843,
+          18.053
+        ],
+        [
+          10.028,
+          18.053
+        ],
+        [
+          16.522,
+          24.547
+        ]
+      ],
+      "hits_taken": 4,
+      "casts": 1,
+      "stats_after": {
+        "hp": 30,
+        "mp": 12,
+        "def": 8,
+        "agi": 14,
+        "atk": 5
+      }
+    },
+    {
+      "step": 594,
+      "at": [
+        -19.36,
+        2.8
+      ],
+      "foes": [
+        "Dimplecap"
+      ],
+      "turn_order": [
+        "Dimplecap",
+        "hero"
+      ],
+      "arena": [
+        [
+          -8.271,
+          7.393
+        ],
+        [
+          -14.766,
+          13.887
+        ],
+        [
+          -23.95,
+          13.887
+        ],
+        [
+          -30.444,
+          7.393
+        ],
+        [
+          -30.444,
+          -1.792
+        ],
+        [
+          -23.95,
+          -8.286
+        ],
+        [
+          -14.766,
+          -8.286
+        ],
+        [
+          -8.271,
+          -1.792
+        ]
+      ],
+      "hits_taken": 1,
+      "casts": 3,
+      "stats_after": {
+        "hp": 30,
+        "mp": 12,
+        "def": 8,
+        "agi": 14,
+        "atk": 5
+      }
+    }
+  ],
+  "region_rosters": {
+    "Toadstool Wood": [
+      "en_L1_1",
+      "en_L1_2",
+      "en_L1_3",
+      "en_L1_4"
+    ],
+    "Fizzwater Caverns": [
+      "en_L2_1",
+      "en_L2_2",
+      "en_L2_3",
+      "en_L2_4"
+    ],
+    "Mistcap Marsh": [
+      "en_L3_1",
+      "en_L3_2",
+      "en_L3_3",
+      "en_L3_4"
+    ]
+  }
+}

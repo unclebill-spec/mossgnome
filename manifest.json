@@ -1,0 +1,4855 @@
+{
+  "game": {
+    "title": "Mossgnome and the Hidden Springs",
+    "seed": 64,
+    "theme": "mossgnome",
+    "theme_title": "Mossgnome and the Hidden Springs",
+    "kingdom": "The Greenwild",
+    "hub": "Mossunder",
+    "hero": "Wittle",
+    "villain": "Krogbold Anvilbeard the Gruff",
+    "relic": "Fizzwell Lantern",
+    "collectible": "Spring Pearl",
+    "generator": "n64-suite 0.1.0"
+  },
+  "style": {
+    "resolution": [
+      320,
+      240
+    ],
+    "tri_budget": [
+      100,
+      800
+    ],
+    "texture_sizes": [
+      32,
+      64
+    ],
+    "texture_format": "CI4 (16 colors) + RGBA5551 TLUT",
+    "fog": {
+      "color": "#cfe6d2",
+      "near": 30,
+      "far": 150
+    },
+    "sky": [
+      "#5fa8dc",
+      "#9fd0e8",
+      "#f2f6dc"
+    ],
+    "palette": "palette/mossgnome.json",
+    "audio_rate": 22050,
+    "palette_swatch": "palette/mossgnome_swatch.png",
+    "preset": {
+      "preset": "storybook",
+      "variant": "mossgnome",
+      "demo": "grove",
+      "hud": "mossy_round",
+      "camera": {
+        "mode": "third",
+        "distance": 3.0,
+        "height": 1.7,
+        "pitch": -16,
+        "fov": 52,
+        "lag": 0.15,
+        "scale": 2.0,
+        "battle": {
+          "orbit": 5.5,
+          "turn": 0.4,
+          "cast_dip": 1.0
+        }
+      },
+      "model": {
+        "proportions": {
+          "hero": {
+            "head_ratio": 0.38
+          },
+          "default": {
+            "head_ratio": 0.36
+          }
+        },
+        "textured_body": false,
+        "creature": "toy",
+        "boss_scale": 1.0,
+        "gnome": true,
+        "timing": {
+          "run": 0.5,
+          "walk": 0.62,
+          "waddle": 0.56,
+          "idle": 2.2,
+          "cast": 1.0,
+          "hit": 0.4,
+          "death": 0.8,
+          "attack": 0.6
+        },
+        "amp": {
+          "bob": 2.4,
+          "arm": 0.4,
+          "larm": 1.4
+        },
+        "cast_style": "spin_leap",
+        "staff_hand": "R",
+        "dust_puffs": true
+      },
+      "texture": {
+        "kinds": [
+          "moss_grass",
+          "clover",
+          "dirt",
+          "mushroom_cap",
+          "cap_blue",
+          "gills",
+          "moss",
+          "wet_stone",
+          "spring_water",
+          "bark",
+          "plank",
+          "leaves",
+          "cliff_moss",
+          "stalk",
+          "parchment",
+          "water",
+          "stone",
+          "roof"
+        ],
+        "size": 32,
+        "colors": 16,
+        "dither": false,
+        "saturation": 1.1
+      },
+      "world": {
+        "layout": "chain",
+        "ground": "moss_grass",
+        "shape": "rolling",
+        "amplitude": 5,
+        "cliffs": "cliff_moss",
+        "paths": true,
+        "level_shapes": {
+          "1": "rolling",
+          "2": "grotto",
+          "3": "marsh",
+          "4": "forge"
+        },
+        "props": [
+          "toadstool_red",
+          "toadstool_red",
+          "toadstool_blue",
+          "mossy_stone",
+          "puffball",
+          "clover",
+          "shelf_stump",
+          "glowcap"
+        ],
+        "region_props": {
+          "1": [
+            "toadstool_red",
+            "toadstool_red",
+            "toadstool_purple",
+            "mossy_stone",
+            "puffball",
+            "clover",
+            "shelf_stump",
+            "giant_trunk"
+          ],
+          "2": [
+            "glowcap",
+            "glowcap",
+            "toadstool_blue",
+            "mossy_stone",
+            "wet_rock",
+            "crystal_cap",
+            "shelf_stump"
+          ],
+          "3": [
+            "reed_cap",
+            "toadstool_purple",
+            "mossy_stone",
+            "glowcap",
+            "dead_snag",
+            "clover",
+            "puffball"
+          ],
+          "4": [
+            "mossy_stone",
+            "wet_rock",
+            "anvil_stump",
+            "glowcap"
+          ]
+        },
+        "town_props": [
+          "clover",
+          "mossy_stone",
+          "lantern_cap",
+          "puffball",
+          "toadstool_red"
+        ],
+        "buildings": [
+          "mushroom_house",
+          "root_house",
+          "treehouse"
+        ],
+        "tree_spacing": 7,
+        "springs": true,
+        "encounter": {
+          "per_unit": 0.01,
+          "count": [
+            1,
+            2
+          ]
+        }
+      },
+      "skybox": {
+        "clouds": 5,
+        "mountains": "#6a9a78",
+        "stars": 0
+      },
+      "music": {
+        "always_on": true,
+        "moods": {
+          "title": {
+            "bpm": 92,
+            "root": 67,
+            "scale": "major",
+            "lead": 10,
+            "counter": 73,
+            "pad": 46,
+            "bass": 32,
+            "perc": "none",
+            "base": "title"
+          },
+          "town": {
+            "bpm": 112,
+            "root": 65,
+            "scale": "major",
+            "lead": 71,
+            "counter": 73,
+            "pad": 48,
+            "bass": 70,
+            "perc": "woodblock",
+            "base": "town"
+          },
+          "overworld": {
+            "bpm": 104,
+            "root": 62,
+            "scale": "mixolydian",
+            "lead": 73,
+            "counter": 68,
+            "pad": 48,
+            "bass": 32,
+            "perc": "triangle",
+            "base": "overworld"
+          },
+          "dungeon": {
+            "bpm": 84,
+            "root": 64,
+            "scale": "dorian",
+            "lead": 10,
+            "counter": 8,
+            "pad": 89,
+            "bass": 32,
+            "perc": "drips",
+            "base": "dungeon"
+          },
+          "marsh": {
+            "bpm": 76,
+            "root": 57,
+            "scale": "dorian",
+            "lead": 71,
+            "counter": 75,
+            "pad": 52,
+            "bass": 70,
+            "perc": "none",
+            "base": "dungeon"
+          },
+          "battle": {
+            "bpm": 132,
+            "root": 62,
+            "scale": "major",
+            "lead": 45,
+            "counter": 71,
+            "pad": 48,
+            "bass": 32,
+            "perc": "woodblock",
+            "base": "boss"
+          },
+          "chase": {
+            "bpm": 156,
+            "root": 60,
+            "scale": "minor",
+            "lead": 45,
+            "counter": 73,
+            "pad": 48,
+            "bass": 70,
+            "perc": "woodblock",
+            "base": "boss"
+          },
+          "boss": {
+            "bpm": 138,
+            "root": 57,
+            "scale": "harmonic_minor",
+            "lead": 68,
+            "counter": 45,
+            "pad": 48,
+            "bass": 58,
+            "perc": "timpani",
+            "base": "boss"
+          },
+          "spring": {
+            "bpm": 100,
+            "root": 72,
+            "scale": "major",
+            "lead": 10,
+            "pad": 46,
+            "bass": 32,
+            "base": "sting"
+          },
+          "victory": {
+            "bpm": 140,
+            "root": 60,
+            "scale": "major",
+            "lead": 45,
+            "pad": 48,
+            "bass": 32,
+            "perc": "snare",
+            "base": "victory"
+          },
+          "ending": {
+            "bpm": 72,
+            "root": 65,
+            "scale": "major",
+            "lead": 10,
+            "counter": 73,
+            "pad": 48,
+            "bass": 32,
+            "perc": "none",
+            "base": "title"
+          }
+        }
+      },
+      "sfx": {
+        "kinds": [
+          "fizz",
+          "spring_chime",
+          "bubble_pop",
+          "squish",
+          "spore_puff",
+          "portal_whoosh",
+          "swing_creak",
+          "fox_yip",
+          "dwarf_grumble",
+          "lid_clank",
+          "chest_open",
+          "map_unfold",
+          "footstep_moss",
+          "waddle_step",
+          "cast_sparkle",
+          "hit_mushroom",
+          "hit_spore",
+          "hit_water",
+          "hit_glow",
+          "gnome_giggle",
+          "gnome_hum",
+          "hat_bonk",
+          "arena_open",
+          "escape",
+          "miss",
+          "inn_rest",
+          "menu_tick",
+          "save_chime",
+          "blip",
+          "babble",
+          "hurt",
+          "select",
+          "jump",
+          "coin"
+        ]
+      },
+      "systems": [
+        "spellcraft",
+        "arena",
+        "springs",
+        "grove"
+      ]
+    },
+    "fonts": [
+      "CourierPrime-Bold.ttf",
+      "CourierPrime-Regular.ttf",
+      "DejaVuSans-Bold.ttf",
+      "DejaVuSans.ttf",
+      "DejaVuSerif-Bold.ttf",
+      "IMFellEnglishSC-Regular.ttf",
+      "IMFellFrenchCanon-Italic.ttf",
+      "IMFellFrenchCanon-Regular.ttf",
+      "LilitaOne-Regular.ttf",
+      "LuckiestGuy-Regular.ttf",
+      "PressStart2P-Regular.ttf",
+      "TitanOne-Regular.ttf",
+      "UnifrakturMaguntia-Regular.ttf"
+    ]
+  },
+  "textures": [
+    {
+      "name": "grass_32",
+      "kind": "grass",
+      "size": 32,
+      "png": "textures/grass_32.png",
+      "ci": "textures/grass_32.ci4",
+      "tlut": "textures/grass_32.tlut",
+      "palette": "textures/grass_32.palette.json"
+    },
+    {
+      "name": "stone_32",
+      "kind": "stone",
+      "size": 32,
+      "png": "textures/stone_32.png",
+      "ci": "textures/stone_32.ci4",
+      "tlut": "textures/stone_32.tlut",
+      "palette": "textures/stone_32.palette.json"
+    },
+    {
+      "name": "brick_32",
+      "kind": "brick",
+      "size": 32,
+      "png": "textures/brick_32.png",
+      "ci": "textures/brick_32.ci4",
+      "tlut": "textures/brick_32.tlut",
+      "palette": "textures/brick_32.palette.json"
+    },
+    {
+      "name": "wood_32",
+      "kind": "wood",
+      "size": 32,
+      "png": "textures/wood_32.png",
+      "ci": "textures/wood_32.ci4",
+      "tlut": "textures/wood_32.tlut",
+      "palette": "textures/wood_32.palette.json"
+    },
+    {
+      "name": "water_32",
+      "kind": "water",
+      "size": 32,
+      "png": "textures/water_32.png",
+      "ci": "textures/water_32.ci4",
+      "tlut": "textures/water_32.tlut",
+      "palette": "textures/water_32.palette.json"
+    },
+    {
+      "name": "dirt_32",
+      "kind": "dirt",
+      "size": 32,
+      "png": "textures/dirt_32.png",
+      "ci": "textures/dirt_32.ci4",
+      "tlut": "textures/dirt_32.tlut",
+      "palette": "textures/dirt_32.palette.json"
+    },
+    {
+      "name": "metal_32",
+      "kind": "metal",
+      "size": 32,
+      "png": "textures/metal_32.png",
+      "ci": "textures/metal_32.ci4",
+      "tlut": "textures/metal_32.tlut",
+      "palette": "textures/metal_32.palette.json"
+    },
+    {
+      "name": "fabric_32",
+      "kind": "fabric",
+      "size": 32,
+      "png": "textures/fabric_32.png",
+      "ci": "textures/fabric_32.ci4",
+      "tlut": "textures/fabric_32.tlut",
+      "palette": "textures/fabric_32.palette.json"
+    },
+    {
+      "name": "skin_32",
+      "kind": "skin",
+      "size": 32,
+      "png": "textures/skin_32.png",
+      "ci": "textures/skin_32.ci4",
+      "tlut": "textures/skin_32.tlut",
+      "palette": "textures/skin_32.palette.json"
+    },
+    {
+      "name": "sky_32",
+      "kind": "sky",
+      "size": 32,
+      "png": "textures/sky_32.png",
+      "ci": "textures/sky_32.ci4",
+      "tlut": "textures/sky_32.tlut",
+      "palette": "textures/sky_32.palette.json"
+    },
+    {
+      "name": "sand_32",
+      "kind": "sand",
+      "size": 32,
+      "png": "textures/sand_32.png",
+      "ci": "textures/sand_32.ci4",
+      "tlut": "textures/sand_32.tlut",
+      "palette": "textures/sand_32.palette.json"
+    },
+    {
+      "name": "snow_32",
+      "kind": "snow",
+      "size": 32,
+      "png": "textures/snow_32.png",
+      "ci": "textures/snow_32.ci4",
+      "tlut": "textures/snow_32.tlut",
+      "palette": "textures/snow_32.palette.json"
+    },
+    {
+      "name": "lava_32",
+      "kind": "lava",
+      "size": 32,
+      "png": "textures/lava_32.png",
+      "ci": "textures/lava_32.ci4",
+      "tlut": "textures/lava_32.tlut",
+      "palette": "textures/lava_32.palette.json"
+    },
+    {
+      "name": "roof_32",
+      "kind": "roof",
+      "size": 32,
+      "png": "textures/roof_32.png",
+      "ci": "textures/roof_32.ci4",
+      "tlut": "textures/roof_32.tlut",
+      "palette": "textures/roof_32.palette.json"
+    },
+    {
+      "name": "leaves_32",
+      "kind": "leaves",
+      "size": 32,
+      "png": "textures/leaves_32.png",
+      "ci": "textures/leaves_32.ci4",
+      "tlut": "textures/leaves_32.tlut",
+      "palette": "textures/leaves_32.palette.json"
+    },
+    {
+      "name": "bark_32",
+      "kind": "bark",
+      "size": 32,
+      "png": "textures/bark_32.png",
+      "ci": "textures/bark_32.ci4",
+      "tlut": "textures/bark_32.tlut",
+      "palette": "textures/bark_32.palette.json"
+    },
+    {
+      "name": "cobble_32",
+      "kind": "cobble",
+      "size": 32,
+      "png": "textures/cobble_32.png",
+      "ci": "textures/cobble_32.ci4",
+      "tlut": "textures/cobble_32.tlut",
+      "palette": "textures/cobble_32.palette.json"
+    },
+    {
+      "name": "tile_32",
+      "kind": "tile",
+      "size": 32,
+      "png": "textures/tile_32.png",
+      "ci": "textures/tile_32.ci4",
+      "tlut": "textures/tile_32.tlut",
+      "palette": "textures/tile_32.palette.json"
+    },
+    {
+      "name": "grass_64",
+      "kind": "grass",
+      "size": 64,
+      "png": "textures/grass_64.png",
+      "ci": "textures/grass_64.ci4",
+      "tlut": "textures/grass_64.tlut",
+      "palette": "textures/grass_64.palette.json"
+    },
+    {
+      "name": "stone_64",
+      "kind": "stone",
+      "size": 64,
+      "png": "textures/stone_64.png",
+      "ci": "textures/stone_64.ci4",
+      "tlut": "textures/stone_64.tlut",
+      "palette": "textures/stone_64.palette.json"
+    },
+    {
+      "name": "brick_64",
+      "kind": "brick",
+      "size": 64,
+      "png": "textures/brick_64.png",
+      "ci": "textures/brick_64.ci4",
+      "tlut": "textures/brick_64.tlut",
+      "palette": "textures/brick_64.palette.json"
+    },
+    {
+      "name": "wood_64",
+      "kind": "wood",
+      "size": 64,
+      "png": "textures/wood_64.png",
+      "ci": "textures/wood_64.ci4",
+      "tlut": "textures/wood_64.tlut",
+      "palette": "textures/wood_64.palette.json"
+    },
+    {
+      "name": "water_64",
+      "kind": "water",
+      "size": 64,
+      "png": "textures/water_64.png",
+      "ci": "textures/water_64.ci4",
+      "tlut": "textures/water_64.tlut",
+      "palette": "textures/water_64.palette.json"
+    },
+    {
+      "name": "sand_64",
+      "kind": "sand",
+      "size": 64,
+      "png": "textures/sand_64.png",
+      "ci": "textures/sand_64.ci4",
+      "tlut": "textures/sand_64.tlut",
+      "palette": "textures/sand_64.palette.json"
+    },
+    {
+      "name": "snow_64",
+      "kind": "snow",
+      "size": 64,
+      "png": "textures/snow_64.png",
+      "ci": "textures/snow_64.ci4",
+      "tlut": "textures/snow_64.tlut",
+      "palette": "textures/snow_64.palette.json"
+    },
+    {
+      "name": "dirt_64",
+      "kind": "dirt",
+      "size": 64,
+      "png": "textures/dirt_64.png",
+      "ci": "textures/dirt_64.ci4",
+      "tlut": "textures/dirt_64.tlut",
+      "palette": "textures/dirt_64.palette.json"
+    },
+    {
+      "name": "roof_64",
+      "kind": "roof",
+      "size": 64,
+      "png": "textures/roof_64.png",
+      "ci": "textures/roof_64.ci4",
+      "tlut": "textures/roof_64.tlut",
+      "palette": "textures/roof_64.palette.json"
+    },
+    {
+      "name": "tile_64",
+      "kind": "tile",
+      "size": 64,
+      "png": "textures/tile_64.png",
+      "ci": "textures/tile_64.ci4",
+      "tlut": "textures/tile_64.tlut",
+      "palette": "textures/tile_64.palette.json"
+    },
+    {
+      "name": "moss_grass_32",
+      "kind": "moss_grass",
+      "size": 32,
+      "png": "textures/moss_grass_32.png",
+      "ci": "textures/moss_grass_32.ci4",
+      "tlut": "textures/moss_grass_32.tlut",
+      "palette": "textures/moss_grass_32.palette.json"
+    },
+    {
+      "name": "clover_32",
+      "kind": "clover",
+      "size": 32,
+      "png": "textures/clover_32.png",
+      "ci": "textures/clover_32.ci4",
+      "tlut": "textures/clover_32.tlut",
+      "palette": "textures/clover_32.palette.json"
+    },
+    {
+      "name": "mushroom_cap_32",
+      "kind": "mushroom_cap",
+      "size": 32,
+      "png": "textures/mushroom_cap_32.png",
+      "ci": "textures/mushroom_cap_32.ci4",
+      "tlut": "textures/mushroom_cap_32.tlut",
+      "palette": "textures/mushroom_cap_32.palette.json"
+    },
+    {
+      "name": "cap_blue_32",
+      "kind": "cap_blue",
+      "size": 32,
+      "png": "textures/cap_blue_32.png",
+      "ci": "textures/cap_blue_32.ci4",
+      "tlut": "textures/cap_blue_32.tlut",
+      "palette": "textures/cap_blue_32.palette.json"
+    },
+    {
+      "name": "gills_32",
+      "kind": "gills",
+      "size": 32,
+      "png": "textures/gills_32.png",
+      "ci": "textures/gills_32.ci4",
+      "tlut": "textures/gills_32.tlut",
+      "palette": "textures/gills_32.palette.json"
+    },
+    {
+      "name": "moss_32",
+      "kind": "moss",
+      "size": 32,
+      "png": "textures/moss_32.png",
+      "ci": "textures/moss_32.ci4",
+      "tlut": "textures/moss_32.tlut",
+      "palette": "textures/moss_32.palette.json"
+    },
+    {
+      "name": "wet_stone_32",
+      "kind": "wet_stone",
+      "size": 32,
+      "png": "textures/wet_stone_32.png",
+      "ci": "textures/wet_stone_32.ci4",
+      "tlut": "textures/wet_stone_32.tlut",
+      "palette": "textures/wet_stone_32.palette.json"
+    },
+    {
+      "name": "spring_water_32",
+      "kind": "spring_water",
+      "size": 32,
+      "png": "textures/spring_water_32.png",
+      "ci": "textures/spring_water_32.ci4",
+      "tlut": "textures/spring_water_32.tlut",
+      "palette": "textures/spring_water_32.palette.json"
+    },
+    {
+      "name": "plank_32",
+      "kind": "plank",
+      "size": 32,
+      "png": "textures/plank_32.png",
+      "ci": "textures/plank_32.ci4",
+      "tlut": "textures/plank_32.tlut",
+      "palette": "textures/plank_32.palette.json"
+    },
+    {
+      "name": "cliff_moss_32",
+      "kind": "cliff_moss",
+      "size": 32,
+      "png": "textures/cliff_moss_32.png",
+      "ci": "textures/cliff_moss_32.ci4",
+      "tlut": "textures/cliff_moss_32.tlut",
+      "palette": "textures/cliff_moss_32.palette.json"
+    },
+    {
+      "name": "stalk_32",
+      "kind": "stalk",
+      "size": 32,
+      "png": "textures/stalk_32.png",
+      "ci": "textures/stalk_32.ci4",
+      "tlut": "textures/stalk_32.tlut",
+      "palette": "textures/stalk_32.palette.json"
+    },
+    {
+      "name": "parchment_32",
+      "kind": "parchment",
+      "size": 32,
+      "png": "textures/parchment_32.png",
+      "ci": "textures/parchment_32.ci4",
+      "tlut": "textures/parchment_32.tlut",
+      "palette": "textures/parchment_32.palette.json"
+    }
+  ],
+  "skybox": {
+    "panorama": "skybox/sky_pano.png",
+    "cross": "skybox/sky_cross.png",
+    "faces": {
+      "px": "skybox/sky_px.png",
+      "nx": "skybox/sky_nx.png",
+      "py": "skybox/sky_py.png",
+      "ny": "skybox/sky_ny.png",
+      "pz": "skybox/sky_pz.png",
+      "nz": "skybox/sky_nz.png"
+    }
+  },
+  "text": {
+    "items": {
+      "json": "text/items.json",
+      "md": "text/items.md"
+    },
+    "enemies": {
+      "json": "text/enemies.json",
+      "md": "text/enemies.md"
+    },
+    "quests": {
+      "json": "text/quests.json",
+      "md": "text/quests.md"
+    },
+    "personalities": {
+      "json": "text/personalities.json",
+      "md": "text/personalities.md"
+    },
+    "lore": {
+      "json": "text/lore.json",
+      "md": "text/lore.md"
+    },
+    "dialogue": {
+      "json": "text/dialogue.json",
+      "md": "text/dialogue.md"
+    },
+    "names": {
+      "json": "text/names.json",
+      "md": "text/names.md"
+    }
+  },
+  "world": {
+    "index": "world/world.json",
+    "maps": "world/world_maps.png",
+    "levels": [
+      {
+        "id": "HUB",
+        "name": "Mossunder",
+        "slug": "hub",
+        "shape": "hub",
+        "music": "town",
+        "counts": {
+          "props": 66,
+          "enemies": 0,
+          "collectibles": 0,
+          "npcs": 4
+        },
+        "level_json": "world/hub/level.json",
+        "map": "world/hub/map.png",
+        "heightmap": "world/hub/heightmap.png"
+      },
+      {
+        "id": "L1",
+        "name": "Toadstool Wood",
+        "slug": "toadstool-wood",
+        "shape": "rolling",
+        "music": "overworld",
+        "counts": {
+          "props": 43,
+          "enemies": 13,
+          "collectibles": 6,
+          "npcs": 2
+        },
+        "level_json": "world/toadstool-wood/level.json",
+        "map": "world/toadstool-wood/map.png",
+        "heightmap": "world/toadstool-wood/heightmap.png"
+      },
+      {
+        "id": "L2",
+        "name": "Fizzwater Caverns",
+        "slug": "fizzwater-caverns",
+        "shape": "grotto",
+        "music": "dungeon",
+        "counts": {
+          "props": 41,
+          "enemies": 10,
+          "collectibles": 5,
+          "npcs": 2
+        },
+        "level_json": "world/fizzwater-caverns/level.json",
+        "map": "world/fizzwater-caverns/map.png",
+        "heightmap": "world/fizzwater-caverns/heightmap.png"
+      },
+      {
+        "id": "L3",
+        "name": "Mistcap Marsh",
+        "slug": "mistcap-marsh",
+        "shape": "marsh",
+        "music": "marsh",
+        "counts": {
+          "props": 35,
+          "enemies": 10,
+          "collectibles": 5,
+          "npcs": 1
+        },
+        "level_json": "world/mistcap-marsh/level.json",
+        "map": "world/mistcap-marsh/map.png",
+        "heightmap": "world/mistcap-marsh/heightmap.png"
+      },
+      {
+        "id": "BOSS",
+        "name": "Cold Forge of Krogbold",
+        "slug": "cold-forge",
+        "shape": "forge",
+        "music": "boss",
+        "counts": {
+          "props": 39,
+          "enemies": 1,
+          "collectibles": 2,
+          "npcs": 0
+        },
+        "level_json": "world/cold-forge/level.json",
+        "map": "world/cold-forge/map.png",
+        "heightmap": "world/cold-forge/heightmap.png"
+      }
+    ]
+  },
+  "models": [
+    {
+      "name": "anvil_stump",
+      "kind": "anvil_stump",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 66,
+      "glb": "models/anvil_stump.glb",
+      "obj": "models/anvil_stump.obj",
+      "turntable": "models/anvil_stump_turntable.png",
+      "thumb": "models/anvil_stump_thumb.png",
+      "materials": [
+        "bark",
+        "metal",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "barrel",
+      "kind": "barrel",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 112,
+      "glb": "models/barrel.glb",
+      "obj": "models/barrel.obj",
+      "turntable": "models/barrel_turntable.png",
+      "thumb": "models/barrel_thumb.png",
+      "materials": [
+        "metal",
+        "wood"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "cave_mound",
+      "kind": "cave_mound",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 180,
+      "glb": "models/cave_mound.glb",
+      "obj": "models/cave_mound.obj",
+      "turntable": "models/cave_mound_turntable.png",
+      "thumb": "models/cave_mound_thumb.png",
+      "materials": [
+        "moss",
+        "wet_stone"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "chest",
+      "kind": "chest",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 72,
+      "glb": "models/chest.glb",
+      "obj": "models/chest.obj",
+      "turntable": "models/chest_turntable.png",
+      "thumb": "models/chest_thumb.png",
+      "materials": [
+        "white",
+        "wood"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "clover",
+      "kind": "clover",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 380,
+      "glb": "models/clover.glb",
+      "obj": "models/clover.obj",
+      "turntable": "models/clover_turntable.png",
+      "thumb": "models/clover_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "coin",
+      "kind": "coin",
+      "category": "item",
+      "role": "collectible",
+      "seed": 64,
+      "tris": 52,
+      "glb": "models/coin.glb",
+      "obj": "models/coin.obj",
+      "turntable": "models/coin_turntable.png",
+      "thumb": "models/coin_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "crate",
+      "kind": "crate",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 156,
+      "glb": "models/crate.glb",
+      "obj": "models/crate.obj",
+      "turntable": "models/crate_turntable.png",
+      "thumb": "models/crate_thumb.png",
+      "materials": [
+        "white",
+        "wood"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "crystal_cap",
+      "kind": "crystal_cap",
+      "category": "tree",
+      "role": "prop",
+      "seed": 64,
+      "tris": 564,
+      "glb": "models/crystal_cap.glb",
+      "obj": "models/crystal_cap.obj",
+      "turntable": "models/crystal_cap_turntable.png",
+      "thumb": "models/crystal_cap_thumb.png",
+      "materials": [
+        "gills",
+        "stalk",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "dead_snag",
+      "kind": "dead_snag",
+      "category": "tree",
+      "role": "prop",
+      "seed": 64,
+      "tris": 84,
+      "glb": "models/dead_snag.glb",
+      "obj": "models/dead_snag.obj",
+      "turntable": "models/dead_snag_turntable.png",
+      "thumb": "models/dead_snag_thumb.png",
+      "materials": [
+        "bark",
+        "moss",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "fairy_ring",
+      "kind": "fairy_ring",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 536,
+      "glb": "models/fairy_ring.glb",
+      "obj": "models/fairy_ring.obj",
+      "turntable": "models/fairy_ring_turntable.png",
+      "thumb": "models/fairy_ring_thumb.png",
+      "materials": [
+        "gills",
+        "mushroom_cap",
+        "stalk",
+        "wet_stone"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "fence",
+      "kind": "fence",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 84,
+      "glb": "models/fence.glb",
+      "obj": "models/fence.obj",
+      "turntable": "models/fence_turntable.png",
+      "thumb": "models/fence_thumb.png",
+      "materials": [
+        "wood"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "forge",
+      "kind": "forge",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 48,
+      "glb": "models/forge.glb",
+      "obj": "models/forge.obj",
+      "turntable": "models/forge_turntable.png",
+      "thumb": "models/forge_thumb.png",
+      "materials": [
+        "wet_stone",
+        "white",
+        "wood"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "gem",
+      "kind": "gem",
+      "category": "item",
+      "role": "collectible",
+      "seed": 64,
+      "tris": 96,
+      "glb": "models/gem.glb",
+      "obj": "models/gem.obj",
+      "turntable": "models/gem_turntable.png",
+      "thumb": "models/gem_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "giant_trunk",
+      "kind": "giant_trunk",
+      "category": "tree",
+      "role": "prop",
+      "seed": 64,
+      "tris": 306,
+      "glb": "models/giant_trunk.glb",
+      "obj": "models/giant_trunk.obj",
+      "turntable": "models/giant_trunk_turntable.png",
+      "thumb": "models/giant_trunk_thumb.png",
+      "materials": [
+        "bark",
+        "moss",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "glowcap",
+      "kind": "glowcap",
+      "category": "tree",
+      "role": "prop",
+      "seed": 64,
+      "tris": 303,
+      "glb": "models/glowcap.glb",
+      "obj": "models/glowcap.obj",
+      "turntable": "models/glowcap_turntable.png",
+      "thumb": "models/glowcap_thumb.png",
+      "materials": [
+        "gills",
+        "mushroom_cap",
+        "stalk"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "heart",
+      "kind": "heart",
+      "category": "item",
+      "role": "collectible",
+      "seed": 64,
+      "tris": 60,
+      "glb": "models/heart.glb",
+      "obj": "models/heart.obj",
+      "turntable": "models/heart_turntable.png",
+      "thumb": "models/heart_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "hollow_log",
+      "kind": "hollow_log",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 348,
+      "glb": "models/hollow_log.glb",
+      "obj": "models/hollow_log.obj",
+      "turntable": "models/hollow_log_turntable.png",
+      "thumb": "models/hollow_log_thumb.png",
+      "materials": [
+        "bark",
+        "gills",
+        "moss",
+        "mushroom_cap",
+        "stalk",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "key",
+      "kind": "key",
+      "category": "item",
+      "role": "collectible",
+      "seed": 64,
+      "tris": 68,
+      "glb": "models/key.glb",
+      "obj": "models/key.obj",
+      "turntable": "models/key_turntable.png",
+      "thumb": "models/key_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "lamp",
+      "kind": "lamp",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 64,
+      "glb": "models/lamp.glb",
+      "obj": "models/lamp.obj",
+      "turntable": "models/lamp_turntable.png",
+      "thumb": "models/lamp_thumb.png",
+      "materials": [
+        "metal",
+        "stone",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "lantern_cap",
+      "kind": "lantern_cap",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 263,
+      "glb": "models/lantern_cap.glb",
+      "obj": "models/lantern_cap.obj",
+      "turntable": "models/lantern_cap_turntable.png",
+      "thumb": "models/lantern_cap_thumb.png",
+      "materials": [
+        "gills",
+        "mushroom_cap",
+        "stalk",
+        "white",
+        "wood"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "map_scroll",
+      "kind": "map_scroll",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 76,
+      "glb": "models/map_scroll.glb",
+      "obj": "models/map_scroll.obj",
+      "turntable": "models/map_scroll_turntable.png",
+      "thumb": "models/map_scroll_thumb.png",
+      "materials": [
+        "parchment",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "mossy_stone",
+      "kind": "mossy_stone",
+      "category": "rock",
+      "role": "prop",
+      "seed": 64,
+      "tris": 244,
+      "glb": "models/mossy_stone.glb",
+      "obj": "models/mossy_stone.obj",
+      "turntable": "models/mossy_stone_turntable.png",
+      "thumb": "models/mossy_stone_thumb.png",
+      "materials": [
+        "moss",
+        "wet_stone",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "mushroom_house",
+      "kind": "mushroom_house",
+      "category": "building",
+      "role": "prop",
+      "seed": 64,
+      "tris": 608,
+      "glb": "models/mushroom_house.glb",
+      "obj": "models/mushroom_house.obj",
+      "turntable": "models/mushroom_house_turntable.png",
+      "thumb": "models/mushroom_house_thumb.png",
+      "materials": [
+        "gills",
+        "mushroom_cap",
+        "plank",
+        "stalk",
+        "wet_stone",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "mushroom_item",
+      "kind": "mushroom_item",
+      "category": "item",
+      "role": "collectible",
+      "seed": 64,
+      "tris": 176,
+      "glb": "models/mushroom_item.glb",
+      "obj": "models/mushroom_item.obj",
+      "turntable": "models/mushroom_item_turntable.png",
+      "thumb": "models/mushroom_item_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "potion",
+      "kind": "potion",
+      "category": "item",
+      "role": "collectible",
+      "seed": 64,
+      "tris": 112,
+      "glb": "models/potion.glb",
+      "obj": "models/potion.obj",
+      "turntable": "models/potion_turntable.png",
+      "thumb": "models/potion_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "puffball",
+      "kind": "puffball",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 84,
+      "glb": "models/puffball.glb",
+      "obj": "models/puffball.obj",
+      "turntable": "models/puffball_turntable.png",
+      "thumb": "models/puffball_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "rainbow_cap",
+      "kind": "rainbow_cap",
+      "category": "tree",
+      "role": "prop",
+      "seed": 64,
+      "tris": 422,
+      "glb": "models/rainbow_cap.glb",
+      "obj": "models/rainbow_cap.obj",
+      "turntable": "models/rainbow_cap_turntable.png",
+      "thumb": "models/rainbow_cap_thumb.png",
+      "materials": [
+        "gills",
+        "stalk",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "reed_cap",
+      "kind": "reed_cap",
+      "category": "tree",
+      "role": "prop",
+      "seed": 64,
+      "tris": 340,
+      "glb": "models/reed_cap.glb",
+      "obj": "models/reed_cap.obj",
+      "turntable": "models/reed_cap_turntable.png",
+      "thumb": "models/reed_cap_thumb.png",
+      "materials": [
+        "gills",
+        "mushroom_cap",
+        "stalk",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "root_arch",
+      "kind": "root_arch",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 433,
+      "glb": "models/root_arch.glb",
+      "obj": "models/root_arch.obj",
+      "turntable": "models/root_arch_turntable.png",
+      "thumb": "models/root_arch_thumb.png",
+      "materials": [
+        "bark",
+        "gills",
+        "moss",
+        "mushroom_cap",
+        "stalk",
+        "wet_stone",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "root_house",
+      "kind": "root_house",
+      "category": "building",
+      "role": "prop",
+      "seed": 64,
+      "tris": 619,
+      "glb": "models/root_house.glb",
+      "obj": "models/root_house.obj",
+      "turntable": "models/root_house_turntable.png",
+      "thumb": "models/root_house_thumb.png",
+      "materials": [
+        "bark",
+        "gills",
+        "moss",
+        "mushroom_cap",
+        "stalk",
+        "white",
+        "wood"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "root_tunnel",
+      "kind": "root_tunnel",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 592,
+      "glb": "models/root_tunnel.glb",
+      "obj": "models/root_tunnel.obj",
+      "turntable": "models/root_tunnel_turntable.png",
+      "thumb": "models/root_tunnel_thumb.png",
+      "materials": [
+        "bark",
+        "dirt",
+        "moss"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "rope_bridge",
+      "kind": "rope_bridge",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 432,
+      "glb": "models/rope_bridge.glb",
+      "obj": "models/rope_bridge.obj",
+      "turntable": "models/rope_bridge_turntable.png",
+      "thumb": "models/rope_bridge_thumb.png",
+      "materials": [
+        "plank",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "rope_swing",
+      "kind": "rope_swing",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 56,
+      "glb": "models/rope_swing.glb",
+      "obj": "models/rope_swing.obj",
+      "turntable": "models/rope_swing_turntable.png",
+      "thumb": "models/rope_swing_thumb.png",
+      "materials": [
+        "plank",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "shelf_stump",
+      "kind": "shelf_stump",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 184,
+      "glb": "models/shelf_stump.glb",
+      "obj": "models/shelf_stump.obj",
+      "turntable": "models/shelf_stump_turntable.png",
+      "thumb": "models/shelf_stump_thumb.png",
+      "materials": [
+        "bark",
+        "moss",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "sign",
+      "kind": "sign",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 48,
+      "glb": "models/sign.glb",
+      "obj": "models/sign.obj",
+      "turntable": "models/sign_turntable.png",
+      "thumb": "models/sign_thumb.png",
+      "materials": [
+        "white",
+        "wood"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "spring_lid",
+      "kind": "spring_lid",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 124,
+      "glb": "models/spring_lid.glb",
+      "obj": "models/spring_lid.obj",
+      "turntable": "models/spring_lid_turntable.png",
+      "thumb": "models/spring_lid_thumb.png",
+      "materials": [
+        "metal",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "spring_pearl",
+      "kind": "spring_pearl",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 172,
+      "glb": "models/spring_pearl.glb",
+      "obj": "models/spring_pearl.obj",
+      "turntable": "models/spring_pearl_turntable.png",
+      "thumb": "models/spring_pearl_thumb.png",
+      "materials": [
+        "moss",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "spring_pool",
+      "kind": "spring_pool",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 332,
+      "glb": "models/spring_pool.glb",
+      "obj": "models/spring_pool.obj",
+      "turntable": "models/spring_pool_turntable.png",
+      "thumb": "models/spring_pool_thumb.png",
+      "materials": [
+        "moss",
+        "wet_stone",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "star",
+      "kind": "star",
+      "category": "item",
+      "role": "collectible",
+      "seed": 64,
+      "tris": 100,
+      "glb": "models/star.glb",
+      "obj": "models/star.obj",
+      "turntable": "models/star_turntable.png",
+      "thumb": "models/star_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "toadstool_blue",
+      "kind": "toadstool_blue",
+      "category": "tree",
+      "role": "prop",
+      "seed": 64,
+      "tris": 286,
+      "glb": "models/toadstool_blue.glb",
+      "obj": "models/toadstool_blue.obj",
+      "turntable": "models/toadstool_blue_turntable.png",
+      "thumb": "models/toadstool_blue_thumb.png",
+      "materials": [
+        "cap_blue",
+        "gills",
+        "stalk",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "toadstool_purple",
+      "kind": "toadstool_purple",
+      "category": "tree",
+      "role": "prop",
+      "seed": 64,
+      "tris": 454,
+      "glb": "models/toadstool_purple.glb",
+      "obj": "models/toadstool_purple.obj",
+      "turntable": "models/toadstool_purple_turntable.png",
+      "thumb": "models/toadstool_purple_thumb.png",
+      "materials": [
+        "cap_blue",
+        "gills",
+        "mushroom_cap",
+        "stalk",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "toadstool_red",
+      "kind": "toadstool_red",
+      "category": "tree",
+      "role": "prop",
+      "seed": 64,
+      "tris": 574,
+      "glb": "models/toadstool_red.glb",
+      "obj": "models/toadstool_red.obj",
+      "turntable": "models/toadstool_red_turntable.png",
+      "thumb": "models/toadstool_red_thumb.png",
+      "materials": [
+        "gills",
+        "mushroom_cap",
+        "stalk",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "treehouse",
+      "kind": "treehouse",
+      "category": "building",
+      "role": "prop",
+      "seed": 64,
+      "tris": 718,
+      "glb": "models/treehouse.glb",
+      "obj": "models/treehouse.obj",
+      "turntable": "models/treehouse_turntable.png",
+      "thumb": "models/treehouse_thumb.png",
+      "materials": [
+        "bark",
+        "gills",
+        "mushroom_cap",
+        "plank",
+        "roof",
+        "stalk",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "well",
+      "kind": "well",
+      "category": "prop",
+      "role": "prop",
+      "seed": 64,
+      "tris": 138,
+      "glb": "models/well.glb",
+      "obj": "models/well.obj",
+      "turntable": "models/well_turntable.png",
+      "thumb": "models/well_thumb.png",
+      "materials": [
+        "roof",
+        "stone",
+        "white",
+        "wood"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "wet_rock",
+      "kind": "wet_rock",
+      "category": "rock",
+      "role": "prop",
+      "seed": 64,
+      "tris": 36,
+      "glb": "models/wet_rock.glb",
+      "obj": "models/wet_rock.obj",
+      "turntable": "models/wet_rock_turntable.png",
+      "thumb": "models/wet_rock_thumb.png",
+      "materials": [
+        "moss",
+        "wet_stone"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "player",
+      "kind": "gnome",
+      "category": "character",
+      "role": "player",
+      "seed": 71,
+      "tris": 776,
+      "glb": "models/player.glb",
+      "obj": "models/player.obj",
+      "turntable": "models/player_turntable.png",
+      "thumb": "models/player_thumb.png",
+      "materials": [
+        "fabric",
+        "gills",
+        "mushroom_cap",
+        "stalk",
+        "white",
+        "wood"
+      ],
+      "rigged": true,
+      "rig": "humanoid",
+      "bones": [
+        "hips",
+        "spine",
+        "head",
+        "upperarm_L",
+        "lowerarm_L",
+        "upperarm_R",
+        "lowerarm_R",
+        "upperleg_L",
+        "lowerleg_L",
+        "upperleg_R",
+        "lowerleg_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "walk",
+          "duration": 0.62,
+          "loop": true,
+          "keys": 10
+        },
+        {
+          "name": "run",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "jump",
+          "duration": 0.72,
+          "loop": false,
+          "keys": 12
+        },
+        {
+          "name": "talk",
+          "duration": 1.6,
+          "loop": true,
+          "keys": 25
+        },
+        {
+          "name": "wave",
+          "duration": 1.2,
+          "loop": true,
+          "keys": 19
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "cast",
+          "duration": 1.0,
+          "loop": false,
+          "keys": 16
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        },
+        {
+          "name": "waddle",
+          "duration": 0.56,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "ride",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "swing",
+          "duration": 2.4,
+          "loop": true,
+          "keys": 37
+        },
+        {
+          "name": "cheer",
+          "duration": 0.7,
+          "loop": true,
+          "keys": 11
+        }
+      ],
+      "anim_sheet": "models/player_anim.png",
+      "label": "Wittle"
+    },
+    {
+      "name": "fox",
+      "kind": "fox",
+      "category": "creature",
+      "role": "mount",
+      "seed": 69,
+      "tris": 554,
+      "glb": "models/fox.glb",
+      "obj": "models/fox.obj",
+      "turntable": "models/fox_turntable.png",
+      "thumb": "models/fox_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": true,
+      "rig": "quadruped",
+      "bones": [
+        "body",
+        "head",
+        "leg_FL",
+        "leg_FR",
+        "leg_BL",
+        "leg_BR",
+        "tail"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.6,
+          "loop": true,
+          "keys": 10
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "anim_sheet": "models/fox_anim.png",
+      "label": "fox"
+    },
+    {
+      "name": "npc1",
+      "kind": "gnome_elder",
+      "category": "character",
+      "role": "npc",
+      "seed": 6400,
+      "tris": 788,
+      "glb": "models/npc1.glb",
+      "obj": "models/npc1.obj",
+      "turntable": "models/npc1_turntable.png",
+      "thumb": "models/npc1_thumb.png",
+      "materials": [
+        "fabric",
+        "gills",
+        "mushroom_cap",
+        "stalk",
+        "white",
+        "wood"
+      ],
+      "rigged": true,
+      "rig": "humanoid",
+      "bones": [
+        "hips",
+        "spine",
+        "head",
+        "upperarm_L",
+        "lowerarm_L",
+        "upperarm_R",
+        "lowerarm_R",
+        "upperleg_L",
+        "lowerleg_L",
+        "upperleg_R",
+        "lowerleg_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "walk",
+          "duration": 0.62,
+          "loop": true,
+          "keys": 10
+        },
+        {
+          "name": "run",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "jump",
+          "duration": 0.72,
+          "loop": false,
+          "keys": 12
+        },
+        {
+          "name": "talk",
+          "duration": 1.6,
+          "loop": true,
+          "keys": 25
+        },
+        {
+          "name": "wave",
+          "duration": 1.2,
+          "loop": true,
+          "keys": 19
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "cast",
+          "duration": 1.0,
+          "loop": false,
+          "keys": 16
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        },
+        {
+          "name": "waddle",
+          "duration": 0.56,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "ride",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "swing",
+          "duration": 2.4,
+          "loop": true,
+          "keys": 37
+        },
+        {
+          "name": "cheer",
+          "duration": 0.7,
+          "loop": true,
+          "keys": 11
+        }
+      ],
+      "anim_sheet": "models/npc1_anim.png",
+      "label": "Grandpa Femble"
+    },
+    {
+      "name": "npc2",
+      "kind": "gnome_lady",
+      "category": "character",
+      "role": "npc",
+      "seed": 6401,
+      "tris": 792,
+      "glb": "models/npc2.glb",
+      "obj": "models/npc2.obj",
+      "turntable": "models/npc2_turntable.png",
+      "thumb": "models/npc2_thumb.png",
+      "materials": [
+        "fabric",
+        "white"
+      ],
+      "rigged": true,
+      "rig": "humanoid",
+      "bones": [
+        "hips",
+        "spine",
+        "head",
+        "upperarm_L",
+        "lowerarm_L",
+        "upperarm_R",
+        "lowerarm_R",
+        "upperleg_L",
+        "lowerleg_L",
+        "upperleg_R",
+        "lowerleg_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "walk",
+          "duration": 0.62,
+          "loop": true,
+          "keys": 10
+        },
+        {
+          "name": "run",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "jump",
+          "duration": 0.72,
+          "loop": false,
+          "keys": 12
+        },
+        {
+          "name": "talk",
+          "duration": 1.6,
+          "loop": true,
+          "keys": 25
+        },
+        {
+          "name": "wave",
+          "duration": 1.2,
+          "loop": true,
+          "keys": 19
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "cast",
+          "duration": 1.0,
+          "loop": false,
+          "keys": 16
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        },
+        {
+          "name": "waddle",
+          "duration": 0.56,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "ride",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "swing",
+          "duration": 2.4,
+          "loop": true,
+          "keys": 37
+        },
+        {
+          "name": "cheer",
+          "duration": 0.7,
+          "loop": true,
+          "keys": 11
+        }
+      ],
+      "label": "Granny Pawick"
+    },
+    {
+      "name": "npc3",
+      "kind": "gnome",
+      "category": "character",
+      "role": "npc",
+      "seed": 6402,
+      "tris": 776,
+      "glb": "models/npc3.glb",
+      "obj": "models/npc3.obj",
+      "turntable": "models/npc3_turntable.png",
+      "thumb": "models/npc3_thumb.png",
+      "materials": [
+        "fabric",
+        "gills",
+        "mushroom_cap",
+        "stalk",
+        "white",
+        "wood"
+      ],
+      "rigged": true,
+      "rig": "humanoid",
+      "bones": [
+        "hips",
+        "spine",
+        "head",
+        "upperarm_L",
+        "lowerarm_L",
+        "upperarm_R",
+        "lowerarm_R",
+        "upperleg_L",
+        "lowerleg_L",
+        "upperleg_R",
+        "lowerleg_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "walk",
+          "duration": 0.62,
+          "loop": true,
+          "keys": 10
+        },
+        {
+          "name": "run",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "jump",
+          "duration": 0.72,
+          "loop": false,
+          "keys": 12
+        },
+        {
+          "name": "talk",
+          "duration": 1.6,
+          "loop": true,
+          "keys": 25
+        },
+        {
+          "name": "wave",
+          "duration": 1.2,
+          "loop": true,
+          "keys": 19
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "cast",
+          "duration": 1.0,
+          "loop": false,
+          "keys": 16
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        },
+        {
+          "name": "waddle",
+          "duration": 0.56,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "ride",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "swing",
+          "duration": 2.4,
+          "loop": true,
+          "keys": 37
+        },
+        {
+          "name": "cheer",
+          "duration": 0.7,
+          "loop": true,
+          "keys": 11
+        }
+      ],
+      "label": "Master Timble"
+    },
+    {
+      "name": "npc4",
+      "kind": "gnome_kid",
+      "category": "character",
+      "role": "npc",
+      "seed": 6403,
+      "tris": 672,
+      "glb": "models/npc4.glb",
+      "obj": "models/npc4.obj",
+      "turntable": "models/npc4_turntable.png",
+      "thumb": "models/npc4_thumb.png",
+      "materials": [
+        "fabric",
+        "white"
+      ],
+      "rigged": true,
+      "rig": "humanoid",
+      "bones": [
+        "hips",
+        "spine",
+        "head",
+        "upperarm_L",
+        "lowerarm_L",
+        "upperarm_R",
+        "lowerarm_R",
+        "upperleg_L",
+        "lowerleg_L",
+        "upperleg_R",
+        "lowerleg_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "walk",
+          "duration": 0.62,
+          "loop": true,
+          "keys": 10
+        },
+        {
+          "name": "run",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "jump",
+          "duration": 0.72,
+          "loop": false,
+          "keys": 12
+        },
+        {
+          "name": "talk",
+          "duration": 1.6,
+          "loop": true,
+          "keys": 25
+        },
+        {
+          "name": "wave",
+          "duration": 1.2,
+          "loop": true,
+          "keys": 19
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "cast",
+          "duration": 1.0,
+          "loop": false,
+          "keys": 16
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        },
+        {
+          "name": "waddle",
+          "duration": 0.56,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "ride",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "swing",
+          "duration": 2.4,
+          "loop": true,
+          "keys": 37
+        },
+        {
+          "name": "cheer",
+          "duration": 0.7,
+          "loop": true,
+          "keys": 11
+        }
+      ],
+      "label": "Little Toffle"
+    },
+    {
+      "name": "npc5",
+      "kind": "gnome_lady",
+      "category": "character",
+      "role": "npc",
+      "seed": 6404,
+      "tris": 792,
+      "glb": "models/npc5.glb",
+      "obj": "models/npc5.obj",
+      "turntable": "models/npc5_turntable.png",
+      "thumb": "models/npc5_thumb.png",
+      "materials": [
+        "fabric",
+        "white"
+      ],
+      "rigged": true,
+      "rig": "humanoid",
+      "bones": [
+        "hips",
+        "spine",
+        "head",
+        "upperarm_L",
+        "lowerarm_L",
+        "upperarm_R",
+        "lowerarm_R",
+        "upperleg_L",
+        "lowerleg_L",
+        "upperleg_R",
+        "lowerleg_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "walk",
+          "duration": 0.62,
+          "loop": true,
+          "keys": 10
+        },
+        {
+          "name": "run",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "jump",
+          "duration": 0.72,
+          "loop": false,
+          "keys": 12
+        },
+        {
+          "name": "talk",
+          "duration": 1.6,
+          "loop": true,
+          "keys": 25
+        },
+        {
+          "name": "wave",
+          "duration": 1.2,
+          "loop": true,
+          "keys": 19
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "cast",
+          "duration": 1.0,
+          "loop": false,
+          "keys": 16
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        },
+        {
+          "name": "waddle",
+          "duration": 0.56,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "ride",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "swing",
+          "duration": 2.4,
+          "loop": true,
+          "keys": 37
+        },
+        {
+          "name": "cheer",
+          "duration": 0.7,
+          "loop": true,
+          "keys": 11
+        }
+      ],
+      "label": "Auntie Luddock"
+    },
+    {
+      "name": "npc6",
+      "kind": "gnome",
+      "category": "character",
+      "role": "npc",
+      "seed": 6405,
+      "tris": 776,
+      "glb": "models/npc6.glb",
+      "obj": "models/npc6.obj",
+      "turntable": "models/npc6_turntable.png",
+      "thumb": "models/npc6_thumb.png",
+      "materials": [
+        "fabric",
+        "gills",
+        "mushroom_cap",
+        "stalk",
+        "white",
+        "wood"
+      ],
+      "rigged": true,
+      "rig": "humanoid",
+      "bones": [
+        "hips",
+        "spine",
+        "head",
+        "upperarm_L",
+        "lowerarm_L",
+        "upperarm_R",
+        "lowerarm_R",
+        "upperleg_L",
+        "lowerleg_L",
+        "upperleg_R",
+        "lowerleg_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "walk",
+          "duration": 0.62,
+          "loop": true,
+          "keys": 10
+        },
+        {
+          "name": "run",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "jump",
+          "duration": 0.72,
+          "loop": false,
+          "keys": 12
+        },
+        {
+          "name": "talk",
+          "duration": 1.6,
+          "loop": true,
+          "keys": 25
+        },
+        {
+          "name": "wave",
+          "duration": 1.2,
+          "loop": true,
+          "keys": 19
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "cast",
+          "duration": 1.0,
+          "loop": false,
+          "keys": 16
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        },
+        {
+          "name": "waddle",
+          "duration": 0.56,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "ride",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "swing",
+          "duration": 2.4,
+          "loop": true,
+          "keys": 37
+        },
+        {
+          "name": "cheer",
+          "duration": 0.7,
+          "loop": true,
+          "keys": 11
+        }
+      ],
+      "label": "Uncle Plupkin"
+    },
+    {
+      "name": "npc7",
+      "kind": "gnome_elder",
+      "category": "character",
+      "role": "npc",
+      "seed": 6406,
+      "tris": 788,
+      "glb": "models/npc7.glb",
+      "obj": "models/npc7.obj",
+      "turntable": "models/npc7_turntable.png",
+      "thumb": "models/npc7_thumb.png",
+      "materials": [
+        "fabric",
+        "gills",
+        "mushroom_cap",
+        "stalk",
+        "white",
+        "wood"
+      ],
+      "rigged": true,
+      "rig": "humanoid",
+      "bones": [
+        "hips",
+        "spine",
+        "head",
+        "upperarm_L",
+        "lowerarm_L",
+        "upperarm_R",
+        "lowerarm_R",
+        "upperleg_L",
+        "lowerleg_L",
+        "upperleg_R",
+        "lowerleg_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "walk",
+          "duration": 0.62,
+          "loop": true,
+          "keys": 10
+        },
+        {
+          "name": "run",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "jump",
+          "duration": 0.72,
+          "loop": false,
+          "keys": 12
+        },
+        {
+          "name": "talk",
+          "duration": 1.6,
+          "loop": true,
+          "keys": 25
+        },
+        {
+          "name": "wave",
+          "duration": 1.2,
+          "loop": true,
+          "keys": 19
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "cast",
+          "duration": 1.0,
+          "loop": false,
+          "keys": 16
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        },
+        {
+          "name": "waddle",
+          "duration": 0.56,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "ride",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "swing",
+          "duration": 2.4,
+          "loop": true,
+          "keys": 37
+        },
+        {
+          "name": "cheer",
+          "duration": 0.7,
+          "loop": true,
+          "keys": 11
+        }
+      ],
+      "label": "Old Gabbin"
+    },
+    {
+      "name": "npc8",
+      "kind": "gnome_lady",
+      "category": "character",
+      "role": "npc",
+      "seed": 6407,
+      "tris": 792,
+      "glb": "models/npc8.glb",
+      "obj": "models/npc8.obj",
+      "turntable": "models/npc8_turntable.png",
+      "thumb": "models/npc8_thumb.png",
+      "materials": [
+        "fabric",
+        "white"
+      ],
+      "rigged": true,
+      "rig": "humanoid",
+      "bones": [
+        "hips",
+        "spine",
+        "head",
+        "upperarm_L",
+        "lowerarm_L",
+        "upperarm_R",
+        "lowerarm_R",
+        "upperleg_L",
+        "lowerleg_L",
+        "upperleg_R",
+        "lowerleg_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "walk",
+          "duration": 0.62,
+          "loop": true,
+          "keys": 10
+        },
+        {
+          "name": "run",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "jump",
+          "duration": 0.72,
+          "loop": false,
+          "keys": 12
+        },
+        {
+          "name": "talk",
+          "duration": 1.6,
+          "loop": true,
+          "keys": 25
+        },
+        {
+          "name": "wave",
+          "duration": 1.2,
+          "loop": true,
+          "keys": 19
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "cast",
+          "duration": 1.0,
+          "loop": false,
+          "keys": 16
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        },
+        {
+          "name": "waddle",
+          "duration": 0.56,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "ride",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "swing",
+          "duration": 2.4,
+          "loop": true,
+          "keys": 37
+        },
+        {
+          "name": "cheer",
+          "duration": 0.7,
+          "loop": true,
+          "keys": 11
+        }
+      ],
+      "label": "Mistress Guck"
+    },
+    {
+      "name": "npc9",
+      "kind": "gnome",
+      "category": "character",
+      "role": "npc",
+      "seed": 6408,
+      "tris": 776,
+      "glb": "models/npc9.glb",
+      "obj": "models/npc9.obj",
+      "turntable": "models/npc9_turntable.png",
+      "thumb": "models/npc9_thumb.png",
+      "materials": [
+        "fabric",
+        "gills",
+        "mushroom_cap",
+        "stalk",
+        "white",
+        "wood"
+      ],
+      "rigged": true,
+      "rig": "humanoid",
+      "bones": [
+        "hips",
+        "spine",
+        "head",
+        "upperarm_L",
+        "lowerarm_L",
+        "upperarm_R",
+        "lowerarm_R",
+        "upperleg_L",
+        "lowerleg_L",
+        "upperleg_R",
+        "lowerleg_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "walk",
+          "duration": 0.62,
+          "loop": true,
+          "keys": 10
+        },
+        {
+          "name": "run",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "jump",
+          "duration": 0.72,
+          "loop": false,
+          "keys": 12
+        },
+        {
+          "name": "talk",
+          "duration": 1.6,
+          "loop": true,
+          "keys": 25
+        },
+        {
+          "name": "wave",
+          "duration": 1.2,
+          "loop": true,
+          "keys": 19
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "cast",
+          "duration": 1.0,
+          "loop": false,
+          "keys": 16
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        },
+        {
+          "name": "waddle",
+          "duration": 0.56,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "ride",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "swing",
+          "duration": 2.4,
+          "loop": true,
+          "keys": 37
+        },
+        {
+          "name": "cheer",
+          "duration": 0.7,
+          "loop": true,
+          "keys": 11
+        }
+      ],
+      "label": "Ronny"
+    },
+    {
+      "name": "en_L1_1",
+      "kind": "shroomling",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 774,
+      "tris": 414,
+      "glb": "models/en_L1_1.glb",
+      "obj": "models/en_L1_1.obj",
+      "turntable": "models/en_L1_1_turntable.png",
+      "thumb": "models/en_L1_1_thumb.png",
+      "materials": [
+        "gills",
+        "mushroom_cap",
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "anim_sheet": "models/en_L1_1_anim.png",
+      "label": "Wobblecap",
+      "rank": "minion"
+    },
+    {
+      "name": "en_L1_2",
+      "kind": "puffcap",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 5133,
+      "tris": 274,
+      "glb": "models/en_L1_2.glb",
+      "obj": "models/en_L1_2.obj",
+      "turntable": "models/en_L1_2_turntable.png",
+      "thumb": "models/en_L1_2_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "anim_sheet": "models/en_L1_2_anim.png",
+      "label": "Stalknub",
+      "rank": "minion"
+    },
+    {
+      "name": "en_L1_3",
+      "kind": "shroomling",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 6579,
+      "tris": 414,
+      "glb": "models/en_L1_3.glb",
+      "obj": "models/en_L1_3.obj",
+      "turntable": "models/en_L1_3_turntable.png",
+      "thumb": "models/en_L1_3_thumb.png",
+      "materials": [
+        "gills",
+        "mushroom_cap",
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "label": "Inkykin",
+      "rank": "minion"
+    },
+    {
+      "name": "en_L1_4",
+      "kind": "puffcap",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 1640,
+      "tris": 274,
+      "glb": "models/en_L1_4.glb",
+      "obj": "models/en_L1_4.obj",
+      "turntable": "models/en_L1_4_turntable.png",
+      "thumb": "models/en_L1_4_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "label": "Buttonpod",
+      "rank": "elite"
+    },
+    {
+      "name": "mb_L1",
+      "kind": "shroomling",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 1449,
+      "tris": 414,
+      "glb": "models/mb_L1.glb",
+      "obj": "models/mb_L1.obj",
+      "turntable": "models/mb_L1_turntable.png",
+      "thumb": "models/mb_L1_thumb.png",
+      "materials": [
+        "gills",
+        "mushroom_cap",
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "label": "Spotling the Great",
+      "rank": "miniboss"
+    },
+    {
+      "name": "en_L2_1",
+      "kind": "inkcap",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 5558,
+      "tris": 300,
+      "glb": "models/en_L2_1.glb",
+      "obj": "models/en_L2_1.obj",
+      "turntable": "models/en_L2_1_turntable.png",
+      "thumb": "models/en_L2_1_thumb.png",
+      "materials": [
+        "cap_blue",
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "anim_sheet": "models/en_L2_1_anim.png",
+      "label": "Bobblebun",
+      "rank": "minion"
+    },
+    {
+      "name": "en_L2_2",
+      "kind": "glowmite",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 4535,
+      "tris": 276,
+      "glb": "models/en_L2_2.glb",
+      "obj": "models/en_L2_2.obj",
+      "turntable": "models/en_L2_2_turntable.png",
+      "thumb": "models/en_L2_2_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "anim_sheet": "models/en_L2_2_anim.png",
+      "label": "Buttonbun",
+      "rank": "minion"
+    },
+    {
+      "name": "en_L2_3",
+      "kind": "inkcap",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 1520,
+      "tris": 300,
+      "glb": "models/en_L2_3.glb",
+      "obj": "models/en_L2_3.obj",
+      "turntable": "models/en_L2_3_turntable.png",
+      "thumb": "models/en_L2_3_thumb.png",
+      "materials": [
+        "cap_blue",
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "label": "Trufflenub",
+      "rank": "minion"
+    },
+    {
+      "name": "en_L2_4",
+      "kind": "glowmite",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 270,
+      "tris": 276,
+      "glb": "models/en_L2_4.glb",
+      "obj": "models/en_L2_4.obj",
+      "turntable": "models/en_L2_4_turntable.png",
+      "thumb": "models/en_L2_4_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "label": "Spotpod",
+      "rank": "elite"
+    },
+    {
+      "name": "mb_L2",
+      "kind": "inkcap",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 7177,
+      "tris": 300,
+      "glb": "models/mb_L2.glb",
+      "obj": "models/mb_L2.obj",
+      "turntable": "models/mb_L2_turntable.png",
+      "thumb": "models/mb_L2_thumb.png",
+      "materials": [
+        "cap_blue",
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "label": "Bobblelet the Great",
+      "rank": "miniboss"
+    },
+    {
+      "name": "en_L3_1",
+      "kind": "bogcap",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 852,
+      "tris": 354,
+      "glb": "models/en_L3_1.glb",
+      "obj": "models/en_L3_1.obj",
+      "turntable": "models/en_L3_1_turntable.png",
+      "thumb": "models/en_L3_1_thumb.png",
+      "materials": [
+        "gills",
+        "moss",
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "anim_sheet": "models/en_L3_1_anim.png",
+      "label": "Morelkin",
+      "rank": "minion"
+    },
+    {
+      "name": "en_L3_2",
+      "kind": "puffcap",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 6094,
+      "tris": 274,
+      "glb": "models/en_L3_2.glb",
+      "obj": "models/en_L3_2.obj",
+      "turntable": "models/en_L3_2_turntable.png",
+      "thumb": "models/en_L3_2_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "label": "Speckcap",
+      "rank": "minion"
+    },
+    {
+      "name": "en_L3_3",
+      "kind": "bogcap",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 5235,
+      "tris": 354,
+      "glb": "models/en_L3_3.glb",
+      "obj": "models/en_L3_3.obj",
+      "turntable": "models/en_L3_3_turntable.png",
+      "thumb": "models/en_L3_3_thumb.png",
+      "materials": [
+        "gills",
+        "moss",
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "label": "Dimplecap",
+      "rank": "minion"
+    },
+    {
+      "name": "en_L3_4",
+      "kind": "glowmite",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 7834,
+      "tris": 276,
+      "glb": "models/en_L3_4.glb",
+      "obj": "models/en_L3_4.obj",
+      "turntable": "models/en_L3_4_turntable.png",
+      "thumb": "models/en_L3_4_thumb.png",
+      "materials": [
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "label": "Bobblepod",
+      "rank": "elite"
+    },
+    {
+      "name": "mb_L3",
+      "kind": "bogcap",
+      "category": "creature",
+      "role": "enemy",
+      "seed": 5439,
+      "tris": 354,
+      "glb": "models/mb_L3.glb",
+      "obj": "models/mb_L3.obj",
+      "turntable": "models/mb_L3_turntable.png",
+      "thumb": "models/mb_L3_thumb.png",
+      "materials": [
+        "gills",
+        "moss",
+        "white"
+      ],
+      "rigged": true,
+      "rig": "shroom",
+      "bones": [
+        "body",
+        "cap",
+        "foot_L",
+        "foot_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "move",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "label": "Morelpod the Great",
+      "rank": "miniboss"
+    },
+    {
+      "name": "boss",
+      "kind": "dwarf",
+      "category": "character",
+      "role": "boss",
+      "seed": 730,
+      "tris": 860,
+      "glb": "models/boss.glb",
+      "obj": "models/boss.obj",
+      "turntable": "models/boss_turntable.png",
+      "thumb": "models/boss_thumb.png",
+      "materials": [
+        "fabric",
+        "white"
+      ],
+      "rigged": true,
+      "rig": "humanoid",
+      "bones": [
+        "hips",
+        "spine",
+        "head",
+        "upperarm_L",
+        "lowerarm_L",
+        "upperarm_R",
+        "lowerarm_R",
+        "upperleg_L",
+        "lowerleg_L",
+        "upperleg_R",
+        "lowerleg_R"
+      ],
+      "clips": [
+        {
+          "name": "idle",
+          "duration": 2.2,
+          "loop": true,
+          "keys": 34
+        },
+        {
+          "name": "walk",
+          "duration": 0.62,
+          "loop": true,
+          "keys": 10
+        },
+        {
+          "name": "run",
+          "duration": 0.5,
+          "loop": true,
+          "keys": 9
+        },
+        {
+          "name": "jump",
+          "duration": 0.72,
+          "loop": false,
+          "keys": 12
+        },
+        {
+          "name": "talk",
+          "duration": 1.6,
+          "loop": true,
+          "keys": 25
+        },
+        {
+          "name": "wave",
+          "duration": 1.2,
+          "loop": true,
+          "keys": 19
+        },
+        {
+          "name": "attack",
+          "duration": 0.6,
+          "loop": false,
+          "keys": 10
+        },
+        {
+          "name": "cast",
+          "duration": 1.0,
+          "loop": false,
+          "keys": 16
+        },
+        {
+          "name": "hit",
+          "duration": 0.4,
+          "loop": false,
+          "keys": 7
+        },
+        {
+          "name": "death",
+          "duration": 0.8,
+          "loop": false,
+          "keys": 13
+        }
+      ],
+      "anim_sheet": "models/boss_anim.png",
+      "label": "Krogbold Anvilbeard the Gruff"
+    },
+    {
+      "name": "sword",
+      "kind": "sword",
+      "category": "weapon",
+      "role": "weapon",
+      "seed": 64,
+      "tris": 72,
+      "glb": "models/sword.glb",
+      "obj": "models/sword.obj",
+      "turntable": "models/sword_turntable.png",
+      "thumb": "models/sword_thumb.png",
+      "materials": [
+        "fabric",
+        "metal",
+        "white"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "axe",
+      "kind": "axe",
+      "category": "weapon",
+      "role": "weapon",
+      "seed": 64,
+      "tris": 52,
+      "glb": "models/axe.glb",
+      "obj": "models/axe.obj",
+      "turntable": "models/axe_turntable.png",
+      "thumb": "models/axe_thumb.png",
+      "materials": [
+        "metal",
+        "wood"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "hammer",
+      "kind": "hammer",
+      "category": "weapon",
+      "role": "weapon",
+      "seed": 64,
+      "tris": 112,
+      "glb": "models/hammer.glb",
+      "obj": "models/hammer.obj",
+      "turntable": "models/hammer_turntable.png",
+      "thumb": "models/hammer_thumb.png",
+      "materials": [
+        "fabric",
+        "metal",
+        "white",
+        "wood"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "staff",
+      "kind": "staff",
+      "category": "weapon",
+      "role": "weapon",
+      "seed": 64,
+      "tris": 74,
+      "glb": "models/staff.glb",
+      "obj": "models/staff.obj",
+      "turntable": "models/staff_turntable.png",
+      "thumb": "models/staff_thumb.png",
+      "materials": [
+        "white",
+        "wood"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "bow",
+      "kind": "bow",
+      "category": "weapon",
+      "role": "weapon",
+      "seed": 64,
+      "tris": 166,
+      "glb": "models/bow.glb",
+      "obj": "models/bow.obj",
+      "turntable": "models/bow_turntable.png",
+      "thumb": "models/bow_thumb.png",
+      "materials": [
+        "white",
+        "wood"
+      ],
+      "rigged": false
+    },
+    {
+      "name": "shield",
+      "kind": "shield",
+      "category": "weapon",
+      "role": "weapon",
+      "seed": 64,
+      "tris": 96,
+      "glb": "models/shield.glb",
+      "obj": "models/shield.obj",
+      "turntable": "models/shield_turntable.png",
+      "thumb": "models/shield_thumb.png",
+      "materials": [
+        "metal",
+        "white",
+        "wood"
+      ],
+      "rigged": false
+    }
+  ],
+  "sprites": {
+    "icons": [
+      "sprites/icons/bomb.png",
+      "sprites/icons/clock.png",
+      "sprites/icons/coin.png",
+      "sprites/icons/egg.png",
+      "sprites/icons/feather.png",
+      "sprites/icons/gem.png",
+      "sprites/icons/heart.png",
+      "sprites/icons/key.png",
+      "sprites/icons/map.png",
+      "sprites/icons/mushroom.png",
+      "sprites/icons/note.png",
+      "sprites/icons/potion.png",
+      "sprites/icons/shield.png",
+      "sprites/icons/skull.png",
+      "sprites/icons/star.png",
+      "sprites/icons/sword.png"
+    ],
+    "billboards": [
+      "sprites/billboards/bush.png",
+      "sprites/billboards/cloud.png",
+      "sprites/billboards/deadtree.png",
+      "sprites/billboards/explosion.png",
+      "sprites/billboards/flame.png",
+      "sprites/billboards/flower.png",
+      "sprites/billboards/grass.png",
+      "sprites/billboards/mob_goblin.png",
+      "sprites/billboards/mob_lantern.png",
+      "sprites/billboards/mob_rat.png",
+      "sprites/billboards/npc_bank.png",
+      "sprites/billboards/npc_guard.png",
+      "sprites/billboards/npc_mystic.png",
+      "sprites/billboards/npc_priest.png",
+      "sprites/billboards/npc_warrior.png",
+      "sprites/billboards/npc_wizard.png",
+      "sprites/billboards/pine.png",
+      "sprites/billboards/rock.png",
+      "sprites/billboards/smoke.png",
+      "sprites/billboards/sparkle.png",
+      "sprites/billboards/spell_fire.png",
+      "sprites/billboards/spell_holy.png",
+      "sprites/billboards/spell_ice.png",
+      "sprites/billboards/spell_lightning.png",
+      "sprites/billboards/spell_ring.png",
+      "sprites/billboards/spell_venom.png",
+      "sprites/billboards/tree.png"
+    ],
+    "hud": [
+      "sprites/hud/btn_a.png",
+      "sprites/hud/btn_b.png",
+      "sprites/hud/btn_c_down.png",
+      "sprites/hud/btn_c_left.png",
+      "sprites/hud/btn_c_right.png",
+      "sprites/hud/btn_c_up.png",
+      "sprites/hud/btn_start.png",
+      "sprites/hud/btn_z.png",
+      "sprites/hud/counter_coin.png",
+      "sprites/hud/counter_note.png",
+      "sprites/hud/counter_star.png",
+      "sprites/hud/dialog_9slice.png",
+      "sprites/hud/dialog_example.png",
+      "sprites/hud/hearts_row.png",
+      "sprites/hud/minimap_tiles_16.png",
+      "sprites/hud/power_0.png",
+      "sprites/hud/power_1.png",
+      "sprites/hud/power_2.png",
+      "sprites/hud/power_3.png",
+      "sprites/hud/power_4.png",
+      "sprites/hud/power_5.png",
+      "sprites/hud/power_6.png",
+      "sprites/hud/power_7.png",
+      "sprites/hud/power_8.png"
+    ],
+    "font": [
+      "sprites/font/font.png"
+    ],
+    "logo": [
+      "sprites/logo/logo.png",
+      "sprites/logo/title_screen.png"
+    ],
+    "portraits": [
+      "sprites/portraits/npc1.png",
+      "sprites/portraits/npc2.png",
+      "sprites/portraits/npc3.png",
+      "sprites/portraits/npc4.png",
+      "sprites/portraits/npc5.png",
+      "sprites/portraits/npc6.png",
+      "sprites/portraits/npc7.png",
+      "sprites/portraits/npc8.png",
+      "sprites/portraits/npc9.png",
+      "sprites/portraits/player.png",
+      "sprites/portraits/portrait_0.png",
+      "sprites/portraits/portrait_1.png",
+      "sprites/portraits/portrait_2.png",
+      "sprites/portraits/portrait_3.png",
+      "sprites/portraits/portrait_4.png",
+      "sprites/portraits/portrait_5.png"
+    ],
+    "font_meta": "sprites/font/font.json",
+    "sheet": "sprites/sprite_sheet_all.png"
+  },
+  "music": [
+    {
+      "mood": "title",
+      "base": "title",
+      "theme": "mossgnome",
+      "seed": 64,
+      "tempo": 92,
+      "scale": "major",
+      "root_midi": 55,
+      "programs": {
+        "lead": 10,
+        "pad": 46,
+        "bass": 32,
+        "arp": null
+      },
+      "bars": 18,
+      "loop": true,
+      "perc": "none",
+      "preset": true,
+      "gain_db": 0,
+      "density": null,
+      "always_on": true,
+      "loop_start_s": 5.217391304347826,
+      "loop_end_s": 46.95652173913044,
+      "renderer": "fluidsynth:FluidR3_GM.sf2",
+      "wav": "music/title.wav",
+      "mid": "music/title.mid"
+    },
+    {
+      "mood": "town",
+      "base": "town",
+      "theme": "mossgnome",
+      "seed": 64,
+      "tempo": 112,
+      "scale": "major",
+      "root_midi": 53,
+      "programs": {
+        "lead": 71,
+        "pad": 48,
+        "bass": 70,
+        "arp": null
+      },
+      "bars": 17,
+      "loop": true,
+      "perc": "woodblock",
+      "preset": true,
+      "gain_db": 0,
+      "density": null,
+      "always_on": true,
+      "loop_start_s": 2.142857142857143,
+      "loop_end_s": 36.42857142857143,
+      "renderer": "fluidsynth:FluidR3_GM.sf2",
+      "wav": "music/town.wav",
+      "mid": "music/town.mid"
+    },
+    {
+      "mood": "overworld",
+      "base": "overworld",
+      "theme": "mossgnome",
+      "seed": 64,
+      "tempo": 104,
+      "scale": "mixolydian",
+      "root_midi": 62,
+      "programs": {
+        "lead": 73,
+        "pad": 48,
+        "bass": 32,
+        "arp": 68
+      },
+      "bars": 18,
+      "loop": true,
+      "perc": "triangle",
+      "preset": true,
+      "gain_db": 0,
+      "density": null,
+      "always_on": true,
+      "loop_start_s": 4.615384615384615,
+      "loop_end_s": 41.53846153846154,
+      "renderer": "fluidsynth:FluidR3_GM.sf2",
+      "wav": "music/overworld.wav",
+      "mid": "music/overworld.mid"
+    },
+    {
+      "mood": "dungeon",
+      "base": "dungeon",
+      "theme": "mossgnome",
+      "seed": 64,
+      "tempo": 84,
+      "scale": "dorian",
+      "root_midi": 64,
+      "programs": {
+        "lead": 10,
+        "pad": 89,
+        "bass": 32,
+        "arp": 8
+      },
+      "bars": 18,
+      "loop": true,
+      "perc": "drips",
+      "preset": true,
+      "gain_db": 0,
+      "density": null,
+      "always_on": true,
+      "loop_start_s": 5.714285714285714,
+      "loop_end_s": 51.42857142857143,
+      "renderer": "fluidsynth:FluidR3_GM.sf2",
+      "wav": "music/dungeon.wav",
+      "mid": "music/dungeon.mid"
+    },
+    {
+      "mood": "marsh",
+      "base": "dungeon",
+      "theme": "mossgnome",
+      "seed": 64,
+      "tempo": 76,
+      "scale": "dorian",
+      "root_midi": 57,
+      "programs": {
+        "lead": 71,
+        "pad": 52,
+        "bass": 70,
+        "arp": 75
+      },
+      "bars": 18,
+      "loop": true,
+      "perc": "none",
+      "preset": true,
+      "gain_db": 0,
+      "density": null,
+      "always_on": true,
+      "loop_start_s": 6.315789473684211,
+      "loop_end_s": 56.8421052631579,
+      "renderer": "fluidsynth:FluidR3_GM.sf2",
+      "wav": "music/marsh.wav",
+      "mid": "music/marsh.mid"
+    },
+    {
+      "mood": "battle",
+      "base": "boss",
+      "theme": "mossgnome",
+      "seed": 64,
+      "tempo": 132,
+      "scale": "major",
+      "root_midi": 62,
+      "programs": {
+        "lead": 45,
+        "pad": 48,
+        "bass": 32,
+        "arp": 71
+      },
+      "bars": 17,
+      "loop": true,
+      "perc": "woodblock",
+      "preset": true,
+      "gain_db": 0,
+      "density": null,
+      "always_on": true,
+      "loop_start_s": 1.8181818181818181,
+      "loop_end_s": 30.90909090909091,
+      "renderer": "fluidsynth:FluidR3_GM.sf2",
+      "wav": "music/battle.wav",
+      "mid": "music/battle.mid"
+    },
+    {
+      "mood": "chase",
+      "base": "boss",
+      "theme": "mossgnome",
+      "seed": 64,
+      "tempo": 156,
+      "scale": "minor",
+      "root_midi": 60,
+      "programs": {
+        "lead": 45,
+        "pad": 48,
+        "bass": 70,
+        "arp": 73
+      },
+      "bars": 17,
+      "loop": true,
+      "perc": "woodblock",
+      "preset": true,
+      "gain_db": 0,
+      "density": null,
+      "always_on": true,
+      "loop_start_s": 1.5384615384615385,
+      "loop_end_s": 26.153846153846153,
+      "renderer": "fluidsynth:FluidR3_GM.sf2",
+      "wav": "music/chase.wav",
+      "mid": "music/chase.mid"
+    },
+    {
+      "mood": "boss",
+      "base": "boss",
+      "theme": "mossgnome",
+      "seed": 64,
+      "tempo": 138,
+      "scale": "harmonic_minor",
+      "root_midi": 57,
+      "programs": {
+        "lead": 68,
+        "pad": 48,
+        "bass": 58,
+        "arp": 45
+      },
+      "bars": 17,
+      "loop": true,
+      "perc": "timpani",
+      "preset": true,
+      "gain_db": 0,
+      "density": null,
+      "always_on": true,
+      "loop_start_s": 1.7391304347826086,
+      "loop_end_s": 29.565217391304348,
+      "renderer": "fluidsynth:FluidR3_GM.sf2",
+      "wav": "music/boss.wav",
+      "mid": "music/boss.mid"
+    },
+    {
+      "mood": "spring",
+      "base": "sting",
+      "theme": "mossgnome",
+      "seed": 64,
+      "tempo": 100,
+      "scale": "major",
+      "root_midi": 60,
+      "programs": {
+        "lead": 10,
+        "pad": 46,
+        "bass": 32,
+        "arp": null
+      },
+      "bars": 1,
+      "loop": false,
+      "perc": null,
+      "preset": true,
+      "gain_db": 0,
+      "density": null,
+      "always_on": true,
+      "loop_start_s": 0,
+      "loop_end_s": 1.8,
+      "renderer": "fluidsynth:FluidR3_GM.sf2",
+      "wav": "music/spring.wav",
+      "mid": "music/spring.mid"
+    },
+    {
+      "mood": "victory",
+      "base": "victory",
+      "theme": "mossgnome",
+      "seed": 64,
+      "tempo": 140,
+      "scale": "major",
+      "root_midi": 60,
+      "programs": {
+        "lead": 45,
+        "pad": 48,
+        "bass": 32,
+        "arp": null
+      },
+      "bars": 4,
+      "loop": false,
+      "perc": "snare",
+      "preset": true,
+      "gain_db": 0,
+      "density": null,
+      "always_on": true,
+      "loop_start_s": 0.0,
+      "loop_end_s": 6.857142857142857,
+      "renderer": "fluidsynth:FluidR3_GM.sf2",
+      "wav": "music/victory.wav",
+      "mid": "music/victory.mid"
+    },
+    {
+      "mood": "ending",
+      "base": "title",
+      "theme": "mossgnome",
+      "seed": 64,
+      "tempo": 72,
+      "scale": "major",
+      "root_midi": 53,
+      "programs": {
+        "lead": 10,
+        "pad": 48,
+        "bass": 32,
+        "arp": null
+      },
+      "bars": 18,
+      "loop": true,
+      "perc": "none",
+      "preset": true,
+      "gain_db": 0,
+      "density": null,
+      "always_on": true,
+      "loop_start_s": 6.666666666666667,
+      "loop_end_s": 60.0,
+      "renderer": "fluidsynth:FluidR3_GM.sf2",
+      "wav": "music/ending.wav",
+      "mid": "music/ending.mid"
+    }
+  ],
+  "sfx": [
+    {
+      "name": "fizz",
+      "wav": "sfx/fizz.wav"
+    },
+    {
+      "name": "spring_chime",
+      "wav": "sfx/spring_chime.wav"
+    },
+    {
+      "name": "bubble_pop",
+      "wav": "sfx/bubble_pop.wav"
+    },
+    {
+      "name": "squish",
+      "wav": "sfx/squish.wav"
+    },
+    {
+      "name": "spore_puff",
+      "wav": "sfx/spore_puff.wav"
+    },
+    {
+      "name": "portal_whoosh",
+      "wav": "sfx/portal_whoosh.wav"
+    },
+    {
+      "name": "swing_creak",
+      "wav": "sfx/swing_creak.wav"
+    },
+    {
+      "name": "fox_yip",
+      "wav": "sfx/fox_yip.wav"
+    },
+    {
+      "name": "dwarf_grumble",
+      "wav": "sfx/dwarf_grumble.wav"
+    },
+    {
+      "name": "lid_clank",
+      "wav": "sfx/lid_clank.wav"
+    },
+    {
+      "name": "chest_open",
+      "wav": "sfx/chest_open.wav"
+    },
+    {
+      "name": "map_unfold",
+      "wav": "sfx/map_unfold.wav"
+    },
+    {
+      "name": "footstep_moss",
+      "wav": "sfx/footstep_moss.wav"
+    },
+    {
+      "name": "waddle_step",
+      "wav": "sfx/waddle_step.wav"
+    },
+    {
+      "name": "cast_sparkle",
+      "wav": "sfx/cast_sparkle.wav"
+    },
+    {
+      "name": "hit_mushroom",
+      "wav": "sfx/hit_mushroom.wav"
+    },
+    {
+      "name": "hit_spore",
+      "wav": "sfx/hit_spore.wav"
+    },
+    {
+      "name": "hit_water",
+      "wav": "sfx/hit_water.wav"
+    },
+    {
+      "name": "hit_glow",
+      "wav": "sfx/hit_glow.wav"
+    },
+    {
+      "name": "gnome_giggle",
+      "wav": "sfx/gnome_giggle.wav"
+    },
+    {
+      "name": "gnome_hum",
+      "wav": "sfx/gnome_hum.wav"
+    },
+    {
+      "name": "hat_bonk",
+      "wav": "sfx/hat_bonk.wav"
+    },
+    {
+      "name": "arena_open",
+      "wav": "sfx/arena_open.wav"
+    },
+    {
+      "name": "escape",
+      "wav": "sfx/escape.wav"
+    },
+    {
+      "name": "miss",
+      "wav": "sfx/miss.wav"
+    },
+    {
+      "name": "inn_rest",
+      "wav": "sfx/inn_rest.wav"
+    },
+    {
+      "name": "menu_tick",
+      "wav": "sfx/menu_tick.wav"
+    },
+    {
+      "name": "save_chime",
+      "wav": "sfx/save_chime.wav"
+    },
+    {
+      "name": "blip",
+      "wav": "sfx/blip.wav"
+    },
+    {
+      "name": "babble",
+      "wav": "sfx/babble.wav"
+    },
+    {
+      "name": "hurt",
+      "wav": "sfx/hurt.wav"
+    },
+    {
+      "name": "select",
+      "wav": "sfx/select.wav"
+    },
+    {
+      "name": "jump",
+      "wav": "sfx/jump.wav"
+    },
+    {
+      "name": "coin",
+      "wav": "sfx/coin.wav"
+    }
+  ],
+  "voices": [
+    {
+      "npc": "npc1",
+      "wav": "sfx/voice_npc1.wav",
+      "text": "Oh! Mind the puddles, little one."
+    },
+    {
+      "npc": "npc2",
+      "wav": "sfx/voice_npc2.wav",
+      "text": "Good morning! Have you heard the springs?"
+    },
+    {
+      "npc": "npc3",
+      "wav": "sfx/voice_npc3.wav",
+      "text": "Hoo-hoo! A red hat! Welcome, welcome."
+    },
+    {
+      "npc": "npc4",
+      "wav": "sfx/voice_npc4.wav",
+      "text": "Tra-la! Off on an adventure, are we?"
+    },
+    {
+      "npc": "npc5",
+      "wav": "sfx/voice_npc5.wav",
+      "text": "Shh, listen... can you hear the bubbles?"
+    },
+    {
+      "npc": "npc6",
+      "wav": "sfx/voice_npc6.wav",
+      "text": "Hello, hello! Lovely day for fizzing."
+    },
+    {
+      "npc": "npc7",
+      "wav": "sfx/voice_npc7.wav",
+      "text": "Oh! Mind the puddles, little one."
+    },
+    {
+      "npc": "npc8",
+      "wav": "sfx/voice_npc8.wav",
+      "text": "Good morning! Have you heard the springs?"
+    },
+    {
+      "npc": "npc9",
+      "wav": "sfx/voice_npc9.wav",
+      "text": "Hoo-hoo! A red hat! Welcome, welcome."
+    },
+    {
+      "npc": "hero",
+      "wav": "sfx/voice_hero.wav",
+      "text": "Hello there! Let's go and find the springs."
+    },
+    {
+      "npc": "boss",
+      "wav": "sfx/voice_boss.wav",
+      "text": "Hmph! Who goes poking at my lids?"
+    }
+  ],
+  "systems": {
+    "spellcraft": [
+      "systems/spells.json"
+    ],
+    "arena": [
+      "systems/arena.json"
+    ],
+    "springs": [
+      "sprites/portals/portals_sprites.json",
+      "systems/portals.json",
+      "systems/springs.json"
+    ],
+    "grove": [
+      "systems/game.json"
+    ]
+  },
+  "hud": {
+    "skin": "mossy_round",
+    "layout": "ui/mossy_round/layout.json",
+    "dir": "ui/mossy_round/",
+    "previews": [
+      "ui/mossy_round/preview_dialogue.png",
+      "ui/mossy_round/preview_field.png"
+    ]
+  },
+  "links": {
+    "npcs": [
+      {
+        "id": "npc1",
+        "name": "Grandpa Femble",
+        "role": "elder",
+        "home": "Mossunder",
+        "model": "models/npc1.glb",
+        "portrait": "sprites/portraits/npc1.png",
+        "voice": "sfx/voice_npc1.wav",
+        "quests": [
+          "MQ1",
+          "MQ2",
+          "MQ3",
+          "MQ4"
+        ],
+        "backstory": "Grandpa Femble was born in Mossunder during the First Harvest. Years ago Grandpa Femble saw the guardians pass overhead. Now Grandpa Femble hopes the spirits will return to Fizzwater Caverns. Few know that Grandpa Femble once saw the hooded traveller."
+      },
+      {
+        "id": "npc2",
+        "name": "Granny Pawick",
+        "role": "healer",
+        "home": "Mossunder",
+        "model": "models/npc2.glb",
+        "portrait": "sprites/portraits/npc2.png",
+        "voice": "sfx/voice_npc2.wav",
+        "quests": [
+          "SQ2"
+        ],
+        "backstory": "Granny Pawick was born in Mossunder during the Sealing. Years ago Granny Pawick watched the harvest fail. Now Granny Pawick hopes the spirits will return to Toadstool Wood. Few know that Granny Pawick keeps a page of an old spell book."
+      },
+      {
+        "id": "npc3",
+        "name": "Master Timble",
+        "role": "mapmaker",
+        "home": "Mossunder",
+        "model": "models/npc3.glb",
+        "portrait": "sprites/portraits/npc3.png",
+        "voice": "sfx/voice_npc3.wav",
+        "quests": [
+          "SQ3"
+        ],
+        "backstory": "Master Timble has kept the same house in Mossunder all their life. Years ago Master Timble saw the guardians pass overhead. Now Master Timble hopes the spirits will return to Mistcap Marsh. Few know that Master Timble keeps a page of an old spell book."
+      },
+      {
+        "id": "npc4",
+        "name": "Little Toffle",
+        "role": "kid",
+        "home": "Mossunder",
+        "model": "models/npc4.glb",
+        "portrait": "sprites/portraits/npc4.png",
+        "voice": "sfx/voice_npc4.wav",
+        "quests": [
+          "SQ4"
+        ],
+        "backstory": "Little Toffle was born in Mossunder during the Founding of the Monastery. Years ago Little Toffle watched the harvest fail. Now Little Toffle wishes to visit the monastery once more. Few know that Little Toffle is afraid of the sealed door."
+      },
+      {
+        "id": "npc5",
+        "name": "Auntie Luddock",
+        "role": "forager",
+        "home": "Toadstool Wood",
+        "model": "models/npc5.glb",
+        "portrait": "sprites/portraits/npc5.png",
+        "voice": "sfx/voice_npc5.wav",
+        "quests": [
+          "SQ5"
+        ],
+        "backstory": "Auntie Luddock came to Toadstool Wood as a child. Years ago Auntie Luddock lost a brother on the road to Toadstool Wood. Now Auntie Luddock hopes the spirits will return to Toadstool Wood. Few know that Auntie Luddock once saw the hooded traveller."
+      },
+      {
+        "id": "npc6",
+        "name": "Uncle Plupkin",
+        "role": "lamplighter",
+        "home": "Fizzwater Caverns",
+        "model": "models/npc6.glb",
+        "portrait": "sprites/portraits/npc6.png",
+        "voice": "sfx/voice_npc6.wav",
+        "quests": [
+          "SQ6"
+        ],
+        "backstory": "Uncle Plupkin came to Fizzwater Caverns as a child. Years ago Uncle Plupkin lost a brother on the road to Fizzwater Caverns. Now Uncle Plupkin wishes to visit the monastery once more. Few know that Uncle Plupkin is afraid of the dark woods."
+      },
+      {
+        "id": "npc7",
+        "name": "Old Gabbin",
+        "role": "ferrier",
+        "home": "Mistcap Marsh",
+        "model": "models/npc7.glb",
+        "portrait": "sprites/portraits/npc7.png",
+        "voice": "sfx/voice_npc7.wav",
+        "quests": [
+          "SQ7"
+        ],
+        "backstory": "Old Gabbin came to Mistcap Marsh as a child. Years ago Old Gabbin lost a brother on the road to Toadstool Wood. Now Old Gabbin wishes to visit the monastery once more. Few know that Old Gabbin once saw the hooded traveller."
+      },
+      {
+        "id": "npc8",
+        "name": "Mistress Guck",
+        "role": "beekeeper",
+        "home": "Toadstool Wood",
+        "model": "models/npc8.glb",
+        "portrait": "sprites/portraits/npc8.png",
+        "voice": "sfx/voice_npc8.wav",
+        "quests": [
+          "SQ8"
+        ],
+        "backstory": "Mistress Guck came to Toadstool Wood as a child. Years ago Mistress Guck watched the harvest fail. Now Mistress Guck wants to see Toadstool Wood safe again. Few know that Mistress Guck keeps a page of an old spell book."
+      },
+      {
+        "id": "npc9",
+        "name": "Ronny",
+        "role": "songkeeper",
+        "home": "Fizzwater Caverns",
+        "model": "models/npc9.glb",
+        "portrait": "sprites/portraits/npc9.png",
+        "voice": "sfx/voice_npc9.wav",
+        "quests": [
+          "SQ9"
+        ],
+        "backstory": "Ronny came to Fizzwater Caverns as a child. Years ago Ronny lost a brother on the road to Fizzwater Caverns. Now Ronny wishes to visit the monastery once more. Few know that Ronny once saw the hooded traveller."
+      }
+    ],
+    "levels": [
+      {
+        "id": "L1",
+        "name": "Toadstool Wood",
+        "quests": [
+          "MQ1",
+          "SQ5",
+          "SQ8"
+        ],
+        "enemies": [
+          "en_L1_1",
+          "en_L1_2",
+          "en_L1_3",
+          "en_L1_4",
+          "mb_L1"
+        ],
+        "shard": "Fizzwell Lantern Fragment I"
+      },
+      {
+        "id": "L2",
+        "name": "Fizzwater Caverns",
+        "quests": [
+          "MQ2",
+          "SQ6",
+          "SQ9"
+        ],
+        "enemies": [
+          "en_L2_1",
+          "en_L2_2",
+          "en_L2_3",
+          "en_L2_4",
+          "mb_L2"
+        ],
+        "shard": "Fizzwell Lantern Fragment II"
+      },
+      {
+        "id": "L3",
+        "name": "Mistcap Marsh",
+        "quests": [
+          "MQ3",
+          "SQ7"
+        ],
+        "enemies": [
+          "en_L3_1",
+          "en_L3_2",
+          "en_L3_3",
+          "en_L3_4",
+          "mb_L3"
+        ],
+        "shard": "Fizzwell Lantern Fragment III"
+      },
+      {
+        "id": "BOSS",
+        "name": "Cold Forge of Krogbold",
+        "quests": [
+          "MQ4"
+        ],
+        "enemies": [],
+        "shard": null
+      }
+    ],
+    "main_chain": [
+      "MQ1",
+      "MQ2",
+      "MQ3",
+      "MQ4"
+    ]
+  },
+  "previews": {
+    "contact_sheet": "preview/contact_sheet.png",
+    "models": "preview/models_contact.png",
+    "animations": "preview/anim_sheet.png",
+    "textures": "textures/sheet_32.png",
+    "sprites": "sprites/sprite_sheet_all.png",
+    "world": "world/world_maps.png",
+    "gnome_models": "preview/gnome_mushroom_models.png",
+    "portals": "sprites/portals/portals_preview.png"
+  },
+  "vfx_preview": "vfx.html",
+  "demo": "index.html",
+  "browser": "browser.html",
+  "serve": "n64 serve /workspace/n64-projects/mossgnome-64"
+}

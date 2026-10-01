@@ -1,0 +1,75 @@
+html, body { margin: 0; height: 100%; background: #050508; color: #eee; font-family: "DejaVuSans", system-ui, sans-serif; overflow: hidden; }
+#wrap { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+#stage { position: relative; aspect-ratio: 4 / 3; height: min(100vh, 75vw); container-type: size; overflow: hidden; }
+canvas#view { width: 100%; height: 100%; display: block; background: #000; image-rendering: auto; }
+body.crisp canvas#view { image-rendering: pixelated; }
+#hud { position: absolute; inset: 0; pointer-events: none; font-size: 3.2cqh; }
+#hud img { image-rendering: auto; }
+#title { position: absolute; inset: 0; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; z-index: 20; }
+#titleText { font-size: 9cqh; color: #f0e0b0; text-shadow: 0.4cqh 0.4cqh 0 #000; margin-bottom: 10cqh; text-align: center; }
+#title span { font-size: 3cqh; color: #fff; animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+#bar { position: fixed; bottom: 6px; right: 8px; z-index: 30; font: 12px system-ui; display: flex; gap: 6px; align-items: center; }
+#bar select, #bar a, #bar button { background: #222a44; color: #fff; border: 1px solid #556; border-radius: 6px; padding: 3px 6px; text-decoration: none; font-size: 12px; }
+#help { position: fixed; left: 8px; bottom: 6px; font: 11px system-ui; color: #99a; z-index: 30; max-width: 60vw; }
+.hide { display: none !important; }
+/* floating damage numbers: large white serif, black outline, pop instantly then rise */
+.float { position: absolute; transform: translate(-50%, -100%); font-family: "FloatSerif", "DejaVu Serif", serif; font-weight: bold; font-size: 7cqh; color: #fff;
+  -webkit-text-stroke: 0.35cqh #000; paint-order: stroke fill; text-shadow: 0.3cqh 0.3cqh 0 #000; animation: rise 0.9s linear forwards; white-space: nowrap; }
+.float.miss { font-size: 5.5cqh; }
+.float.heal { color: #b0ffb0; }
+@keyframes rise { 0% { margin-top: 0; opacity: 1; } 70% { opacity: 1; } 100% { margin-top: -6cqh; opacity: 0; } }
+
+/* ---------- stone plaque skin (storybook) */
+.sp-plaque { background: url(ui/stone_plaque/plaque.png) center/100% 100%; display: flex; align-items: center; gap: 4%; padding: 0 4%; box-sizing: border-box;
+  font-family: "HudSerif", serif; font-style: italic; color: #fff; font-size: 2.6cqh; text-shadow: 0.2cqh 0.2cqh 0 #000; }
+.sp-plaque .bar { flex: 1; height: 38%; background: #3a1010; border: 0.25cqh solid #645a50; position: relative; }
+.sp-plaque .bar i { position: absolute; inset: 0; width: 100%; background: linear-gradient(#e07070, #c7504d 50%, #8a2a28); }
+.sp-plaque.mp .bar { background: #050c28; } .sp-plaque.mp .bar i { background: linear-gradient(#4a6ad0, #0b2578 50%, #061440); }
+.sp-plaque b { font-weight: normal; min-width: 32%; text-align: right; }
+.sp-spell { background: url(ui/stone_plaque/plaque_spell.png) center/100% 100%; color: #3a3530; font-family: "HudSerif", serif; font-style: italic; display: flex; align-items: center; justify-content: center; font-size: 2.6cqh; }
+.sp-foe { background: url(ui/stone_plaque/foe_tag.png) center/100% 100%; color: #ffe8b0; font-family: "HudSerif", serif; font-style: italic; display: flex; align-items: center; justify-content: center; font-size: 2.8cqh; text-shadow: 0.2cqh 0.2cqh 0 #000; }
+.sp-gem { position: absolute; display: flex; align-items: center; gap: 0.4cqh; color: #fff; font-family: "HudSerif", serif; font-size: 2.6cqh; text-shadow: 0.2cqh 0.2cqh 0 #000; }
+.sp-gem img { height: 4.6cqh; }
+.sp-compass img { width: 100%; height: 100%; }
+.sp-select { background: url(ui/stone_plaque/select_box.png) center/100% 100%; display: flex; align-items: center; justify-content: center; gap: 6%; }
+.sp-select img { width: 17%; opacity: 0.45; } .sp-select img.on { opacity: 1; transform: scale(1.25); filter: drop-shadow(0 0 0.6cqh #fff); }
+.sp-dialog { background: url(ui/stone_plaque/dialog.png) center/100% 100%; box-sizing: border-box; padding: 2.5cqh 4cqh; color: #3a3530; font-family: "DlgSerif", serif; font-size: 3.1cqh; line-height: 1.35; }
+.sp-dialog .who { color: #7c1d2b; font-style: italic; }
+.sp-hint { position: absolute; left: 0; right: 0; bottom: 13%; text-align: center; color: #fff; font-family: "HudSerif", serif; font-size: 2.6cqh; text-shadow: 0.2cqh 0.2cqh 0 #000; }
+
+/* ---------- parchment skin (chronicle) */
+.pa-band { background: rgba(0, 0, 0, 0.55); }
+.pa-portrait { border: 0.5cqh solid #8a6a40; box-sizing: border-box; background: #201810 center/cover; }
+.pa-text { color: #fff; font-family: "DlgSerif", serif; font-size: 3.3cqh; line-height: 1.3; padding: 1cqh 1.5cqh; box-sizing: border-box; }
+.pa-text .who { color: #efcfb0; }
+.pa-log { background: rgba(16, 16, 24, 0.85); border: 0.3cqh solid #3a3a48; color: #e8e8f0; font-family: "HudSans", sans-serif; font-size: 2.4cqh; padding: 0.8cqh 1.4cqh; box-sizing: border-box; line-height: 1.35; overflow: hidden; }
+.pa-col { display: flex; flex-direction: column; gap: 1.2cqh; }
+.pa-unit { width: 100%; aspect-ratio: 1; border: 0.35cqh solid #8a6a40; background: #2a2016 center/cover; position: relative; box-sizing: border-box; }
+.pa-unit i { position: absolute; right: -1.2cqh; top: 0; width: 0.8cqh; height: 100%; background: #300; } .pa-unit i b { position: absolute; bottom: 0; left: 0; right: 0; background: #00e000; }
+.pa-unit.active { outline: 0.4cqh solid #ffe080; } .pa-unit.dead { filter: grayscale(1) brightness(0.4); }
+.pa-dial, .pa-compass, .pa-radar { position: absolute; }
+.pa-dial img, .pa-compass img { width: 100%; height: 100%; }
+.pa-compass { filter: drop-shadow(0 0 0.8cqh #6080ff); }
+.pa-radar { border-radius: 50%; background: rgba(0, 0, 0, 0.85); border: 0.3cqh solid #555; }
+.pa-radar b { position: absolute; width: 0.9cqh; height: 0.9cqh; border-radius: 50%; transform: translate(-50%, -50%); }
+.pa-menu { position: absolute; inset: 0; background: url(ui/parchment/menu.png) center/100% 100%; color: #5a3a28; font-family: "DlgSerif", serif; font-size: 3cqh; padding: 7% 8%; box-sizing: border-box; }
+.pa-menu h1 { font-family: "HeadSC", serif; color: #9f694c; font-weight: normal; font-size: 5cqh; margin: 0 0 1cqh; }
+.pa-menu .doll { position: absolute; right: 8%; top: 18%; width: 30%; }
+.pa-menu table { border-collapse: collapse; } .pa-menu td { padding: 0.3cqh 1.6cqh 0.3cqh 0; }
+.pa-status { position: absolute; left: 50%; top: 3%; transform: translateX(-50%); color: #efcfb0; font-family: "DlgSerif", serif; font-size: 2.6cqh; text-shadow: 0.2cqh 0.2cqh 0 #000; }
+
+/* ---------- green glass skin (castlekeep) */
+.gg-band { background: rgba(2, 22, 10, 0.55); color: #e0e0d8; font-family: "Mono", monospace; font-size: 2.7cqh; padding: 1.2cqh 2cqh; box-sizing: border-box; line-height: 1.35; white-space: pre-wrap; }
+.gg-panel { background: rgba(2, 22, 10, 0.85); border: 0.35cqh solid; border-color: #959f9a #3e483d #3e483d #959f9a; box-sizing: border-box; }
+.gg-grid { display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(3, 1fr); gap: 0.8cqh; padding: 2cqh; height: 100%; box-sizing: border-box; }
+.gg-slot { border: 0.25cqh solid; border-color: #3e483d #959f9a #959f9a #3e483d; display: flex; align-items: center; justify-content: center; }
+.gg-slot.sel { outline: 0.4cqh solid #d4ddbd; }
+.gg-slot i { width: 60%; height: 60%; border-radius: 40%; display: block; }
+.gg-tab { position: absolute; top: -3.4cqh; left: 1cqh; background: rgba(2, 22, 10, 0.85); border: 0.3cqh solid #959f9a; border-bottom: 0; color: #e0e0d8; font-family: "MenuSC", serif; font-size: 2.2cqh; padding: 0.2cqh 1cqh; }
+.gg-death { position: absolute; inset: 0; background: #000; }
+.gg-col { position: absolute; top: 0; bottom: 0; background: url(ui/green_glass/death_column.png) center top / 100% auto repeat-y; animation: scrollcol 12s linear infinite; }
+@keyframes scrollcol { from { background-position-y: 0; } to { background-position-y: -200cqh; } }
+.gg-dtext { position: absolute; left: 34%; right: 34%; top: 30%; color: #fff; text-align: center; font-family: "DeathSerif", serif; font-size: 3.4cqh; line-height: 1.45; text-shadow: 0.2cqh 0.2cqh 0 #000; }
+.gg-globe { position: absolute; inset: 0; background: url(ui/green_glass/death_globe.png) center/cover; opacity: 0; transition: opacity 2.5s; }
+.gg-try { position: absolute; left: 0; right: 0; top: 66%; text-align: center; color: #8a0a0a; font-family: "Gothic", serif; font-size: 10cqh; opacity: 0; transition: opacity 3s; text-shadow: 0 0 2cqh #300; }

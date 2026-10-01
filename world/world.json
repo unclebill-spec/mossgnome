@@ -1,0 +1,72 @@
+{
+  "hub": "Mossunder",
+  "levels": [
+    {
+      "id": "HUB",
+      "name": "Mossunder",
+      "slug": "hub",
+      "shape": "hub",
+      "music": "town",
+      "counts": {
+        "props": 66,
+        "enemies": 0,
+        "collectibles": 0,
+        "npcs": 4
+      }
+    },
+    {
+      "id": "L1",
+      "name": "Toadstool Wood",
+      "slug": "toadstool-wood",
+      "shape": "rolling",
+      "music": "overworld",
+      "counts": {
+        "props": 43,
+        "enemies": 13,
+        "collectibles": 6,
+        "npcs": 2
+      }
+    },
+    {
+      "id": "L2",
+      "name": "Fizzwater Caverns",
+      "slug": "fizzwater-caverns",
+      "shape": "grotto",
+      "music": "dungeon",
+      "counts": {
+        "props": 41,
+        "enemies": 10,
+        "collectibles": 5,
+        "npcs": 2
+      }
+    },
+    {
+      "id": "L3",
+      "name": "Mistcap Marsh",
+      "slug": "mistcap-marsh",
+      "shape": "marsh",
+      "music": "marsh",
+      "counts": {
+        "props": 35,
+        "enemies": 10,
+        "collectibles": 5,
+        "npcs": 1
+      }
+    },
+    {
+      "id": "BOSS",
+      "name": "Cold Forge of Krogbold",
+      "slug": "cold-forge",
+      "shape": "forge",
+      "music": "boss",
+      "counts": {
+        "props": 39,
+        "enemies": 1,
+        "collectibles": 2,
+        "npcs": 0
+      }
+    }
+  ],
+  "size": 128.0,
+  "grid": 64
+}

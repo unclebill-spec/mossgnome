@@ -1,0 +1,405 @@
+{
+  "springs": [
+    {
+      "id": "spring1",
+      "name": "Whispering Bubblepool",
+      "region": "HUB",
+      "hide": "hollow_log",
+      "hide_desc": "inside a great hollow log that glows like honey",
+      "tint": "teal",
+      "water": "#36d6cc",
+      "foam": "#fff0b0",
+      "temperature": "warm",
+      "steam": true,
+      "look": {
+        "water": "#36d6cc",
+        "deep": "#0b5a66",
+        "glow": "#fff0b0",
+        "sparkle": "#ffe08a",
+        "rock": "#8a7a5c",
+        "moss": "#6aa83a",
+        "steam": 0.7,
+        "decor": [
+          "glowcap",
+          "toadstool_red",
+          "clover"
+        ]
+      },
+      "bubbles_per_s": 15.7,
+      "fizz_pitch": 0.94,
+      "shimmer": 0.63,
+      "clue": "The log that glows from inside is not just a log.",
+      "reward": {
+        "type": "spell",
+        "spell": "heal",
+        "spell_id": "sp_w_g_31",
+        "spell_name": "Fizz Mend",
+        "text": "The bubbles hum a little tune, and you learn Fizz Mend!"
+      },
+      "heals": true,
+      "found_lines": [
+        "You found the Whispering Bubblepool!",
+        "It fizzes warm, humming like a kettle.",
+        "The bubbles hum a little tune, and you learn Fizz Mend!"
+      ]
+    },
+    {
+      "id": "spring2",
+      "name": "Twinkling Fizzpot",
+      "region": "L1",
+      "hide": "behind_waterfall",
+      "hide_desc": "a mossy grotto behind a curtain of falling water",
+      "tint": "rose",
+      "water": "#3ad8e8",
+      "foam": "#e8ffff",
+      "temperature": "hot",
+      "steam": true,
+      "look": {
+        "water": "#3ad8e8",
+        "deep": "#0a4f70",
+        "glow": "#e8ffff",
+        "sparkle": "#bff6ff",
+        "rock": "#6e7a72",
+        "moss": "#4f9a3a",
+        "steam": 1.0,
+        "decor": [
+          "clover",
+          "toadstool_blue",
+          "clover"
+        ]
+      },
+      "bubbles_per_s": 14.5,
+      "fizz_pitch": 1.17,
+      "shimmer": 0.81,
+      "clue": "Walk where the water sings; it hides a door of spray.",
+      "reward": {
+        "type": "map",
+        "region": "L1",
+        "text": "The steam draws a picture on the air: every secret of this place appears on your parchment map."
+      },
+      "heals": true,
+      "found_lines": [
+        "You found the Twinkling Fizzpot!",
+        "It fizzes hot, humming like a kettle.",
+        "The steam draws a picture on the air: every secret of this place appears on your parchment map."
+      ]
+    },
+    {
+      "id": "spring3",
+      "name": "Humming Bubblepool",
+      "region": "L1",
+      "hide": "root_tunnel",
+      "hide_desc": "the far end of a tunnel of old roots",
+      "tint": "gold",
+      "water": "#34e0b4",
+      "foam": "#f0ffd0",
+      "temperature": "warm",
+      "steam": true,
+      "look": {
+        "water": "#34e0b4",
+        "deep": "#0a5a4a",
+        "glow": "#f0ffd0",
+        "sparkle": "#e8ff9a",
+        "rock": "#6a6050",
+        "moss": "#5aa832",
+        "steam": 0.9,
+        "decor": [
+          "glowcap",
+          "glowcap",
+          "clover"
+        ]
+      },
+      "bubbles_per_s": 14.1,
+      "fizz_pitch": 0.91,
+      "shimmer": 0.94,
+      "clue": "Crawl under the roots and keep going, past the dark bit.",
+      "reward": {
+        "type": "spell",
+        "spell": "spore",
+        "spell_id": "sp_s_45",
+        "spell_name": "Waft Lance",
+        "text": "The bubbles hum a little tune, and you learn Waft Lance!"
+      },
+      "heals": true,
+      "found_lines": [
+        "You found the Humming Bubblepool!",
+        "It fizzes warm, tickling your toes.",
+        "The bubbles hum a little tune, and you learn Waft Lance!"
+      ]
+    },
+    {
+      "id": "spring4",
+      "name": "Honeyed Fizzpot",
+      "region": "L2",
+      "hide": "cave",
+      "hide_desc": "a little cave under a mound of mossy stone",
+      "tint": "violet",
+      "water": "#30c4f0",
+      "foam": "#d8f4ff",
+      "temperature": "cool and glowing",
+      "steam": true,
+      "look": {
+        "water": "#30c4f0",
+        "deep": "#08386a",
+        "glow": "#d8f4ff",
+        "sparkle": "#9ad8ff",
+        "rock": "#5a6470",
+        "moss": "#3f7a4a",
+        "steam": 0.6,
+        "decor": [
+          "crystal_cap",
+          "crystal_cap",
+          "glowcap"
+        ]
+      },
+      "bubbles_per_s": 14.9,
+      "fizz_pitch": 0.98,
+      "shimmer": 0.58,
+      "clue": "A mound of moss with a mouth: something bubbles inside.",
+      "reward": {
+        "type": "max_hp",
+        "amount": 10,
+        "text": "You feel as sturdy as an old toadstool. Max HP +10."
+      },
+      "heals": true,
+      "found_lines": [
+        "You found the Honeyed Fizzpot!",
+        "It fizzes cool and glowing, popping against your nose.",
+        "You feel as sturdy as an old toadstool. Max HP +10."
+      ]
+    },
+    {
+      "id": "spring5",
+      "name": "Merry Fizzwell",
+      "region": "L2",
+      "hide": "behind_waterfall",
+      "hide_desc": "a mossy grotto behind a curtain of falling water",
+      "tint": "mint",
+      "water": "#48f0d0",
+      "foam": "#f0fff4",
+      "temperature": "cool and glowing",
+      "steam": true,
+      "look": {
+        "water": "#48f0d0",
+        "deep": "#0a5a5a",
+        "glow": "#f0fff4",
+        "sparkle": "#c8ffe0",
+        "rock": "#647068",
+        "moss": "#4a9a42",
+        "steam": 0.8,
+        "decor": [
+          "crystal_cap",
+          "glowcap",
+          "clover"
+        ]
+      },
+      "bubbles_per_s": 15.7,
+      "fizz_pitch": 1.02,
+      "shimmer": 0.92,
+      "clue": "Walk where the water sings; it hides a door of spray.",
+      "reward": {
+        "type": "spell",
+        "spell": "glow",
+        "spell_id": "sp_g_0",
+        "spell_name": "Sunbeam Dart",
+        "text": "The bubbles hum a little tune, and you learn Sunbeam Dart!"
+      },
+      "heals": true,
+      "found_lines": [
+        "You found the Merry Fizzwell!",
+        "It fizzes cool and glowing, humming like a kettle.",
+        "The bubbles hum a little tune, and you learn Sunbeam Dart!"
+      ]
+    },
+    {
+      "id": "spring6",
+      "name": "Rosy Spring",
+      "region": "L3",
+      "hide": "root_tunnel",
+      "hide_desc": "the far end of a tunnel of old roots",
+      "tint": "teal",
+      "water": "#3cc8c0",
+      "foam": "#eef0ff",
+      "temperature": "warm",
+      "steam": true,
+      "look": {
+        "water": "#3cc8c0",
+        "deep": "#0c4a50",
+        "glow": "#eef0ff",
+        "sparkle": "#d0c0ff",
+        "rock": "#5e6058",
+        "moss": "#5a8a3a",
+        "steam": 1.0,
+        "decor": [
+          "toadstool_purple",
+          "glowcap",
+          "clover"
+        ]
+      },
+      "bubbles_per_s": 16.5,
+      "fizz_pitch": 0.95,
+      "shimmer": 0.94,
+      "clue": "Old roots make a tunnel; tunnels go somewhere.",
+      "reward": {
+        "type": "map",
+        "region": "L3",
+        "text": "The steam draws a picture on the air: every secret of this place appears on your parchment map."
+      },
+      "heals": true,
+      "found_lines": [
+        "You found the Rosy Spring!",
+        "It fizzes warm, humming like a kettle.",
+        "The steam draws a picture on the air: every secret of this place appears on your parchment map."
+      ]
+    },
+    {
+      "id": "spring7",
+      "name": "Moonlit Spring",
+      "region": "L3",
+      "hide": "cave",
+      "hide_desc": "a little cave under a mound of mossy stone",
+      "tint": "rose",
+      "water": "#40c8e0",
+      "foam": "#f4e8ff",
+      "temperature": "hot",
+      "steam": true,
+      "look": {
+        "water": "#40c8e0",
+        "deep": "#1a3a6a",
+        "glow": "#f4e8ff",
+        "sparkle": "#e0b0ff",
+        "rock": "#5a5a6a",
+        "moss": "#4a7a4a",
+        "steam": 0.9,
+        "decor": [
+          "toadstool_purple",
+          "crystal_cap",
+          "glowcap"
+        ]
+      },
+      "bubbles_per_s": 13.0,
+      "fizz_pitch": 0.95,
+      "shimmer": 0.64,
+      "clue": "Follow the fizzing sound into the stones.",
+      "reward": {
+        "type": "spell",
+        "spell": "barrier",
+        "spell_id": "sp_g_w_w_12",
+        "spell_name": "Glimmer Ward",
+        "text": "The bubbles hum a little tune, and you learn Glimmer Ward!"
+      },
+      "heals": true,
+      "found_lines": [
+        "You found the Moonlit Spring!",
+        "It fizzes hot, tickling your toes.",
+        "The bubbles hum a little tune, and you learn Glimmer Ward!"
+      ]
+    },
+    {
+      "id": "spring8",
+      "name": "Dimpled Spring",
+      "region": "L3",
+      "hide": "hollow_log",
+      "hide_desc": "inside a great hollow log that glows like honey",
+      "tint": "gold",
+      "water": "#3ad0c8",
+      "foam": "#fff0d0",
+      "temperature": "warm",
+      "steam": true,
+      "look": {
+        "water": "#3ad0c8",
+        "deep": "#0a4a58",
+        "glow": "#fff0d0",
+        "sparkle": "#ffc8a0",
+        "rock": "#7a6a58",
+        "moss": "#5a9a3a",
+        "steam": 0.7,
+        "decor": [
+          "lantern_cap",
+          "toadstool_red",
+          "clover"
+        ]
+      },
+      "bubbles_per_s": 16.7,
+      "fizz_pitch": 1.05,
+      "shimmer": 0.81,
+      "clue": "Peek into the honey-glowing log.",
+      "reward": {
+        "type": "max_mp",
+        "amount": 6,
+        "text": "Your hat tingles with fizz. Max MP +6."
+      },
+      "heals": true,
+      "found_lines": [
+        "You found the Dimpled Spring!",
+        "It fizzes warm, popping against your nose.",
+        "Your hat tingles with fizz. Max MP +6."
+      ]
+    }
+  ],
+  "mother": {
+    "id": "mother",
+    "name": "the Mother Spring",
+    "region": "BOSS",
+    "hide": "capped",
+    "hide_desc": "under the dwarf's great iron lid",
+    "tint": "gold",
+    "water": "#5ae4d8",
+    "foam": "#fff4b0",
+    "look": {
+      "water": "#5ae4d8",
+      "deep": "#0a5a60",
+      "glow": "#fff4b0",
+      "sparkle": "#ffe080",
+      "rock": "#6a6460",
+      "moss": "#4a7a3a",
+      "steam": 1.0,
+      "decor": [
+        "glowcap",
+        "glowcap",
+        "crystal_cap"
+      ]
+    },
+    "temperature": "warm",
+    "steam": true,
+    "bubbles_per_s": 30,
+    "fizz_pitch": 0.8,
+    "shimmer": 1.0,
+    "reward": {
+      "type": "ending",
+      "text": "Every spring in the Greenwild sighs and fizzes back to life."
+    },
+    "heals": true
+  },
+  "count": 8,
+  "spellbook": {
+    "start": "sp_m_15",
+    "heal": "sp_w_g_31",
+    "spore": "sp_s_45",
+    "glow": "sp_g_0",
+    "barrier": "sp_g_w_w_12",
+    "water": "sp_w_30",
+    "big": "sp_m_g_g_20"
+  },
+  "spell_names": {
+    "start": "Button Lance",
+    "heal": "Fizz Mend",
+    "spore": "Waft Lance",
+    "glow": "Sunbeam Dart",
+    "barrier": "Glimmer Ward",
+    "water": "Brook Dart",
+    "big": "Button Bulwark"
+  },
+  "rules": {
+    "collectible": "each spring is counted once (save file); bathing again heals fully",
+    "gate": "the spore ring opens after 5 springs",
+    "discovery": "fizz SFX grows louder as you near a hidden spring; chime + sting on discovery",
+    "hint": "the hint button reads the nearest unfound spring's clue"
+  },
+  "hides": {
+    "behind_waterfall": "a mossy grotto behind a curtain of falling water",
+    "cave": "a little cave under a mound of mossy stone",
+    "root_tunnel": "the far end of a tunnel of old roots",
+    "hollow_log": "inside a great hollow log that glows like honey"
+  }
+}

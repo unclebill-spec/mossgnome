@@ -1,0 +1,54 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Spell VFX sheet</title>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+<style>body{margin:0;width:1440px;background:#0a0a12;color:#dde;font:12px DejaVuSans,system-ui}#t{padding:6px 10px;font-size:15px;color:#e8c070}
+#wrap{position:relative;width:1440px}#c{display:block}.lb{position:absolute;color:#fff;font-size:11px;text-shadow:1px 1px 0 #000;padding:2px 4px;pointer-events:none}</style></head>
+<body><div id="t">Spell VFX templates (deterministic, 3 times per template)</div><div id="wrap"><canvas id="c" width="1440" height="1440"></canvas></div>
+<script type="module">
+import { THREE, J } from './common.js';
+import { makeVFX, TEMPLATES } from './vfx.js';
+const man = await J('manifest.json');
+let spells = null;
+try { spells = await J('systems/spells.json'); } catch (e) { spells = null; }
+const pick = {};
+if (spells) for (const s of spells.spells) if (!pick[s.vfx.template]) pick[s.vfx.template] = s;
+// level-1 demo spells override (so the sheet shows the exact demo look)
+if (spells) for (const id of Object.values(spells.demo)) { const s = spells.spells.find((x) => x.id === id); if (s) pick[s.vfx.template] = s; }
+const DEF = { ray_fan: ['#ffd040', '#ffffff'], orb_bolt: ['#ff3a20', '#ffa060'], spike_ring: ['#b08050', '#e0c090'], dust_cloud: ['#a08060', '#d0b890'], pillar: ['#3060ff', '#c0e0ff'],
+  wave: ['#3080ff', '#c0f0ff'], crescent_blades: ['#60d080', '#ffffff'], feather_fan: ['#80e0a0', '#ffffff'], shard_burst: ['#40c060', '#d03030'], ice_spikes: ['#80d8f0', '#e0f8ff'],
+  whirlwind: ['#8040c0', '#ffffff'], bone_wall: ['#eee8d8', '#d0c4a8'], light_flash: ['#fff0a0', '#ffffff'], heal_motes: ['#80ff90', '#ffffff'], barrier_dome: ['#60a0ff', '#c0e0ff'],
+  cap_burst: ['#d6322a', '#fbf6ea'], spore_cloud: ['#c8a8f0', '#f4ecff'], bubble_stream: ['#5ad8d8', '#e8fffc'], firefly_swarm: ['#ffe070', '#fff8c0'] };
+const LIFE = { whirlwind: 3, bone_wall: 2, ice_spikes: 1.5, shard_burst: 0.5, crescent_blades: 1 };
+const names = (spells && spells.vfx_templates ? spells.vfx_templates : Object.keys(TEMPLATES).slice(0, 15)).filter((n) => TEMPLATES[n]);
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: false, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setScissorTest(true); renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+const scene = new THREE.Scene();
+const cw = 240, ch = 180, cols = 6;
+const HH = Math.max(1440, Math.ceil(names.length * 3 / cols) * ch);
+document.getElementById('c').height = HH; renderer.setSize(1440, HH, false);
+const cells = [];
+names.forEach((n, i) => {
+  const base = new THREE.Vector3(i * 60, 0, 0);
+  const s = pick[n];
+  const spec = s ? { ...s.vfx } : { template: n, color: DEF[n][0], color2: DEF[n][1], count: n === 'ice_spikes' ? 3 : (n === 'crescent_blades' ? 1 : 8), life: LIFE[n] || 1.2, seed: 7 + i, additive: true, alpha: 0.65 };
+  if (!s && n === 'shard_burst') spec.count = 3;
+  const from = base.clone().add(new THREE.Vector3(-3, 0, 0)), to = base.clone().add(new THREE.Vector3(3, 0, 0));
+  const fx = makeVFX(spec, from, to); scene.add(fx.group);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(14, 8), new THREE.MeshBasicMaterial({ color: 0x2a3a2a })); ground.rotation.x = -Math.PI / 2; ground.position.copy(base); scene.add(ground);
+  const grid = new THREE.GridHelper(14, 14, 0x3e5a3e, 0x3e5a3e); grid.position.copy(base).add(new THREE.Vector3(0, 0.01, 0)); scene.add(grid);
+  for (const [p, c] of [[from, 0x4060ff], [to, 0xff4040]]) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.6, 0.6), new THREE.MeshBasicMaterial({ color: c })); b.position.copy(p).add(new THREE.Vector3(0, 0.8, 0)); scene.add(b); }
+  const cam = new THREE.PerspectiveCamera(50, cw / ch, 0.1, 100); cam.position.copy(base).add(new THREE.Vector3(0, 5.5, 8.5)); cam.lookAt(base.clone().add(new THREE.Vector3(0, 1, 0)));
+  [0.25, 0.5, 0.8].forEach((f, k) => cells.push({ n, fx, cam, t: f * fx.life, label: `${n}${s ? ' · ' + s.name : ''} t=${(f * fx.life).toFixed(2)}s` }));
+});
+cells.forEach((c, j) => {
+  const x = (j % cols) * cw, y = Math.floor(j / cols) * ch;
+  c.fx.at(c.t);
+  renderer.setViewport(x, HH - y - ch, cw, ch); renderer.setScissor(x, HH - y - ch, cw, ch);
+  renderer.setClearColor(0x101420); renderer.clear();
+  renderer.render(scene, c.cam);
+  const lb = document.createElement('div'); lb.className = 'lb'; lb.style.left = x + 'px'; lb.style.top = y + 'px'; lb.textContent = c.label; document.getElementById('wrap').appendChild(lb);
+});
+document.getElementById('t').textContent = `Spell VFX templates — ${man.game.title} (${names.length} templates × 3 times; demo spells use their generated colours)`;
+window.__debug = () => ({ templates: names.length, cells: cells.length });
+window.__ready = true;
+</script></body></html>

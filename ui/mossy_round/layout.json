@@ -1,0 +1,154 @@
+{
+  "font": {
+    "hud": "LilitaOne-Regular.ttf",
+    "dialogue": "LilitaOne-Regular.ttf",
+    "title": "LuckiestGuy-Regular.ttf"
+  },
+  "circles": {
+    "pause": [
+      0.06,
+      0.08,
+      0.05
+    ],
+    "hint": [
+      0.06,
+      0.2,
+      0.042
+    ],
+    "map": [
+      0.06,
+      0.305,
+      0.042
+    ],
+    "joy": [
+      0.15,
+      0.79,
+      0.12
+    ],
+    "act": [
+      0.905,
+      0.66,
+      0.058
+    ],
+    "cast": [
+      0.79,
+      0.8,
+      0.052
+    ],
+    "jump": [
+      0.915,
+      0.84,
+      0.062
+    ],
+    "ride": [
+      0.8,
+      0.625,
+      0.042
+    ],
+    "bonk": [
+      0.69,
+      0.895,
+      0.044
+    ]
+  },
+  "rects": {
+    "timer": [
+      0.79,
+      0.025,
+      0.975,
+      0.105
+    ],
+    "pearls": [
+      0.8,
+      0.115,
+      0.975,
+      0.185
+    ],
+    "vitals": [
+      0.12,
+      0.025,
+      0.46,
+      0.14
+    ],
+    "dialogue": [
+      0.04,
+      0.6,
+      0.96,
+      0.975
+    ],
+    "spells": [
+      0.22,
+      0.86,
+      0.64,
+      0.975
+    ],
+    "foe": [
+      0.36,
+      0.03,
+      0.7,
+      0.1
+    ],
+    "menu": [
+      0.25,
+      0.14,
+      0.75,
+      0.86
+    ],
+    "toast": [
+      0.2,
+      0.43,
+      0.8,
+      0.53
+    ]
+  },
+  "buttons": {
+    "pause": "P",
+    "hint": "H",
+    "map": "M",
+    "act": "E",
+    "cast": "1",
+    "jump": "Space",
+    "ride": "R",
+    "bonk": "F"
+  },
+  "colors": {
+    "wood": "#8a5a32",
+    "wood_hi": "#c08850",
+    "moss": "#5aa832",
+    "moss_dk": "#2f6a1e",
+    "cap": "#d6322a",
+    "dots": "#fff6e0",
+    "ink": "#4a2a14",
+    "parchment": "#f2e2b8",
+    "hp": "#e8483c",
+    "mp": "#3fa8e8",
+    "pearl": "#bff4ff",
+    "text": "#fff8e8"
+  },
+  "skin": "mossy_round",
+  "pieces": {
+    "btn_pause": "btn_pause.png",
+    "btn_hint": "btn_hint.png",
+    "btn_map": "btn_map.png",
+    "btn_act": "btn_act.png",
+    "btn_cast": "btn_cast.png",
+    "btn_jump": "btn_jump.png",
+    "btn_ride": "btn_ride.png",
+    "btn_bonk": "btn_bonk.png",
+    "ic_pearl": "ic_pearl.png",
+    "ic_clock": "ic_clock.png",
+    "ic_mushroom": "ic_mushroom.png",
+    "ic_bubble": "ic_bubble.png",
+    "plaque_timer": "plaque_timer.png",
+    "plaque_vitals": "plaque_vitals.png",
+    "plaque_small": "plaque_small.png",
+    "dialog": "dialog.png",
+    "menu": "menu.png",
+    "joy_ring": "joy_ring.png",
+    "joy_knob": "joy_knob.png"
+  },
+  "ref_size": [
+    640,
+    480
+  ]
+}

@@ -1,0 +1,4 @@
+Fonts in this folder used by the RPG preset HUD skins are licensed under the SIL Open Font License 1.1 (https://openfontlicense.org):
+UnifrakturMaguntia, IM Fell English SC, IM Fell French Canon (Regular/Italic), Courier Prime (Regular/Bold), Titan One, Lilita One,
+Press Start 2P (Google Fonts). Luckiest Guy is under the Apache License 2.0. DejaVu Sans / DejaVu Serif are under the Bitstream Vera / DejaVu free licence.
+They may be bundled and redistributed with generated projects; they may not be sold on their own.

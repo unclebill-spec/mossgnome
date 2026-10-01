@@ -1,0 +1,1432 @@
+{
+  "title": {
+    "title": "Mossgnome and the Hidden Springs",
+    "subtitle": "a cozy gnome adventure",
+    "menu": [
+      "New Game",
+      "Continue"
+    ],
+    "intro": [
+      "Deep in The Greenwild, under toadstools as tall as houses, the gnomes of Mossunder keep the woods well.",
+      "They mend birds' wings, sing the clover awake, and drink from the hidden bubbly springs that keep every glowcap shining.",
+      "But this spring, one by one, the fizzing has stopped... and the glowcaps have begun to dim.",
+      "Young Wittle, grab your red hat. Grandpa Femble is waiting at the village green."
+    ],
+    "save_key": "mossgnome-save-64"
+  },
+  "hero": "Wittle",
+  "fox": {
+    "name": "Tansy",
+    "speed": 1.9
+  },
+  "hub": "Mossunder",
+  "quests": [
+    {
+      "id": "q1",
+      "title": "The Dimming Glowcaps",
+      "giver": "npc1",
+      "goal": "Talk to Grandpa Femble on the village green.",
+      "done": {
+        "flag": "has_map"
+      },
+      "hint": "Grandpa Femble is the gnome with the longest beard, near the middle of Mossunder. Press E to talk."
+    },
+    {
+      "id": "q2",
+      "title": "A Glow in the Log",
+      "giver": "npc1",
+      "goal": "Find the hidden spring in Mossunder.",
+      "done": {
+        "flag": "spring1"
+      },
+      "hint": "Look for a fallen log glowing like honey at the east edge of the village. Walk inside it."
+    },
+    {
+      "id": "q3",
+      "title": "A Friend with a Bushy Tail",
+      "giver": "npc4",
+      "goal": "Meet Tansy the fox with Little Toffle and go for a ride.",
+      "done": {
+        "flag": "rode_fox"
+      },
+      "hint": "Little Toffle plays by the path south of the green. Once you've met Tansy, press R near the fox to ride."
+    },
+    {
+      "id": "q4",
+      "title": "Into Toadstool Wood",
+      "giver": "npc1",
+      "goal": "Step through the root arch to Toadstool Wood and find Auntie Luddock.",
+      "done": {
+        "flag": "met_forager"
+      },
+      "hint": "The root arches stand at the north edge of the village. The swirling one on the left leads to the wood."
+    },
+    {
+      "id": "q5",
+      "title": "Springs of the Wood",
+      "giver": "npc5",
+      "goal": "Find both hidden springs in Toadstool Wood.",
+      "done": {
+        "flag": "forest_done"
+      },
+      "hint": "One spring hides behind a waterfall on the far cliff; another waits at the end of a root tunnel."
+    },
+    {
+      "id": "q6",
+      "title": "The Fizzwater Caverns",
+      "giver": "npc6",
+      "goal": "Meet Uncle Plupkin and find both springs in Fizzwater Caverns.",
+      "done": {
+        "flag": "caverns_done"
+      },
+      "hint": "Follow the fizzing sound: a mossy cave mound, and another waterfall on the west wall."
+    },
+    {
+      "id": "q7",
+      "title": "Footprints in the Mist",
+      "giver": "npc7",
+      "goal": "Find a spring in Mistcap Marsh, then escape the grumbling dwarf.",
+      "done": {
+        "flag": "chase_escaped"
+      },
+      "hint": "When the stomping starts, run for the swirling rift on the cliff behind where you arrived. Ride the fox if you can."
+    },
+    {
+      "id": "q8",
+      "title": "The Spore Ring",
+      "giver": "npc1",
+      "goal": "Bring at least 5 springs' worth of news back to Grandpa Femble.",
+      "done": {
+        "flag": "elder_ring"
+      },
+      "hint": "Talk to Grandpa Femble. The fairy ring west of the village wakes once five springs are bubbling again."
+    },
+    {
+      "id": "q9",
+      "title": "The Cold Forge",
+      "giver": "npc1",
+      "goal": "Go through the spore ring and face Krogbold in Cold Forge of Krogbold.",
+      "done": {
+        "flag": "boss_beaten"
+      },
+      "hint": "Walk up to Krogbold beside the great lid and press E. Mushroom spells (Button Lance) are strong against his cold iron."
+    },
+    {
+      "id": "q10",
+      "title": "A Lid Lifted",
+      "giver": "npc1",
+      "goal": "Make peace with the dwarf and uncap the Mother Spring together.",
+      "done": {
+        "flag": "ending"
+      },
+      "hint": "Talk to Krogbold again and listen to him. Kindness opens more lids than hammers do."
+    }
+  ],
+  "trees": {
+    "npc1": {
+      "branches": [
+        {
+          "when": {
+            "flag": "boss_beaten"
+          },
+          "start": "after"
+        },
+        {
+          "when": {
+            "flag": "elder_ring"
+          },
+          "start": "go_forge"
+        },
+        {
+          "when": {
+            "all": [
+              {
+                "flag": "chase_escaped"
+              },
+              {
+                "springs_gte": 5
+              }
+            ]
+          },
+          "start": "ring"
+        },
+        {
+          "when": {
+            "flag": "chase_escaped"
+          },
+          "start": "need_more"
+        },
+        {
+          "when": {
+            "flag": "has_map"
+          },
+          "start": "progress"
+        },
+        {}
+      ],
+      "nodes": {
+        "start": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "Ah, Wittle! Just the gnome I was hoping to see. Mind my beard, it's had a busy morning.",
+            "Have you noticed the glowcaps along the path? They're fading, like candles at bedtime.",
+            "Our glowcaps drink from the hidden springs. When the springs go quiet, the whole wood grows dim and sleepy."
+          ],
+          "options": [
+            {
+              "text": "What's quieting the springs?",
+              "next": "why"
+            },
+            {
+              "text": "How can I help?",
+              "next": "help"
+            },
+            {
+              "text": "Are the glowcaps going to be all right?",
+              "next": "worry"
+            }
+          ]
+        },
+        "why": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "That's the riddle, isn't it? Last week I put my ear to the Brookside spring and heard... nothing at all.",
+            "And something else. Far off, a tink-tonk, tink-tonk, like a hammer on iron. Gnomes don't hammer iron. We grow things."
+          ],
+          "next": "help"
+        },
+        "worry": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "They're stubborn little things, like gnomes. Give them a drink and they'll shine again.",
+            "We only need to find the springs and wake them up."
+          ],
+          "next": "help"
+        },
+        "help": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "Take this. My old parchment map. It has a few blank corners, but you'll fill those in.",
+            "Most springs are hidden: behind waterfalls, inside mossy caves, under tunnels of roots.",
+            "Start close to home. There's a log at the edge of Mossunder that glows from the inside. Peek in."
+          ],
+          "options": [
+            {
+              "text": "I'll find them all!",
+              "next": "bye",
+              "set": [
+                "has_map"
+              ],
+              "give": {
+                "item": "Parchment Map"
+              }
+            },
+            {
+              "text": "A map! Can I keep it?",
+              "next": "keep",
+              "set": [
+                "has_map"
+              ],
+              "give": {
+                "item": "Parchment Map"
+              }
+            }
+          ]
+        },
+        "keep": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "Keep it, draw on it, spill tea on it. Maps like being used.",
+            "Press M to unfold it whenever you lose your way."
+          ],
+          "next": "bye"
+        },
+        "bye": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "Off you go, then. And say hello to the fox for me, if you meet her.",
+            "Hmm... Little Toffle has been feeding a fox, hasn't she."
+          ],
+          "end": true
+        },
+        "progress": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "The map is already looking well loved.",
+            "Every spring you wake makes the glowcaps a little brighter. Can you see it?"
+          ],
+          "options": [
+            {
+              "text": "Where should I look next?",
+              "next": "next"
+            },
+            {
+              "text": "Tell me about the root arches.",
+              "next": "arches"
+            },
+            {
+              "text": "Just saying hello!",
+              "next": "hello"
+            }
+          ]
+        },
+        "next": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "Press H for a hint any time. The quest log in the pause menu remembers what you're up to.",
+            "The arches to the north will take you to Toadstool Wood, then Fizzwater Caverns, then Mistcap Marsh. They open one after another."
+          ],
+          "end": true
+        },
+        "arches": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "The root arches were grown by our great-great-grandgnomes. Each one remembers the way to one place.",
+            "Walk into the swirl and you'll be there before your hat stops wobbling. To come home, find the swirl on the cliff."
+          ],
+          "end": true
+        },
+        "hello": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "Hello to you too, young one. Have a clover. No? More for me."
+          ],
+          "end": true
+        },
+        "need_more": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "A dwarf! Stomping through the marsh, you say? Grumbling about lids?",
+            "I count your springs and come up short. Wake at least five of them, then come back. We'll need their fizz to open the old spore ring."
+          ],
+          "end": true
+        },
+        "ring": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "Five springs singing again! I can hear them from here, Wittle. Listen... fizz, fizz, fizz.",
+            "And a dwarf, grumbling about lids. That explains the tink-tonk. Someone has been capping our springs with iron.",
+            "The spore ring west of the village was planted for days like this. It leads to the high cold places, where the forge-folk live."
+          ],
+          "options": [
+            {
+              "text": "I'll go and talk to the dwarf.",
+              "next": "brave",
+              "set": [
+                "elder_ring"
+              ]
+            },
+            {
+              "text": "Is the dwarf dangerous?",
+              "next": "danger"
+            }
+          ]
+        },
+        "danger": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "Grumpy is not the same as wicked. Dwarves are like chestnuts: prickly outside, warm inside.",
+            "But bring your spells, and keep your hat on tight."
+          ],
+          "options": [
+            {
+              "text": "Then I'm ready.",
+              "next": "brave",
+              "set": [
+                "elder_ring"
+              ]
+            }
+          ]
+        },
+        "brave": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "I'll wake the ring. Stand back... Oh, it tickles!",
+            "Go gently, little one. Find out why, before you decide who's wrong."
+          ],
+          "end": true
+        },
+        "go_forge": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "The spore ring is awake. It won't stay patient forever, mind.",
+            "Find Krogbold. Ask him why."
+          ],
+          "end": true
+        },
+        "after": {
+          "speaker": "Grandpa Femble",
+          "lines": [
+            "You did more than win, Wittle. You listened. That's the hardest spell there is.",
+            "Look at the glowcaps! I haven't seen them this bright since my beard was brown."
+          ],
+          "end": true
+        }
+      }
+    },
+    "npc2": {
+      "branches": [
+        {
+          "when": {
+            "flag": "boss_beaten"
+          },
+          "start": "after"
+        },
+        {}
+      ],
+      "nodes": {
+        "start": {
+          "speaker": "Granny Pawick",
+          "lines": [
+            "Come here, Wittle, let me look at you. Scraped knees again?",
+            "A sip of my clover tea, a pat on the hat, and you'll be right as rain."
+          ],
+          "options": [
+            {
+              "text": "Heal me, please.",
+              "next": "heal",
+              "give": {
+                "heal": true
+              }
+            },
+            {
+              "text": "What's in the tea?",
+              "next": "tea"
+            },
+            {
+              "text": "I'm fine, thank you!",
+              "next": "bye"
+            }
+          ]
+        },
+        "heal": {
+          "speaker": "Granny Pawick",
+          "lines": [
+            "There. Good as new, and twice as rosy.",
+            "If a critter ever knocks the puff out of you, you'll wake up here in my kitchen. Granny's rules."
+          ],
+          "end": true
+        },
+        "tea": {
+          "speaker": "Granny Pawick",
+          "lines": [
+            "Clover, a little honey, and three bubbles from a happy spring. The bubbles are the important part.",
+            "That's why I'm worried, dear. My kettle spring went flat last Tuesday."
+          ],
+          "options": [
+            {
+              "text": "Heal me, please.",
+              "next": "heal",
+              "give": {
+                "heal": true
+              }
+            },
+            {
+              "text": "I'll fix it!",
+              "next": "bye"
+            }
+          ]
+        },
+        "bye": {
+          "speaker": "Granny Pawick",
+          "lines": [
+            "Off you waddle, then. Mind the puddles."
+          ],
+          "end": true
+        },
+        "after": {
+          "speaker": "Granny Pawick",
+          "lines": [
+            "My kettle's fizzing again! I've put the kettle on for that dwarf, too. Everyone's welcome in my kitchen."
+          ],
+          "options": [
+            {
+              "text": "Heal me, please.",
+              "next": "heal",
+              "give": {
+                "heal": true
+              }
+            },
+            {
+              "text": "Goodbye, Granny!"
+            }
+          ]
+        }
+      }
+    },
+    "npc3": {
+      "branches": [
+        {
+          "when": {
+            "not": "has_map"
+          },
+          "start": "nomap"
+        },
+        {}
+      ],
+      "nodes": {
+        "nomap": {
+          "speaker": "Master Timble",
+          "lines": [
+            "A map? Grandpa Femble has the good one. Go and ask him, he loves giving things away.",
+            "Mine are all half-drawn. I keep running out of edge."
+          ],
+          "end": true
+        },
+        "start": {
+          "speaker": "Master Timble",
+          "lines": [
+            "Let me see your map... Oh, lovely smudges.",
+            "Each spring you find, I'll mark with a bubble. And some springs show you whole regions when you bathe in them."
+          ],
+          "options": [
+            {
+              "text": "How do maps get revealed?",
+              "next": "reveal"
+            },
+            {
+              "text": "Any mapmaker tips?",
+              "next": "tips"
+            },
+            {
+              "text": "Thanks!"
+            }
+          ]
+        },
+        "reveal": {
+          "speaker": "Master Timble",
+          "lines": [
+            "When spring-steam rises, it draws pictures in the air. Look closely and you'll see every nook of the land around it.",
+            "The spring behind the falls in Toadstool Wood does it, I'm sure, and there's another under roots in Mistcap Marsh."
+          ],
+          "end": true
+        },
+        "tips": {
+          "speaker": "Master Timble",
+          "lines": [
+            "Waterfalls are thin. Caves have mouths. Root tunnels go further than they look.",
+            "And if you hear fizzing get louder, you're getting warmer. Press H if you're stuck."
+          ],
+          "end": true
+        }
+      }
+    },
+    "npc4": {
+      "branches": [
+        {
+          "when": {
+            "flag": "met_fox"
+          },
+          "start": "again"
+        },
+        {}
+      ],
+      "nodes": {
+        "start": {
+          "speaker": "Little Toffle",
+          "lines": [
+            "Shh! You'll scare her! ... Oh, it's you, Wittle.",
+            "This is Tansy. She's a fox, and she's my best friend. Well, second best. After you. Maybe."
+          ],
+          "options": [
+            {
+              "text": "She's beautiful! Can I pet her?",
+              "next": "pet"
+            },
+            {
+              "text": "A real fox? In the village?",
+              "next": "real"
+            }
+          ]
+        },
+        "real": {
+          "speaker": "Little Toffle",
+          "lines": [
+            "She got her paw stuck in a bramble and I unstuck it. Now she follows me everywhere.",
+            "Foxes are very good at remembering kindness."
+          ],
+          "next": "pet"
+        },
+        "pet": {
+          "speaker": "Little Toffle",
+          "lines": [
+            "Tansy likes you! Look, she's wagging. Foxes don't usually wag.",
+            "She's much faster than us waddlers. Hop on her back and hold on to her scruff, gently."
+          ],
+          "options": [
+            {
+              "text": "I'd love to ride her!",
+              "next": "ride",
+              "set": [
+                "met_fox"
+              ],
+              "give": {
+                "ride": true
+              }
+            }
+          ]
+        },
+        "ride": {
+          "speaker": "Little Toffle",
+          "lines": [
+            "Press R next to Tansy to climb on, and R again to hop off.",
+            "Don't let her chase butterflies. She always chases butterflies."
+          ],
+          "end": true
+        },
+        "again": {
+          "speaker": "Little Toffle",
+          "lines": [
+            "Tansy has been telling me about your adventures. Well, yipping. It's nearly the same."
+          ],
+          "options": [
+            {
+              "text": "Want to hear a story?",
+              "next": "story"
+            },
+            {
+              "text": "See you later, Toffle!"
+            }
+          ]
+        },
+        "story": {
+          "speaker": "Little Toffle",
+          "lines": [
+            "Yes! Is it about a dragon?",
+            "...A dwarf? A grumpy one? That's even better than a dragon."
+          ],
+          "end": true
+        }
+      }
+    },
+    "npc5": {
+      "branches": [
+        {
+          "when": {
+            "flag": "forest_done"
+          },
+          "start": "done"
+        },
+        {
+          "when": {
+            "flag": "met_forager"
+          },
+          "start": "again"
+        },
+        {}
+      ],
+      "nodes": {
+        "start": {
+          "speaker": "Auntie Luddock",
+          "lines": [
+            "Well, if it isn't Wittle from Mossunder! Welcome to Toadstool Wood. Mind the puffcaps, they sneeze.",
+            "I've foraged these woods for ninety springs and I've never seen the toadstools droop like this.",
+            "There are two springs hidden here. One behind the falls on the far cliff. One somewhere under the old roots."
+          ],
+          "options": [
+            {
+              "text": "Will the critters hurt me?",
+              "next": "critters",
+              "set": [
+                "met_forager"
+              ]
+            },
+            {
+              "text": "I'll find both springs.",
+              "next": "go",
+              "set": [
+                "met_forager"
+              ]
+            }
+          ]
+        },
+        "critters": {
+          "speaker": "Auntie Luddock",
+          "lines": [
+            "The shroomlings aren't wicked, only cross. Their caps get sore when the springs run dry.",
+            "Bonk them on the cap with your hat (Space) or cast Button Lance (1). They pop into spores and wander off feeling better."
+          ],
+          "next": "go"
+        },
+        "go": {
+          "speaker": "Auntie Luddock",
+          "lines": [
+            "If you need a rest, sit by any spring you've woken. They're lovely and warm."
+          ],
+          "end": true
+        },
+        "again": {
+          "speaker": "Auntie Luddock",
+          "lines": [
+            "Still looking? Listen for the fizz. Walk where the water sings."
+          ],
+          "end": true
+        },
+        "done": {
+          "speaker": "Auntie Luddock",
+          "lines": [
+            "Both springs bubbling! Did you see the iron lid lying by the tunnel? Heavy, and stamped with an anvil.",
+            "Gnomes don't make lids. Somebody with very strong arms has been busy.",
+            "The caverns arch should be open now. Find Uncle Plupkin there. He's lighting what lamps he can."
+          ],
+          "end": true
+        }
+      }
+    },
+    "npc8": {
+      "branches": [
+        {
+          "when": {
+            "flag": "honey"
+          },
+          "start": "again"
+        },
+        {}
+      ],
+      "nodes": {
+        "start": {
+          "speaker": "Mistress Guck",
+          "lines": [
+            "Bzz-bzz, hello, dearie! The bees are cross today. No fizz in the clover means no sweet in the honey.",
+            "Here, take my last honey drop. It mends a gnome right up."
+          ],
+          "options": [
+            {
+              "text": "Thank you! Can I help the bees?",
+              "next": "help",
+              "set": [
+                "honey"
+              ],
+              "give": {
+                "item": "Honey Drop"
+              }
+            },
+            {
+              "text": "I'll save it for later.",
+              "next": "later",
+              "set": [
+                "honey"
+              ],
+              "give": {
+                "item": "Honey Drop"
+              }
+            }
+          ]
+        },
+        "help": {
+          "speaker": "Mistress Guck",
+          "lines": [
+            "Wake the springs, and the clover will drink, and the bees will hum. That's how it all goes round."
+          ],
+          "end": true
+        },
+        "later": {
+          "speaker": "Mistress Guck",
+          "lines": [
+            "Wise gnome. Honey keeps forever, you know. Bees told me."
+          ],
+          "end": true
+        },
+        "again": {
+          "speaker": "Mistress Guck",
+          "lines": [
+            "The bees say thank you. Well, they say bzz. It's the same thing."
+          ],
+          "end": true
+        }
+      }
+    },
+    "npc6": {
+      "branches": [
+        {
+          "when": {
+            "flag": "caverns_done"
+          },
+          "start": "done"
+        },
+        {
+          "when": {
+            "flag": "met_lamp"
+          },
+          "start": "again"
+        },
+        {}
+      ],
+      "nodes": {
+        "start": {
+          "speaker": "Uncle Plupkin",
+          "lines": [
+            "Who's there? Oh! A red hat! Hello, hello. I'm Uncle Plupkin, I light the lamps down here.",
+            "Or I did, before the springs went flat. Glowcaps won't glow without a drink.",
+            "I found big boot-prints by the cave mouth. Much too big for a gnome. Square-toed, like a dwarf's."
+          ],
+          "options": [
+            {
+              "text": "A dwarf? Down here?",
+              "next": "dwarf"
+            },
+            {
+              "text": "I'm finding the springs.",
+              "next": "gift"
+            }
+          ]
+        },
+        "dwarf": {
+          "speaker": "Uncle Plupkin",
+          "lines": [
+            "Dwarves live up in the cold places, beyond the fairy ring. They like iron and fire and not much else.",
+            "Mind you, I've never actually met one. Perhaps they like other things too."
+          ],
+          "next": "gift"
+        },
+        "gift": {
+          "speaker": "Uncle Plupkin",
+          "lines": [
+            "Then take this, you'll need it. My grandmother's spell: Button Bulwark.",
+            "It builds a little wall of toadstools around you. Very good for grumpy things."
+          ],
+          "options": [
+            {
+              "text": "Learn Button Bulwark",
+              "next": "bye",
+              "set": [
+                "met_lamp"
+              ],
+              "give": {
+                "spell": "sp_m_g_g_20"
+              }
+            }
+          ]
+        },
+        "bye": {
+          "speaker": "Uncle Plupkin",
+          "lines": [
+            "One spring is in a mossy cave mound. The other is behind the waterfall on the west wall. Follow the fizz!"
+          ],
+          "end": true
+        },
+        "again": {
+          "speaker": "Uncle Plupkin",
+          "lines": [
+            "Follow the fizz! It always gets louder when you're close."
+          ],
+          "end": true
+        },
+        "done": {
+          "speaker": "Uncle Plupkin",
+          "lines": [
+            "Look! Look at my lamps! Every glowcap in the caverns is shining!",
+            "I heard stomping in Mistcap Marsh, though. Something big and grumbly. Be careful, and ask Old Gabbin there for help."
+          ],
+          "end": true
+        }
+      }
+    },
+    "npc9": {
+      "branches": [
+        {}
+      ],
+      "nodes": {
+        "start": {
+          "speaker": "Ronny",
+          "lines": [
+            "La-la-laaa... Oh, a listener! Would you like to hear the Spring Song?"
+          ],
+          "options": [
+            {
+              "text": "Yes please!",
+              "next": "song"
+            },
+            {
+              "text": "Maybe later."
+            }
+          ]
+        },
+        "song": {
+          "speaker": "Ronny",
+          "lines": [
+            "Fizz in the hollow and fizz in the stone,",
+            "fizz where the roots make a tunnel their own,",
+            "fizz where the water falls down like a veil,",
+            "follow the bubbles and follow the trail!"
+          ],
+          "options": [
+            {
+              "text": "That's a map in a song!",
+              "next": "map"
+            },
+            {
+              "text": "Lovely!"
+            }
+          ]
+        },
+        "map": {
+          "speaker": "Ronny",
+          "lines": [
+            "Clever gnome! Our grandparents sang it so nobody would ever forget where the springs hide."
+          ],
+          "end": true
+        }
+      }
+    },
+    "npc7": {
+      "branches": [
+        {
+          "when": {
+            "flag": "chase_escaped"
+          },
+          "start": "after"
+        },
+        {}
+      ],
+      "nodes": {
+        "start": {
+          "speaker": "Old Gabbin",
+          "lines": [
+            "Ahoy, little red hat. Old Gabbin, ferrier of the marsh. Not much ferrying when the pools are this flat and still.",
+            "There's a dwarf about. Stomps through here every evening with a lid under each arm, grumbling about the noise.",
+            "If he spots you, don't argue with him in the mud. Run for the swirl on the cliff, and argue later over tea."
+          ],
+          "options": [
+            {
+              "text": "Why does he hate the noise?",
+              "next": "noise"
+            },
+            {
+              "text": "Where are the springs?",
+              "next": "where"
+            }
+          ]
+        },
+        "noise": {
+          "speaker": "Old Gabbin",
+          "lines": [
+            "Fizzing keeps him up at night, he says. But I think he's lonely. Lonely folk hear every little sound."
+          ],
+          "next": "where"
+        },
+        "where": {
+          "speaker": "Old Gabbin",
+          "lines": [
+            "Three springs in the marsh. One under roots, one in a cave of moss, one in a glowing log out east.",
+            "When the stomping starts, ride Tansy if she's with you. Foxes don't get stuck in mud."
+          ],
+          "end": true
+        },
+        "after": {
+          "speaker": "Old Gabbin",
+          "lines": [
+            "You got away! Well done. He's not a bad sort, I'd wager. Just a grump with cold toes."
+          ],
+          "end": true
+        }
+      }
+    },
+    "boss": {
+      "branches": [
+        {
+          "when": {
+            "flag": "reconciled"
+          },
+          "start": "friend"
+        },
+        {
+          "when": {
+            "flag": "boss_beaten"
+          },
+          "start": "puffed"
+        },
+        {}
+      ],
+      "nodes": {
+        "start": {
+          "speaker": "Krogbold",
+          "lines": [
+            "WHO GOES THERE? A gnome? In MY forge? Hmph!",
+            "I am Krogbold Anvilbeard, smith of the cold stair, and I'll thank you to stop poking at my lids!",
+            "Fizz, fizz, fizz, all night long! A dwarf can't think, can't sleep, can't hammer!"
+          ],
+          "options": [
+            {
+              "text": "The glowcaps are fading because of the lids.",
+              "next": "fading"
+            },
+            {
+              "text": "Please, just talk with me.",
+              "next": "talk"
+            }
+          ]
+        },
+        "fading": {
+          "speaker": "Krogbold",
+          "lines": [
+            "Fading? Pah! Mushrooms don't fade. They just... sit there being mushrooms.",
+            "Enough chatter! If you want my lids, you'll have to knock the puff out of me first!"
+          ],
+          "options": [
+            {
+              "text": "(Get ready!)",
+              "set": [
+                "boss_fight"
+              ]
+            }
+          ]
+        },
+        "talk": {
+          "speaker": "Krogbold",
+          "lines": [
+            "Talk? TALK? Dwarves don't talk, we hammer! ...Well, we grumble. Grumbling is a sort of talking.",
+            "No! You'll talk me out of my own forge. Have at you, gnome!"
+          ],
+          "options": [
+            {
+              "text": "(Get ready!)",
+              "set": [
+                "boss_fight"
+              ]
+            }
+          ]
+        },
+        "puffed": {
+          "speaker": "Krogbold",
+          "lines": [
+            "Hff... hff... all right, all right. I'm out of puff. You bonk hard for a little fellow.",
+            "Go on, then. Gloat. Everyone does, when the dwarf falls over."
+          ],
+          "options": [
+            {
+              "text": "Why did you cap the springs?",
+              "next": "why"
+            },
+            {
+              "text": "I won't gloat. Are you hurt?",
+              "next": "kind"
+            },
+            {
+              "text": "You should be ashamed of yourself!",
+              "next": "cross"
+            }
+          ]
+        },
+        "cross": {
+          "speaker": "Krogbold",
+          "lines": [
+            "...Aye. Maybe I should.",
+            "But a cold dwarf with an empty forge isn't thinking about mushrooms, is he?"
+          ],
+          "options": [
+            {
+              "text": "Why is your forge cold?",
+              "next": "why"
+            },
+            {
+              "text": "I'm sorry I shouted.",
+              "next": "kind"
+            }
+          ]
+        },
+        "kind": {
+          "speaker": "Krogbold",
+          "lines": [
+            "Hurt? Only my pride, and that's mostly beard anyway.",
+            "...Nobody's asked me that in forty winters."
+          ],
+          "next": "why"
+        },
+        "why": {
+          "speaker": "Krogbold",
+          "lines": [
+            "My forge went cold last autumn. The deep fire went out, and I couldn't light it again.",
+            "I heard the springs fizzing, warm and happy, all the way down the mountain. So I capped them, and piped their steam up here.",
+            "I thought: what do gnomes need with warm water? They've got each other.",
+            "I didn't know about the glowcaps. Truly, I didn't."
+          ],
+          "options": [
+            {
+              "text": "We could warm your forge together.",
+              "next": "together"
+            },
+            {
+              "text": "Come and live in the village!",
+              "next": "village"
+            }
+          ]
+        },
+        "village": {
+          "speaker": "Krogbold",
+          "lines": [
+            "Me? In a mushroom house? I'd bump my head on every door!",
+            "...Though I suppose I could carve some taller doors."
+          ],
+          "next": "together"
+        },
+        "together": {
+          "speaker": "Krogbold",
+          "lines": [
+            "Together? The glowcaps... your sunbeam spells... aye, a forge could burn on firefly-light, if a gnome helped kindle it.",
+            "And I'd not need a single lid.",
+            "Will you help me lift the big one, then? The Mother Spring's been holding her breath all winter."
+          ],
+          "options": [
+            {
+              "text": "Let's lift it together!",
+              "set": [
+                "reconciled"
+              ]
+            }
+          ]
+        },
+        "friend": {
+          "speaker": "Krogbold",
+          "lines": [
+            "Ready when you are, little friend. Stand at the lid and press E. On three. One... two..."
+          ],
+          "end": true
+        }
+      }
+    }
+  },
+  "hints": {
+    "springs": {
+      "spring1": "The log that glows from inside is not just a log.",
+      "spring2": "Walk where the water sings; it hides a door of spray.",
+      "spring3": "Crawl under the roots and keep going, past the dark bit.",
+      "spring4": "A mound of moss with a mouth: something bubbles inside.",
+      "spring5": "Walk where the water sings; it hides a door of spray.",
+      "spring6": "Old roots make a tunnel; tunnels go somewhere.",
+      "spring7": "Follow the fizzing sound into the stones.",
+      "spring8": "Peek into the honey-glowing log."
+    },
+    "general": [
+      "Listen: the fizz gets louder as you get close to a hidden spring.",
+      "Press M to unfold your parchment map.",
+      "Ride Tansy with R to cross the marsh faster.",
+      "Bathing in a spring you've already found heals you completely.",
+      "Critters that are cross can be calmed with a hat bonk (Space) or a spell (1-6)."
+    ],
+    "chase": "RUN! Make for the swirling rift on the cliff behind where you arrived!"
+  },
+  "critters": {
+    "L1": [
+      {
+        "id": "en_L1_1",
+        "name": "Wobblecap",
+        "model": "shroomling",
+        "element": "mushroom",
+        "rank": "minion",
+        "hp": 4,
+        "atk": 2,
+        "xp": 9
+      },
+      {
+        "id": "en_L1_2",
+        "name": "Stalknub",
+        "model": "puffcap",
+        "element": "spore",
+        "rank": "minion",
+        "hp": 4,
+        "atk": 1,
+        "xp": 9
+      },
+      {
+        "id": "en_L1_3",
+        "name": "Inkykin",
+        "model": "shroomling",
+        "element": "mushroom",
+        "rank": "minion",
+        "hp": 3,
+        "atk": 1,
+        "xp": 9
+      },
+      {
+        "id": "en_L1_4",
+        "name": "Buttonpod",
+        "model": "puffcap",
+        "element": "spore",
+        "rank": "elite",
+        "hp": 7,
+        "atk": 2,
+        "xp": 18
+      },
+      {
+        "id": "mb_L1",
+        "name": "Spotling the Great",
+        "model": "shroomling",
+        "element": "mushroom",
+        "rank": "miniboss",
+        "hp": 19,
+        "atk": 2,
+        "xp": 54
+      }
+    ],
+    "L2": [
+      {
+        "id": "en_L2_1",
+        "name": "Bobblebun",
+        "model": "inkcap",
+        "element": "water",
+        "rank": "minion",
+        "hp": 5,
+        "atk": 2,
+        "xp": 13
+      },
+      {
+        "id": "en_L2_2",
+        "name": "Buttonbun",
+        "model": "glowmite",
+        "element": "glow",
+        "rank": "minion",
+        "hp": 4,
+        "atk": 2,
+        "xp": 13
+      },
+      {
+        "id": "en_L2_3",
+        "name": "Trufflenub",
+        "model": "inkcap",
+        "element": "water",
+        "rank": "minion",
+        "hp": 5,
+        "atk": 2,
+        "xp": 13
+      },
+      {
+        "id": "en_L2_4",
+        "name": "Spotpod",
+        "model": "glowmite",
+        "element": "glow",
+        "rank": "elite",
+        "hp": 9,
+        "atk": 3,
+        "xp": 26
+      },
+      {
+        "id": "mb_L2",
+        "name": "Bobblelet the Great",
+        "model": "inkcap",
+        "element": "water",
+        "rank": "miniboss",
+        "hp": 32,
+        "atk": 2,
+        "xp": 78
+      }
+    ],
+    "L3": [
+      {
+        "id": "en_L3_1",
+        "name": "Morelkin",
+        "model": "bogcap",
+        "element": "water",
+        "rank": "minion",
+        "hp": 7,
+        "atk": 3,
+        "xp": 17
+      },
+      {
+        "id": "en_L3_2",
+        "name": "Speckcap",
+        "model": "puffcap",
+        "element": "spore",
+        "rank": "minion",
+        "hp": 6,
+        "atk": 2,
+        "xp": 17
+      },
+      {
+        "id": "en_L3_3",
+        "name": "Dimplecap",
+        "model": "bogcap",
+        "element": "mushroom",
+        "rank": "minion",
+        "hp": 7,
+        "atk": 3,
+        "xp": 17
+      },
+      {
+        "id": "en_L3_4",
+        "name": "Bobblepod",
+        "model": "glowmite",
+        "element": "glow",
+        "rank": "elite",
+        "hp": 12,
+        "atk": 4,
+        "xp": 34
+      },
+      {
+        "id": "mb_L3",
+        "name": "Morelpod the Great",
+        "model": "bogcap",
+        "element": "spore",
+        "rank": "miniboss",
+        "hp": 36,
+        "atk": 4,
+        "xp": 102
+      }
+    ]
+  },
+  "boss": {
+    "name": "Krogbold Anvilbeard",
+    "short": "Krogbold",
+    "model": "dwarf",
+    "hp": 84,
+    "atk": 5,
+    "element": "glow",
+    "weak": "mushroom",
+    "phases": [
+      {
+        "phase": 1,
+        "name": "Grumbling Smith",
+        "hp": 49,
+        "attacks": [
+          "Lid Toss",
+          "Anvil Stomp"
+        ],
+        "tell": "spits on his palms",
+        "vulnerable": "to water after each stomp"
+      },
+      {
+        "phase": 2,
+        "name": "Steam-Puffing Temper",
+        "hp": 49,
+        "attacks": [
+          "Bellows Gust",
+          "Twin-Axe Twirl",
+          "Cinder Sneeze"
+        ],
+        "tell": "his beard braids start to smoke",
+        "vulnerable": "to glow when he runs out of puff"
+      }
+    ],
+    "taunts": [
+      "Hands off my lids, pointy-hat!",
+      "Springs are for forges, not for paddling!"
+    ],
+    "defeat": "Krogbold sits down hard on his anvil. \"Hff... out of puff,\" he grumbles.",
+    "moves": [
+      {
+        "name": "Lid Toss",
+        "dmg": [
+          4,
+          7
+        ],
+        "sfx": "lid_clank"
+      },
+      {
+        "name": "Steam Huff",
+        "dmg": [
+          3,
+          6
+        ],
+        "sfx": "spore_puff"
+      },
+      {
+        "name": "Beard Swing",
+        "dmg": [
+          5,
+          8
+        ],
+        "sfx": "hat_bonk"
+      }
+    ],
+    "chase": {
+      "level": "L3",
+      "speed": 5.2,
+      "catch_radius": 1.4,
+      "start_after_spring": true,
+      "shouts": [
+        "OI! Who's been poking at my lids?!",
+        "Come back here, you little fizz-finder!",
+        "Stop! Hff... gnomes are too quick!",
+        "When I catch you, I'll... I'll... tell you off very sternly!"
+      ]
+    }
+  },
+  "ending": {
+    "pages": [
+      "Wittle and Krogbold put their shoulders to the great iron lid. One... two... THREE!",
+      "With a sigh like a kettle and a laugh like a brook, the Mother Spring bubbled up into the sun.",
+      "All across The Greenwild, the hidden springs fizzed awake, and the glowcaps blushed brighter than ever.",
+      "Krogbold warms his forge with firefly-light now. He makes kettles for Granny Pawick, bells for the bees, and taller doors for himself.",
+      "And every evening, Wittle rides Tansy to the hollow log, to listen to the bubbles hum.",
+      "THE END"
+    ],
+    "credits": [
+      "A cozy gnome adventure generated by n64-suite",
+      "seed 64",
+      "Models, textures, music, sound and words made procedurally; nothing copied."
+    ]
+  },
+  "mother": {
+    "id": "mother",
+    "name": "the Mother Spring",
+    "region": "BOSS",
+    "hide": "capped",
+    "hide_desc": "under the dwarf's great iron lid",
+    "tint": "gold",
+    "water": "#5ae4d8",
+    "foam": "#fff4b0",
+    "look": {
+      "water": "#5ae4d8",
+      "deep": "#0a5a60",
+      "glow": "#fff4b0",
+      "sparkle": "#ffe080",
+      "rock": "#6a6460",
+      "moss": "#4a7a3a",
+      "steam": 1.0,
+      "decor": [
+        "glowcap",
+        "glowcap",
+        "crystal_cap"
+      ]
+    },
+    "temperature": "warm",
+    "steam": true,
+    "bubbles_per_s": 30,
+    "fizz_pitch": 0.8,
+    "shimmer": 1.0,
+    "reward": {
+      "type": "ending",
+      "text": "Every spring in the Greenwild sighs and fizzes back to life."
+    },
+    "heals": true
+  },
+  "spellbook": {
+    "start": [
+      "sp_m_15"
+    ],
+    "names": {
+      "start": "Button Lance",
+      "heal": "Fizz Mend",
+      "spore": "Waft Lance",
+      "glow": "Sunbeam Dart",
+      "barrier": "Glimmer Ward",
+      "water": "Brook Dart",
+      "big": "Button Bulwark"
+    },
+    "ids": {
+      "start": "sp_m_15",
+      "heal": "sp_w_g_31",
+      "spore": "sp_s_45",
+      "glow": "sp_g_0",
+      "barrier": "sp_g_w_w_12",
+      "water": "sp_w_30",
+      "big": "sp_m_g_g_20"
+    }
+  },
+  "start_stats": {
+    "hp": 30,
+    "mp": 14,
+    "atk": 3
+  },
+  "items": [
+    "Parchment Map",
+    "Honey Drop",
+    "Copper Thimble"
+  ],
+  "regions": {
+    "L1": "Toadstool Wood",
+    "L2": "Fizzwater Caverns",
+    "L3": "Mistcap Marsh",
+    "BOSS": "Cold Forge of Krogbold"
+  }
+}

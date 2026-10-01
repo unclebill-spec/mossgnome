@@ -1,0 +1,104 @@
+{
+  "frames": 8,
+  "fps": 10,
+  "strips": {
+    "vortex_forest": {
+      "file": "sprites/portals/vortex_forest.png",
+      "kind": "spiral_vortex",
+      "palette": "forest",
+      "frame_w": 128,
+      "frame_h": 128,
+      "colors": [
+        "#fff6c0",
+        "#c8f070",
+        "#6ac040",
+        "#2f7a2a",
+        "#143a14"
+      ]
+    },
+    "vortex_caverns": {
+      "file": "sprites/portals/vortex_caverns.png",
+      "kind": "spiral_vortex",
+      "palette": "caverns",
+      "frame_w": 128,
+      "frame_h": 128,
+      "colors": [
+        "#e8fffc",
+        "#7ae8e0",
+        "#2ab0c0",
+        "#126a80",
+        "#08283a"
+      ]
+    },
+    "vortex_marsh": {
+      "file": "sprites/portals/vortex_marsh.png",
+      "kind": "spiral_vortex",
+      "palette": "marsh",
+      "frame_w": 128,
+      "frame_h": 128,
+      "colors": [
+        "#f4e8ff",
+        "#c8a8f0",
+        "#9070d0",
+        "#5a3a9a",
+        "#24143e"
+      ]
+    },
+    "vortex_home": {
+      "file": "sprites/portals/vortex_home.png",
+      "kind": "spiral_vortex",
+      "palette": "home",
+      "frame_w": 128,
+      "frame_h": 128,
+      "colors": [
+        "#fff4e0",
+        "#ffd0a0",
+        "#f08a6a",
+        "#a8405a",
+        "#3a1424"
+      ]
+    },
+    "rift_spring": {
+      "file": "sprites/portals/rift_spring.png",
+      "kind": "oval_rift",
+      "palette": "spring",
+      "frame_w": 64,
+      "frame_h": 128,
+      "colors": [
+        "#ffffff",
+        "#a8fff4",
+        "#40d8d0",
+        "#127080",
+        "#08303a"
+      ]
+    },
+    "ring_spore": {
+      "file": "sprites/portals/ring_spore.png",
+      "kind": "flame_ring",
+      "palette": "spore",
+      "frame_w": 128,
+      "frame_h": 128,
+      "colors": [
+        "#fffbe0",
+        "#ffe070",
+        "#ff9a3a",
+        "#e05a1a",
+        "#7a2a0a"
+      ]
+    },
+    "wall_moss": {
+      "file": "sprites/portals/wall_moss.png",
+      "kind": "wall_vortex",
+      "palette": "moss",
+      "frame_w": 128,
+      "frame_h": 128,
+      "colors": [
+        "#c8f0a0",
+        "#6aa840",
+        "#3a6a3a",
+        "#1e3a24",
+        "#0a140c"
+      ]
+    }
+  }
+}
