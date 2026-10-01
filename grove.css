@@ -58,7 +58,7 @@
 .mg-title .mi.sel { background: #5aa832; border-color: #2f6a1e; transform: scale(1.06); }
 .mg-title .mi.off { opacity: 0.45; }
 .mg-title .foot { font-size: 2.2cqh; margin-top: 3cqh; opacity: 0.85; }
-#hud.titling > :not(.mg-title):not(.mg-fade) { display: none !important; }
+#hud.titling > :not(.mg-title):not(.mg-fade):not(.mg-menu):not(.mg-toast) { display: none !important; }
 .mg-ending { position: absolute; inset: 0; background: rgba(30, 40, 16, 0.55); display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 8%; z-index: 9; cursor: pointer; }
 .mg-ending .page { width: 80%; background: rgba(242, 226, 184, 0.95); color: #4a2a14; border: 0.6cqh solid #8a5a32; border-radius: 2cqh; padding: 2.4cqh 3cqh; font-size: 3.6cqh; line-height: 1.25; text-align: center; }
 .mg-ending .page.credits { font-size: 2.9cqh; }
@@ -104,3 +104,79 @@ html[data-input=touch] #hud.mg .mg-btn i { display: none; }
 .mg-reticle { position: absolute; width: 5.6cqh; height: 7cqh; transform: translate(-50%, -100%); pointer-events: none; animation: mgret 0.7s ease-in-out infinite alternate; z-index: 3; }
 .mg-reticle svg { width: 100%; height: 100%; } .mg-reticle path { fill: #ffd040; stroke: #6a3a08; stroke-width: 1.6; } .mg-reticle path.o { fill: none; stroke: #fff2a0; stroke-width: 2.4; }
 @keyframes mgret { from { margin-top: -1.2cqh; } to { margin-top: 0.4cqh; } }
+
+/* ---------- display layer: anchored HUD on any aspect, safe areas, small-height (sideways phone) + TV scaling, fullscreen icon */
+#hud.mg .mg-menu { z-index: 12; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+#hud.mg .mg-menu, #hud.mg .mg-menu * { touch-action: pan-y; }
+#hud.mg .mg-toast { z-index: 15; font-size: calc(3cqh * var(--hk, 1)); } #hud.mg .mg-toast small { font-size: calc(2.2cqh * var(--hk, 1)); }
+html[data-input=touch] #hud.mg { --tmin: 48px; }
+#hud.mg .mg-vitals { transform: scale(var(--hk, 1)); transform-origin: 0 0; }
+#hud.mg .mg-timer { transform: scale(var(--hk, 1)); transform-origin: 100% 0; }
+#hud.mg .mg-pearls { transform: translateY(calc((var(--hk, 1) - 1) * 9cqh)) scale(var(--hk, 1)); transform-origin: 100% 0; }
+#hud.mg .mg-quest { top: calc(2.5cqh + 17.5cqh * var(--hk, 1) + var(--sat, 0px)); right: calc(2cqh + var(--sar, 0px)); width: min(40%, calc(40cqh * var(--hk, 1))); font-size: calc(2.2cqh * var(--hk, 1)); }
+#hud.mg .mg-quest b { font-size: calc(2.5cqh * var(--hk, 1)); }
+#hud.mg .mg-foe { transform: scale(calc(1 + (var(--hk, 1) - 1) * 0.4)); transform-origin: 50% 0; }
+#hud.mg .mg-prompt { font-size: calc(2.8cqh * var(--hk, 1)); bottom: calc(25% + var(--sab, 0px)); }
+#hud.mg .mg-spells { transform: scale(var(--hk, 1)); transform-origin: 50% 100%; }
+.mg-fs .fs-out { display: none; } html[data-fs="1"] .mg-fs .fs-in { display: none; } html[data-fs="1"] .mg-fs .fs-out { display: block; }
+.mg-fs { opacity: 0.85; } .mg-fs svg { stroke-width: 2.6; }
+.mg-title .tmenu { display: flex; flex-direction: column; align-items: center; width: 100%; }
+.mg-menu .sgrid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(5, auto); grid-template-columns: 1fr 1fr; column-gap: 1.2cqh; }
+.mg-menu .sgrid .mi.set { margin: 0.5cqh 0.6cqh; }
+#hud.mg .mg-menu.wide { left: calc(50% - min(45%, 62cqh)) !important; width: min(90%, 124cqh) !important; }
+html[data-input=touch] .mg-menu .mi, html[data-input=touch] .mg-title .mi { min-height: 44px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
+html[data-input=touch] .mg-menu .mi.set { justify-content: space-between; }
+html[data-input=touch] .mg-menu .mi.set .val { float: none; display: inline-flex; align-items: center; }
+html[data-input=touch] .mg-menu .mi.set u { min-width: 40px; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; }
+html[data-input=touch] .mg-dialog .opt { min-height: 44px; display: flex; align-items: center; box-sizing: border-box; }
+/* sideways phone (stage under 520px tall): bigger text floors, wider panels, 2-column menus, dialogue choices in a row */
+html[data-small="1"] #hud.mg .mg-menu { left: calc(50% - min(45%, 92cqh)) !important; width: min(90%, 184cqh) !important; top: calc(4% + var(--sat, 0px)) !important; height: calc(92% - var(--sat, 0px) - var(--sab, 0px)) !important; padding: 2.4cqh 3.5cqh; }
+html[data-small="1"] .mg-menu h2 { font-size: max(5.2cqh, 20px); margin-bottom: 0.4cqh; }
+html[data-small="1"] .mg-menu .sub, html[data-small="1"] .mg-menu .q { font-size: max(2.6cqh, 12.5px); margin: 0.3cqh 0; }
+html[data-small="1"] .mg-menu .q small { font-size: max(2.1cqh, 11px); }
+html[data-small="1"] .mg-menu .mi { font-size: max(3.6cqh, 15px); margin: 0.5cqh 1cqh; padding: 0.3cqh 1cqh; }
+html[data-small="1"] .mg-menu .mi.set { font-size: max(3cqh, 14px); }
+html[data-small="1"] .mg-menu[data-page=main] { display: grid; grid-template-columns: 1fr 1fr; align-content: start; }
+html[data-small="1"] .mg-menu[data-page=main] h2, html[data-small="1"] .mg-menu[data-page=main] .sub { grid-column: 1 / -1; }
+html[data-small="1"] .mg-menu .ctl3 { font-size: max(1.75cqh, 11px); gap: 1cqh; } html[data-small="1"] .mg-menu .ctl3 h3 { font-size: max(2.3cqh, 13px); }
+html[data-small="1"] .mg-menu:has(.ctl3) { padding: 2cqh 3cqh; } html[data-small="1"] .mg-menu:has(.ctl3) h2 { font-size: max(4.2cqh, 18px); }
+html[data-small="1"] #hud.mg .mg-dialog { top: auto !important; bottom: calc(2% + var(--sab, 0px)) !important; height: auto !important; min-height: 36%; left: calc(50% - min(47%, 98cqh)) !important; width: min(94%, 196cqh) !important;
+  font-size: max(3.8cqh, 15px); padding: 2.6cqh 3cqh 2.4cqh 15%; }
+html[data-small="1"] .mg-dialog .por { width: auto; height: max(13cqh, 46px); top: 50%; transform: translateY(-50%); left: 2.5%; }
+html[data-small="1"] .mg-dialog .who { left: 15%; font-size: max(3cqh, 13px); top: max(-3.6cqh, -15px); }
+html[data-small="1"] .mg-dialog .opts { flex-direction: row; flex-wrap: wrap; gap: 0.8cqh; }
+html[data-small="1"] .mg-dialog .opt { font-size: max(2.8cqh, 13.5px); flex: 1 1 40%; }
+html[data-small="1"] .mg-dialog .txt { min-height: 0; }
+html[data-small="1"] .mg-spells .sp { font-size: max(1.7cqh, 8.5px); } html[data-small="1"] .mg-spells .sp b { font-size: max(2.4cqh, 10.5px); }
+html[data-small="1"] .mg-map .leg { font-size: max(2.1cqh, 11px); } html[data-small="1"] .mg-map .ttl { font-size: max(4.2cqh, 16px); }
+html[data-small="1"] .mg-title .logo { font-size: max(8cqh, 26px); }
+html[data-small="1"] .mg-title .sub { font-size: max(3.4cqh, 13px); margin: 1.2cqh 0 2.4cqh; }
+html[data-small="1"] .mg-title .tmenu { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6cqh 2.4cqh; width: min(76%, 150cqh); }
+html[data-small="1"] .mg-title .tmenu .mi { width: auto; margin: 0; font-size: max(4.4cqh, 16px); }
+html[data-small="1"] .mg-title .foot { font-size: max(2.2cqh, 11px); margin-top: 2cqh; }
+html[data-small="1"] .mg-ending .page { font-size: max(3.6cqh, 14px); width: min(80%, 160cqh); }
+html[data-small="1"] .mg-ending .page.credits { font-size: max(2.9cqh, 12.5px); }
+html[data-small="1"] .mg-ending .foot { font-size: max(2.4cqh, 12px); }
+/* TV presets: readable from the sofa */
+html[data-tv="1"] .mg-dialog { font-size: 4.3cqh; } html[data-tv="1"] .mg-dialog .opt { font-size: 3.3cqh; }
+html[data-tv="1"] .mg-menu .mi { font-size: 4cqh; } html[data-tv="1"] .mg-menu .mi.set { font-size: 3.3cqh; } html[data-tv="1"] .mg-menu .q { font-size: 3cqh; }
+html[data-tv="1"] .mg-title .foot { font-size: 2.7cqh; } html[data-tv="1"] .mg-map .leg { font-size: 2.6cqh; }
+svg.ico { width: 0.9em; height: 0.9em; vertical-align: -0.1em; margin-right: 0.35em; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; }
+/* a wide (settings / controls) or phone-sized menu hides the field HUD behind it */
+#hud.mg:has(> .mg-menu.wide:not(.hide)) > :is(.mg-btn, .mg-timer, .mg-pearls, .mg-vitals, .mg-quest, .mg-prompt),
+html[data-small="1"] #hud.mg:has(> .mg-menu:not(.hide)) > :is(.mg-btn, .mg-timer, .mg-pearls, .mg-vitals, .mg-quest, .mg-prompt),
+#hud.mg:has(> .mg-map:not(.hide)) > :is(.mg-btn, .mg-timer, .mg-pearls, .mg-vitals, .mg-quest, .mg-prompt) { visibility: hidden; }
+/* held upright ("keep playing anyway"): the 4:3 band is too short for 48px targets, so keep the original proportions */
+html[data-portrait="1"] #hud.mg { --tmin: 0px; --col0: 0px; --colgap: 0px; }
+/* phone panels stay inside the notch / home-bar safe area */
+html[data-small="1"] #hud.mg .mg-dialog { --pw: min(calc(94% - var(--sal, 0px) - var(--sar, 0px)), 196cqh); width: var(--pw) !important; left: calc(50% - var(--pw) / 2 + (var(--sal, 0px) - var(--sar, 0px)) / 2) !important; }
+html[data-small="1"] #hud.mg .mg-menu { --pw: min(calc(90% - var(--sal, 0px) - var(--sar, 0px)), 184cqh); width: var(--pw) !important; left: calc(50% - var(--pw) / 2 + (var(--sal, 0px) - var(--sar, 0px)) / 2) !important; }
+.mg-menu .mi.back { position: sticky; bottom: 0; background: rgba(242, 226, 184, 0.97); }
+.mg-menu .mi.back.sel, .mg-menu .mi.back:hover { background: #5aa832; }
+/* phone ring battle: spell tiles span the gap between the stick and the action buttons; the foe tag sits after the vitals plaque */
+html[data-small="1"] #hud.mg .mg-spells { transform: none; left: calc(var(--sal, 0px) + 34cqh) !important; right: calc(var(--sar, 0px) + 43cqh + 28px); width: auto !important;
+  top: auto !important; bottom: calc(1.5% + var(--sab, 0px)); height: max(12%, 50px) !important; }
+html[data-small="1"] .mg-spells .sp { font-size: max(1.7cqh, 10px); padding: 0.3cqh 0.2cqh; } html[data-small="1"] .mg-spells .sp b { font-size: max(2.4cqh, 12px); }
+html[data-small="1"] #hud.mg .mg-foe { left: calc(var(--sal, 0px) + 16cqh + 45.4cqh * var(--hk, 1) + 2.5cqh) !important; transform-origin: 0 0; }
+html[data-small="1"] .mg-foe { font-size: max(2.5cqh, 11px); } html[data-small="1"] .mg-foe .fn small { font-size: max(1.9cqh, 9.5px); }
+html[data-small="1"] .mg-spells .sp small { font-size: max(1.7cqh, 9.5px); }

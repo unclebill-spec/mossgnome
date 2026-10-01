@@ -21,9 +21,15 @@ The on-screen prompts switch automatically to whatever you used last (keyboard &
 | Ride the fox | R | D-pad down | paw button |
 | Map / hint | M or Tab / H | Select / D-pad up | map / bulb buttons |
 | Pause / back | Esc | Start / B | pause button |
+| Fullscreen | ` (backtick), corner button, title / Settings | Start + Select | corner button (iPhone: Add to Home Screen) |
 
 Follow camera swings in behind you as you go (nudge it any time; it eases back after a moment). Free camera only moves when you move it.
 Target Lock grabs a cross critter when you get close (or press the lock control): you face it, strafe round it, the letterbox bars slide in; press again to switch targets or let go. Step out of a battle ring to run away.
+
+## Phones, fullscreen and display
+- Made for a **sideways phone**: the picture fills the whole screen (around notches and the home bar), the stick sits bottom-left and the buttons bottom-right. Held upright, it asks you to turn the phone (or you can keep playing in a smaller strip).
+- **Fullscreen:** the corner button, **Fullscreen** on the title screen or in Settings, or the ` key. Android also locks to landscape. iPhone Safari can't make a page fullscreen, so use **Share → Add to Home Screen**: the home-screen icon opens the game fullscreen and sideways (the game explains this once).
+- **Settings → Display:** *Auto* (phone resolution on touch devices, otherwise matches the window), *Phone (landscape)*, *720p TV/PC*, *1080p TV/PC* (bigger, sofa-readable HUD and controller-first prompts) or *Retro 320x240* (authentic N64 low res, chunky pixels). **Aspect:** Fit screen / 16:9 / 4:3 (black bars). **Render scale** 50-100% if a device runs slow. Changes apply instantly and are remembered.
 
 Progress saves to your browser (localStorage): pick **Continue** on the title screen.
 

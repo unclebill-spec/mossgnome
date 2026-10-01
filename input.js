@@ -26,20 +26,20 @@ const coarse = () => typeof matchMedia === 'function' && matchMedia('(pointer: c
 export function createInput({ storageKey = 'n64.input', stickKeys = true, binds = {}, onToast = null, onScheme = null, canvas = null } = {}) {
   let saved = {}; try { saved = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch (e) { /* private mode */ }
   const I = {
-    scheme: coarse() ? 'touch' : 'kbm', padType: 'generic', padName: '', pads: 0,
+    scheme: coarse() ? 'touch' : 'kbm', last: coarse() ? 'touch' : 'mouse', padType: 'generic', padName: '', pads: 0,
     move: { x: 0, y: 0 }, look: { x: 0, y: 0 }, mouse: { dx: 0, dy: 0, wheel: 0 }, menu: false, dead: 0.18,
     settings: { ...SETTINGS, ...saved }, binds: { ...DEFAULT_BINDS, ...binds },
     save() { try { localStorage.setItem(storageKey, JSON.stringify(I.settings)); } catch (e) { /* private mode */ } },
     glyph(btn) { return (GLYPHS[I.padType] || GLYPHS.generic)[btn] || btn; },
     get locked() { return !!canvas && document.pointerLockElement === canvas; },
   };
-  const setScheme = (s) => { if (s === I.scheme) return; I.scheme = s; document.documentElement.dataset.input = s; onScheme && onScheme(s); };
+  const setScheme = (s, last = s === 'kbm' ? 'key' : s) => { const ch = s !== I.scheme || last !== I.last; I.scheme = s; I.last = last; if (!ch) return; document.documentElement.dataset.input = s; onScheme && onScheme(s); };  // last: key | mouse | touch | pad
   document.documentElement.dataset.input = I.scheme;
   const pending = []; const say = (m) => { if (window.__loaded && onToast) onToast(m); else pending.push(m); };
   // ---- keyboard / mouse / touch: whichever was used last wins
   addEventListener('keydown', () => setScheme('kbm'), true);
-  addEventListener('pointerdown', (e) => setScheme(e.pointerType === 'mouse' ? 'kbm' : 'touch'), true);
-  addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse' && (Math.abs(e.movementX) + Math.abs(e.movementY) > 3 || I.locked)) setScheme('kbm'); if (I.locked && performance.now() - lockAt > 80) { const c = (v) => Math.max(-150, Math.min(150, v || 0)); I.mouse.dx += c(e.movementX); I.mouse.dy += c(e.movementY); } }, true);
+  addEventListener('pointerdown', (e) => (e.pointerType === 'mouse' ? setScheme('kbm', 'mouse') : setScheme('touch')), true);
+  addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse' && (Math.abs(e.movementX) + Math.abs(e.movementY) > 3 || I.locked)) setScheme('kbm', I.scheme === 'kbm' ? I.last : 'mouse'); if (I.locked && performance.now() - lockAt > 80) { const c = (v) => Math.max(-150, Math.min(150, v || 0)); I.mouse.dx += c(e.movementX); I.mouse.dy += c(e.movementY); } }, true);
   let lockAt = 0; document.addEventListener('pointerlockchange', () => { lockAt = performance.now(); });  // browsers report a bogus jump as the lock engages
   addEventListener('wheel', (e) => { if (!window.__loaded) return; I.mouse.wheel += Math.sign(e.deltaY); e.preventDefault(); }, { passive: false });
   if (canvas) canvas.addEventListener('click', () => { if (I.settings.mouseLock && !I.locked && window.__loaded && canvas.requestPointerLock) { const r = canvas.requestPointerLock(); if (r && r.catch) r.catch(() => {}); } });
@@ -61,6 +61,9 @@ export function createInput({ storageKey = 'n64.input', stickKeys = true, binds 
     const [mx, my] = radial(ax(0), ax(1)), [lx, ly] = radial(ax(2), ax(3));
     const active = (mx || my || lx || ly) !== 0;
     let any = false;
+    const bon = (n) => { const b = g.buttons && g.buttons[PAD[n]]; return !!b && (b.pressed || b.value > 0.55); };
+    const combo = bon('START') && bon('SELECT') && (!prev.START || !prev.SELECT);  // Start+Select together: fullscreen (instead of pause / map)
+    if (combo && audio.ready) { fire('Fullscreen'); prev.START = prev.SELECT = true; any = true; }
     for (const [name, idx] of Object.entries(PAD)) {
       const b = g.buttons && g.buttons[idx]; const on = !!b && (b.pressed || b.value > 0.55);
       const code = I.binds[name];

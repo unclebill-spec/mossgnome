@@ -1,4 +1,4 @@
-// n64-suite RPG preset demos: shared runtime (320x240 renderer @30 fps, loaders, skeletal clips, audio, HUD helpers).
+// n64-suite RPG preset demos: shared runtime (renderer sized by display.js presets, 320x240 retro @30 fps, loaders, skeletal clips, audio, HUD helpers).
 import * as THREE from 'three';
 import { GLTFLoader } from './vendor/addons/GLTFLoader.js';
 import { clone as skClone } from './vendor/addons/SkeletonUtils.js';
@@ -20,6 +20,7 @@ export function makeRenderer() {
   renderer.setPixelRatio(1);
   renderer.setSize(320, 240, false);
   renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+  window.__renderer = renderer;  // the shared display layer resizes it (resolution presets)
   return renderer;
 }
 
@@ -164,8 +165,25 @@ export class Music {
 }
 
 // ---------- HUD helpers (normalised 4:3 rects -> % CSS)
-export function place(el, r) { Object.assign(el.style, { position: 'absolute', left: `${r[0] * 100}%`, top: `${r[1] * 100}%`, width: `${(r[2] - r[0]) * 100}%`, height: `${(r[3] - r[1]) * 100}%` }); return el; }
-export function placeCircle(el, c) { Object.assign(el.style, { position: 'absolute', left: `${(c[0] - c[2] * 0.75) * 100}%`, top: `${(c[1] - c[2]) * 100}%`, width: `${c[2] * 150}%`, height: `${c[2] * 200}%` }); return el; }
+// HUD rects / circles come in 4:3 layout space. Each item hugs its nearest edge (left / right / centre) in stage-height units, so a 4:3 stage
+// looks exactly as before while a wide phone keeps thumb controls in the corners. --sal/--sar/--sat/--sab (safe-area insets) keep them off
+// notches and the home bar; --tmin is the minimum touch-target size, and circles never get pushed off the edge.
+const AX = 4 / 3;
+const hx = (x, w, side) => (side === 'l' ? `calc(${x * AX * 100}cqh + var(--sal, 0px))` : side === 'r' ? `calc(100% - ${(1 - x) * AX * 100}cqh - var(--sar, 0px))` : `calc(50% + ${(x - 0.5) * AX * 100}cqh)`);
+const side = (cx) => (cx < 0.4 ? 'l' : cx > 0.6 ? 'r' : 'c');
+export function place(el, r) {
+  const s = side((r[0] + r[2]) / 2), w = (r[2] - r[0]) * AX * 100;
+  const left = s === 'r' ? `calc(100% - ${(1 - r[0]) * AX * 100}cqh - var(--sar, 0px))` : hx(r[0], w, s);
+  const top = r[1] < 0.5 ? `calc(${r[1] * 100}% + var(--sat, 0px))` : `calc(${r[1] * 100}% - var(--sab, 0px))`;
+  Object.assign(el.style, { position: 'absolute', left, top, width: `${w}cqh`, height: `${(r[3] - r[1]) * 100}%` }); el.dataset.side = s; return el;
+}
+export function placeCircle(el, c, minTop = 0) {
+  const s = side(c[0]), d = 'var(--d)', pad = `calc(${d} / 2 + 4px)`;
+  const left = s === 'l' ? `calc(max(${c[0] * AX * 100}cqh, ${pad}) + var(--sal, 0px))` : s === 'r' ? `calc(100% - max(${(1 - c[0]) * AX * 100}cqh, ${pad}) - var(--sar, 0px))` : hx(c[0], 0, 'c');
+  const top = c[1] < 0.5 ? `calc(max(${c[1] * 100}%, ${pad}, ${typeof minTop === 'number' ? `${minTop}px` : minTop}) + var(--sat, 0px))` : `calc(min(${c[1] * 100}%, 100% - ${pad}) - var(--sab, 0px))`;
+  el.style.setProperty('--d', `max(${c[2] * 200}cqh, var(--tmin, 0px))`);
+  Object.assign(el.style, { position: 'absolute', left, top, width: d, height: d, marginLeft: `calc(${d} / -2)`, marginTop: `calc(${d} / -2)` }); el.dataset.side = s; return el;
+}
 export function div(cls, parent = $('hud'), html = '') { const d = document.createElement('div'); d.className = cls; d.innerHTML = html; parent.appendChild(d); return d; }
 export function font(name, file) { const f = new FontFace(name, `url(fonts/${file})`); document.fonts.add(f); return f.load().catch(() => null); }
 export function typewriter(el, text, cps = 30, onDone) {

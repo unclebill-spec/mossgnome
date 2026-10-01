@@ -2,6 +2,8 @@
 <html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Mossgnome"><meta name="theme-color" content="#141c0c">
+<link rel="manifest" href="app.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png"><link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <title>Mossgnome and the Hidden Springs</title>
 <style>#bar{display:none!important}html.debug #bar{display:flex!important}
 html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;background:#050508}
@@ -9,7 +11,7 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none;touch-
 #loading.done{opacity:0;pointer-events:none}#loading i{width:34px;height:34px;border-radius:50%;border:4px solid #3c5222;border-top-color:#a8d060;animation:ldspin .9s linear infinite}@keyframes ldspin{to{transform:rotate(360deg)}}</style>
 <script>if(new URLSearchParams(location.search).get("debug")==="1")document.documentElement.classList.add("debug");
 // no page scroll / bounce / pinch-zoom / long-press menus on phones
-for(const ev of ["touchmove","gesturestart","gesturechange","contextmenu","selectstart","dblclick"])document.addEventListener(ev,(e)=>e.preventDefault(),{passive:false});</script><link rel="stylesheet" href="rpg.css">
+for(const ev of ["touchmove","gesturestart","gesturechange","contextmenu","selectstart","dblclick"])document.addEventListener(ev,(e)=>{if(ev==="touchmove"&&e.target.closest&&e.target.closest(".n64-scroll"))return;e.preventDefault()},{passive:false});  // .n64-scroll panels (long menus) may still scroll</script><link rel="stylesheet" href="rpg.css">
 <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script></head>
 <body>
 <div id="loading"><i></i>Loading…</div>

@@ -6,6 +6,7 @@ import { THREE, Q, $, J, clamp, lerp, rng, makeRenderer, tex, load, animate, mix
 import { makeVFX } from './vfx.js';
 import { makeSpringPool } from './springfx.js';
 import { createInput } from './input.js';
+import { createDisplay, RES, ASPECTS } from './display.js';
 import { followYaw, lockFrame, strafe, pickTarget, wrapA } from './camrig.js';
 
 const P3 = (p) => new THREE.Vector3(p[0], p[1], p[2]);
@@ -44,6 +45,8 @@ export async function start(man) {
   const renderer = makeRenderer();
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(58, 4 / 3, 0.2, 400);
+  // shared display layer: resolution preset, aspect, render scale, fullscreen, safe areas; applies instantly (resize / setting change)
+  const display = createDisplay({ renderer, cameras: () => [camera], storageKey: `${SAVE_KEY}.display`, title: man.game.title, onChange: () => { if (G && G.mode === 'menu') drawMenu(); if (G) refreshGlyphs(); }, onToast: (m) => toast(m, 2600) });
   const skyT = tex(man.skybox.panorama, false); skyT.mapping = THREE.EquirectangularReflectionMapping;
   let world = new THREE.Group(); scene.add(world);
   const R = rng(man.game.seed * 13 + 5);
@@ -78,10 +81,13 @@ export async function start(man) {
   const U = 'ui/mossy_round/';
   const injected = [];
   const press = (code) => injected.push(code);
-  const btn = (nm, c, onClick) => { const b = placeCircle(div('mg-btn', hud, `<img src="${U}btn_${nm}.png"><i>${layout.buttons[nm]}</i>`), c); b.dataset.nm = nm; b.onpointerdown = (e) => { e.stopPropagation(); onClick(); }; return b; };
+  const COL = (i) => (i === undefined ? '0px' : `calc(var(--col0, 30px) + ${i} * var(--colgap, 54px))`);  // left column (pause / hint / map / camera): min spacing for 48px targets
+  const btn = (nm, c, onClick, col) => { const b = placeCircle(div('mg-btn', hud, `<img src="${U}btn_${nm}.png"><i>${layout.buttons[nm]}</i>`), c, COL(col)); b.dataset.nm = nm; b.onpointerdown = (e) => { e.stopPropagation(); onClick(); }; return b; };
   const vit = place(div('mg-vitals', hud, `<img class="ic" src="${U}ic_mushroom.png"><div class="bar hp"><i></i></div><b class="hpn"></b><img class="ic" src="${U}ic_bubble.png"><div class="bar mp"><i></i></div><b class="mpn"></b>`), layout.rects.vitals);
+  layout.rects.timer = [0.695, 0.025, 0.88, 0.105]; layout.rects.pearls = [0.705, 0.115, 0.88, 0.185];  // room for the fullscreen corner icon
   const timerEl = place(div('mg-timer', hud, `<img src="${U}ic_clock.png"><span>00:00</span>`), layout.rects.timer);
   const pearlEl = place(div('mg-pearls', hud, `<img src="${U}ic_pearl.png"><span></span>`), layout.rects.pearls);
+  { const f = layout.rects.foe; layout.rects.foe = [f[0], 0.15, f[2], 0.15 + f[3] - f[1]]; }  // foe tag sits under the top HUD row (no overlap with vitals / timer)
   const foeEl = place(div('mg-foe hide', hud), layout.rects.foe);
   const spellBar = place(div('mg-spells hide', hud), layout.rects.spells);
   const toastEl = place(div('mg-toast hide', hud), layout.rects.toast);
@@ -90,7 +96,7 @@ export async function start(man) {
   const joy = placeCircle(div('mg-joy', hud, `<img src="${U}joy_ring.png"><img class="knob" src="${U}joy_knob.png">`), layout.circles.joy);
   const fieldBtns = [btn('act', layout.circles.act, () => press('KeyE')), btn('jump', layout.circles.jump, () => press('Space')), btn('ride', layout.circles.ride, () => press('KeyR')),
     btn('cast', layout.circles.cast, () => press('CastSel')), btn('bonk', layout.circles.bonk, () => press('KeyF'))];
-  btn('pause', layout.circles.pause, () => press('KeyP')); btn('hint', layout.circles.hint, () => press('KeyH')); btn('map', layout.circles.map, () => press('KeyM'));
+  btn('pause', layout.circles.pause, () => press('KeyP'), 0); btn('hint', layout.circles.hint, () => press('KeyH'), 1); btn('map', layout.circles.map, () => press('KeyM'), 2);
   const dlgEl = place(div('mg-dialog hide', hud, '<img class="por"><div class="who"></div><div class="txt"></div><div class="opts"></div><div class="more">&#9660;</div>'), layout.rects.dialogue);
   const menuEl = place(div('mg-menu hide', hud), layout.rects.menu);
   const mapEl = div('mg-map hide', hud, '<div class="ttl"></div><canvas width="256" height="256"></canvas><div class="leg"></div>');
@@ -98,10 +104,15 @@ export async function start(man) {
   const endEl = div('mg-ending hide', hud);
   const fadeEl = div('mg-fade', hud);
   // Target Lock + camera-mode buttons (touch), letterbox bars and the bouncing lock reticle
-  const tbtn = (nm, svg, c, code) => { const b = placeCircle(div('mg-btn mg-tb', hud, `<span>${svg}</span><i></i>`), c); b.dataset.nm = nm; b.onpointerdown = (e) => { e.stopPropagation(); press(code); }; return b; };
+  const tbtn = (nm, svg, c, code, col) => { const b = placeCircle(div('mg-btn mg-tb', hud, `<span>${svg}</span><i></i>`), c, COL(col)); b.dataset.nm = nm; b.onpointerdown = (e) => { e.stopPropagation(); press(code); }; return b; };
   fieldBtns.push(tbtn('lock', '<svg viewBox="-12 -12 24 24"><circle r="7.5"/><path d="M0 -11v6M0 11v-6M-11 0h6M11 0h-6"/><circle r="1.6" class="f"/></svg>', [0.915, 0.475, 0.044], 'LockOn'),
-    tbtn('cam', '<svg viewBox="-12 -12 24 24"><rect x="-9" y="-5.5" width="14" height="11" rx="2.5"/><path d="M5 -2.5l5 -3v11l-5 -3z" class="f"/></svg>', [0.06, 0.41, 0.042], 'CamToggle'));
+    tbtn('cam', '<svg viewBox="-12 -12 24 24"><rect x="-9" y="-5.5" width="14" height="11" rx="2.5"/><path d="M5 -2.5l5 -3v11l-5 -3z" class="f"/></svg>', [0.06, 0.41, 0.042], 'CamToggle', 3));
   for (const b of fieldBtns) b.classList.add('touch-only');
+  const FS_ICO = '<svg class="ico" viewBox="-12 -12 24 24"><path d="M-9 -3v-6h6M3 -9h6v6M9 3v6h-6M-3 9h-6v-6"/></svg>';
+  const fsBtn = placeCircle(div('mg-btn mg-tb mg-fs', hud, `<span>${'<svg viewBox="-12 -12 24 24" class="fs-in"><path d="M-9 -3v-6h6M3 -9h6v6M9 3v6h-6M-3 9h-6v-6"/></svg><svg viewBox="-12 -12 24 24" class="fs-out"><path d="M-9 -3h6v-6M3 -9v6h6M9 3h-6v6M-3 9v-6h-6"/></svg>'}</span><i></i>`), [0.958, 0.068, 0.032]); fsBtn.dataset.nm = 'fs';
+  // fullscreen needs a click (a user gesture on touch too), armed by a pointerdown on the same element so a tap that just opened / closed a panel can't fall through
+  const armClick = (el, fn) => { el.onpointerdown = (e) => { e.stopPropagation(); el.armed = true; }; el.onclick = (e) => { e.stopPropagation(); if (!el.armed) return; el.armed = false; fn(); }; };
+  armClick(fsBtn, () => display.toggleFS());
   const lbTop = div('mg-lb top'), lbBot = div('mg-lb bot'); hud.prepend(lbBot); hud.prepend(lbTop);
   const reticle = div('mg-reticle hide', hud, '<svg viewBox="-16 -16 32 40"><path d="M-9 2 L0 16 L9 2 L0 7 Z"/><path d="M-12 -6 L0 -14 L12 -6" class="o"/></svg>');
   // shared input layer (controllers + keyboard/mouse + touch); prompts and badges follow whichever device was used last
@@ -109,8 +120,9 @@ export async function start(man) {
   const GL = { use: ['E', 'Y'], jump: ['Space', 'A'], back: ['Esc', 'B'], attack: ['F', 'X'], ride: ['R', 'D-pad down'], lock: ['T', 'LT'], camera: ['C', 'R3'], map: ['M', 'SELECT'], pause: ['Esc', 'START'], confirm: ['Enter', 'A'],
     cast: ['Enter', 'RT'], prev: ['Q', 'LB'], next: ['R', 'RB'], hint: ['H', 'D-pad up'], move: ['WASD', 'LS'], cam: ['Mouse', 'RS'], walk: ['Shift', 'L3'] };
   const BTN_ACT = { act: 'use', jump: 'jump', ride: 'ride', cast: 'cast', bonk: 'attack', pause: 'pause', hint: 'hint', map: 'map', lock: 'lock', cam: 'camera' };
-  const gk = (a) => (input.scheme === 'pad' ? input.glyph(GL[a][1]) : GL[a][0]);
-  const gl = (a) => (input.scheme === 'touch' ? '' : `<b class="gl ${input.scheme}">${gk(a)}</b>`);
+  const padFirst = () => input.scheme === 'pad' || (display.tv && input.last !== 'key' && input.last !== 'touch');  // TV presets: controller-first prompts
+  const gk = (a) => (padFirst() ? input.glyph(GL[a][1]) : GL[a][0]);
+  const gl = (a) => (input.scheme === 'touch' && !padFirst() ? '' : `<b class="gl ${padFirst() ? 'pad' : input.scheme}">${gk(a)}</b>`);
   const tapOr = (a) => (input.scheme === 'touch' ? 'tap' : gk(a));
   function refreshGlyphs() {
     for (const b of hud.querySelectorAll('.mg-btn')) { const a = BTN_ACT[b.dataset.nm], i = b.querySelector('i'); if (a && i) i.textContent = gk(a); }
@@ -125,7 +137,7 @@ export async function start(man) {
   const knob = joy.querySelector('.knob'), joyHome = { left: joy.style.left, top: joy.style.top }, JOY_DEAD = 0.08;
   function joyStart(e, float) {
     joyId = e.pointerId; const st = $('stage').getBoundingClientRect(), r = joy.getBoundingClientRect();
-    if (float) { joy.style.left = `${(e.clientX - st.left - r.width / 2) / st.width * 100}%`; joy.style.top = `${(e.clientY - st.top - r.height / 2) / st.height * 100}%`; joyC = { x: e.clientX, y: e.clientY }; }
+    if (float) { joy.style.left = `${(e.clientX - st.left) / st.width * 100}%`; joy.style.top = `${(e.clientY - st.top) / st.height * 100}%`; joyC = { x: e.clientX, y: e.clientY }; }  // left/top = ring centre
     else joyC = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
     joy.classList.add('on'); try { e.target.setPointerCapture(e.pointerId); } catch (_) { /* synthetic */ }
     joyMove(e);
@@ -385,7 +397,12 @@ export async function start(man) {
   // ---------- pause menu (P)
   const MENU = ['Resume', 'Save', 'Quest log', 'Spells', 'Controls', 'Settings', 'Title screen'];
   let setSel = 0;
+  const SC = [0.5, 0.7, 0.85, 1];
   const SET_ROWS = [
+    { name: 'Display', val: () => display.label('res'), adj: (d) => display.cycle('res', d) },
+    { name: 'Aspect', val: () => display.label('aspect'), adj: (d) => display.cycle('aspect', d) },
+    { name: 'Render scale', val: () => display.label('scale'), step: true, adj: (d) => display.set('scale', SC[clamp(SC.indexOf(+display.settings.scale) + d, 0, SC.length - 1)]) },
+    { name: 'Fullscreen', fs: true, val: () => (display.canFS() ? (display.isFS() ? 'On' : 'Off') : 'Tips'), adj: () => { display.toggleFS().then(() => setTimeout(() => G.mode === 'menu' && drawMenu(), 200)); } },
     { name: 'Camera', val: () => (input.settings.camMode === 'free' ? 'Free' : 'Follow'), adj: () => toggleCam(true) },
     { name: 'Camera sensitivity', val: () => `${input.settings.sens.toFixed(2)}x`, step: true, adj: (d) => { input.settings.sens = clamp(Math.round((input.settings.sens + d * 0.25) * 4) / 4, 0.25, 3); } },
     { name: 'Invert camera Y', val: () => (input.settings.invertY ? 'On' : 'Off'), adj: () => { input.settings.invertY = !input.settings.invertY; } },
@@ -398,34 +415,40 @@ export async function start(man) {
     else if (k === 'ArrowDown' || k === 'KeyS') setSel = (setSel + 1) % SET_ROWS.length;
     else if ((k === 'ArrowLeft' || k === 'KeyA') && r.adj) r.adj(-1);
     else if ((k === 'ArrowRight' || k === 'KeyD') && r.adj) r.adj(1);
-    else if (['Enter', 'Space', 'KeyE'].includes(k)) { if (r.back) menuPage = 'main'; else r.adj(1); }
-    else if (['Escape', 'Backspace', 'KeyP'].includes(k)) menuPage = 'main';
+    else if (['Enter', 'Space', 'KeyE'].includes(k)) { if (r.back) { menuBack(); return; } r.adj(1); }
+    else if (['Escape', 'Backspace', 'KeyP'].includes(k)) { input.save(); menuBack(); return; }
     else return;
     input.save(); sfx('menu_tick', 0.3); drawMenu();
   }
   let menuSel = 0, menuPage = 'main';
-  function openMenu(page = 'main') { menuPage = page; menuEl.classList.remove('hide'); setMode('menu'); sfx('menu_tick', 0.5); drawMenu(); }
-  function closeMenu() { menuEl.classList.add('hide'); setMode('field'); }
+  let menuFrom = null;
+  function openMenu(page = 'main', from = null) { menuPage = page; menuFrom = from; if (from === 'title') titleEl.classList.add('hide'); menuEl.classList.remove('hide'); setMode('menu'); sfx('menu_tick', 0.5); drawMenu(); }
+  function closeMenu() { menuEl.classList.add('hide'); if (menuFrom === 'title') { menuFrom = null; titleEl.classList.remove('hide'); setMode('title'); drawTitleSel(); drawTitleFoot(); return; } setMode('field'); }
+  function menuBack() { if (menuFrom === 'title') closeMenu(); else { menuPage = 'main'; drawMenu(); } }
   function drawMenu() {
     let h = '';
     if (menuPage === 'main') h = `<h2>Paused</h2><div class="sub">${levelsMeta.find((l) => l.id === W.id).name} &middot; ${fmtTime(S.time)}</div>` + MENU.map((m, i) => `<div class="mi${i === menuSel ? ' sel' : ''}" data-i="${i}">${m}</div>`).join('');
     if (menuPage === 'quests') h = '<h2>Quest log</h2>' + game.quests.map((q) => { const d = cond(q.done), cur = q === currentQuest(); return (d || cur) ? `<div class="q${d ? ' done' : ''}"><b>${d ? '&#10003;' : '&#10148;'} ${q.title}</b>${cur ? `<br><small>${q.goal}</small>` : ''}</div>` : ''; }).join('') + '<div class="mi back">Back</div>';
     if (menuPage === 'spells') h = '<h2>Spellbook</h2>' + S.spells.map((id, i) => { const s = spellById[id]; return `<div class="q"><b style="color:${FAM_COL[s.family]}">${i + 1}. ${s.name}</b> <small>${s.family} &middot; ${s.mp_cost_at_min} MP</small></div>`; }).join('') + `<div class="q"><small>Items: ${S.items.join(', ') || 'none'}</small></div><div class="mi back">Back</div>`;
     if (menuPage === 'controls') h = controlsPage();
-    if (menuPage === 'settings') h = '<h2>Settings</h2>' + SET_ROWS.map((r, i) => `<div class="mi set${i === setSel ? ' sel' : ''}" data-s="${i}">${r.name}${r.back ? '' : ` <span class="val">${r.step ? '<u data-d="-1">-</u>' : ''}${r.val()}${r.step ? '<u data-d="1">+</u>' : ''}</span>`}</div>`).join('') + '<div class="q"><small>Saved on this device.</small></div>';
-    menuEl.innerHTML = h;
+    if (menuPage === 'settings') h = '<h2>Settings</h2><div class="sgrid">' + SET_ROWS.map((r, i) => `<div class="mi set${i === setSel ? ' sel' : ''}" data-s="${i}">${r.name}${r.back ? '' : ` <span class="val">${r.step ? '<u data-d="-1">-</u>' : ''}${r.val()}${r.step ? '<u data-d="1">+</u>' : ''}</span>`}</div>`).join('') + `</div><div class="q"><small>Saved on this device &middot; rendering ${display.rw}&times;${display.rh}</small></div>`;
+    menuEl.innerHTML = h; menuEl.classList.add('n64-scroll'); menuEl.classList.toggle('wide', menuPage === 'settings' || menuPage === 'controls'); menuEl.dataset.page = menuPage;
     menuEl.querySelectorAll('.mi').forEach((el) => { el.onpointerdown = (e) => { e.stopPropagation();
-      if (el.dataset.s !== undefined) { setSel = +el.dataset.s; const r = SET_ROWS[setSel]; if (r.back) menuPage = 'main'; else r.adj(+(e.target.dataset.d || 1)); input.save(); sfx('menu_tick', 0.3); drawMenu(); return; }
-      if (el.classList.contains('back')) { menuPage = 'main'; drawMenu(); } else { menuSel = +el.dataset.i; menuPick(); } }; });
+      if (el.dataset.s !== undefined) { setSel = +el.dataset.s; const r = SET_ROWS[setSel]; if (r.fs) return; if (r.back) { menuBack(); return; } r.adj(+(e.target.dataset.d || 1)); input.save(); sfx('menu_tick', 0.3); drawMenu(); return; }
+      if (el.classList.contains('back')) menuBack(); else { menuSel = +el.dataset.i; menuPick(); } }; });
+    const fsRow = menuEl.querySelector(`.mi[data-s="${SET_ROWS.findIndex((r) => r.fs)}"]`);  // fullscreen needs a real click / tap (user gesture)
+    if (fsRow) armClick(fsRow, () => { setSel = +fsRow.dataset.s; SET_ROWS[setSel].adj(1); });
+    const sel = menuEl.querySelector('.mi.sel');  // keep the focused row in view in a scrolled panel (without scrolling the page)
+    if (sel) { const t = sel.offsetTop, b = t + sel.offsetHeight; if (t < menuEl.scrollTop) menuEl.scrollTop = t - 8; else if (b > menuEl.scrollTop + menuEl.clientHeight) menuEl.scrollTop = b - menuEl.clientHeight + 8; }
   }
   function controlsPage() {
     const P = (b) => input.glyph(b), fox = game.fox.name;
     const kb = [['WASD / arrows', 'waddle'], ['Shift', 'walk / run'], ['Space', 'jump'], ['E / right-click', 'talk / use'], ['F / left-click', 'hat bonk'], ['T / middle-click', 'Target Lock'], ['1-6', 'cast a spell'],
-      ['Q R / wheel', 'pick a spell (ring)'], ['Enter', 'confirm / cast picked'], ['R', `ride ${fox}`], ['C', 'camera: follow / free'], ['M / Tab', 'map'], ['H', 'hint'], ['Esc', 'pause / back'], ['Mouse', 'drag or lock: look'], ['Wheel', 'zoom (field)']];
+      ['Q R / wheel', 'pick a spell (ring)'], ['Enter', 'confirm / cast picked'], ['R', `ride ${fox}`], ['C', 'camera: follow / free'], ['M / Tab', 'map'], ['H', 'hint'], ['Esc', 'pause / back'], ['Mouse', 'drag or lock: look'], ['Wheel', 'zoom (field)'], ['` (backtick)', 'fullscreen']];
     const pad = [[P('LS'), `waddle (${P('L3')}: walk)`], [P('RS'), `look (${P('R3')}: follow / free)`], [P('A'), 'jump / confirm'], [P('B'), 'back'], [P('X'), 'hat bonk'], [P('Y'), 'talk / use'],
-      [P('LT'), 'Target Lock'], [P('RT'), 'cast picked / use'], [`${P('LB')} ${P('RB')}`, 'pick a spell'], [`${P('DPAD')}`, 'menus; field: up hint, down ride'], [P('START'), 'pause'], [P('SELECT'), 'map']];
+      [P('LT'), 'Target Lock'], [P('RT'), 'cast picked / use'], [`${P('LB')} ${P('RB')}`, 'pick a spell'], [`${P('DPAD')}`, 'menus; field: up hint, down ride'], [P('START'), 'pause'], [P('SELECT'), 'map'], [`${P('START')}+${P('SELECT')}`, 'fullscreen']];
     const tc = [['Left third', 'slide: waddle'], ['Right side', 'drag: look'], ['Hand', 'talk / use'], ['Arrow', 'jump'], ['Reticle', 'Target Lock'], ['Camera', 'follow / free'], ['Paw', `ride ${fox}`],
-      ['Sparkle', 'cast picked spell'], ['Hat', 'hat bonk'], ['Spell tiles', 'cast in the ring'], ['Tap', 'menus &amp; choices']];
+      ['Sparkle', 'cast picked spell'], ['Hat', 'hat bonk'], ['Spell tiles', 'cast in the ring'], [`Corner ${FS_ICO}`, 'fullscreen'], ['Tap', 'menus &amp; choices']];
     const col = (t, rows, on) => `<div class="cc${on ? ' on' : ''}"><h3>${t}</h3>${rows.map(([k, v]) => `<div><b>${k}</b> ${v}</div>`).join('')}</div>`;
     return '<h2>Controls</h2><div class="ctl3">' + col('Keyboard &amp; mouse', kb, input.scheme === 'kbm') + col('Controller', pad, input.scheme === 'pad') + col('Touch', tc, input.scheme === 'touch') +
       '</div><div class="q"><small>Target Lock: face a critter, circle it with the stick / WASD; press again to switch or let go. Leave the ring to run away.</small></div><div class="mi back">Back</div>';
@@ -447,19 +470,26 @@ export async function start(man) {
   function showTitle() {
     setMode('title'); music.play('title');
     titleEl.innerHTML = `<div class="logo">${game.title.title}</div><div class="sub">${game.title.subtitle}</div>` +
-      `<div class="mi" data-k="new">${game.title.menu[0]}</div><div class="mi${hasSave() ? '' : ' off'}" data-k="cont">${game.title.menu[1]}</div><div class="foot"></div>`;
+      `<div class="tmenu"><div class="mi" data-k="new">${game.title.menu[0]}</div><div class="mi${hasSave() ? '' : ' off'}" data-k="cont">${game.title.menu[1]}</div>` +
+      '<div class="mi" data-k="set">Settings</div><div class="mi" data-k="fs"></div></div><div class="foot"></div>';
     titleEl.classList.remove('hide'); hud.classList.add('titling'); titleSel = hasSave() ? 1 : 0; drawTitleSel(); drawTitleFoot();
-    titleEl.querySelectorAll('.mi').forEach((el, i) => { el.onpointerdown = (e) => { e.stopPropagation(); titleSel = i; titlePick(); }; });
+    titleEl.querySelectorAll('.mi').forEach((el, i) => { el.onpointerdown = (e) => { e.stopPropagation(); if (el.dataset.k === 'fs') return; titleSel = i; titlePick(); }; });
+    armClick(titleEl.querySelector('[data-k=fs]'), () => { titleSel = 3; drawTitleSel(); display.toggleFS(); });  // real click / tap = user gesture
+    if (!G.tipped) { G.tipped = true; setTimeout(() => display.tip(), 700); }  // iPhone: one-time 'Add to Home Screen' tip
   }
   let titleSel = 0;
   function drawTitleFoot() {
+    const fe = titleEl.querySelector('[data-k=fs]'); if (fe) fe.innerHTML = FS_ICO + (display.canFS() ? (display.isFS() ? 'Exit fullscreen' : 'Fullscreen') : 'Fullscreen tips');
     const f = titleEl.querySelector('.foot'); if (!f) return; const P = (b) => input.glyph(b);
-    f.innerHTML = input.scheme === 'pad' ? `${P('DPAD')} choose &middot; ${P('A')} start<br>${P('LS')} waddle &middot; ${P('RS')} camera &middot; ${P('A')} jump &middot; ${P('Y')} talk &middot; ${P('LT')} lock &middot; ${P('START')} pause`
+    f.innerHTML = padFirst() ? `${P('DPAD')} choose &middot; ${P('A')} start<br>${P('LS')} waddle &middot; ${P('RS')} camera &middot; ${P('A')} jump &middot; ${P('Y')} talk &middot; ${P('LT')} lock &middot; ${P('START')} pause`
       : input.scheme === 'touch' ? 'Tap to choose<br>Slide on the left to waddle &middot; drag on the right to look &middot; round buttons to act'
-      : 'Enter / click &middot; arrows to choose<br>WASD waddle &middot; Space jump &middot; E talk &middot; F bonk &middot; T lock &middot; C camera &middot; M map &middot; Esc pause';
+      : 'Enter / click &middot; arrows to choose<br>WASD waddle &middot; Space jump &middot; E talk &middot; F bonk &middot; T lock &middot; C camera &middot; M map &middot; Esc pause &middot; ` fullscreen';
   }
   function drawTitleSel() { titleEl.querySelectorAll('.mi').forEach((el, i) => el.classList.toggle('sel', i === titleSel)); }
   async function titlePick() {
+    const tk = (titleEl.querySelectorAll('.mi')[titleSel] || {}).dataset?.k;
+    if (tk === 'set') { sfx('select', 0.6); openMenu('settings', 'title'); setSel = 0; drawMenu(); return; }
+    if (tk === 'fs') { sfx('select', 0.6); display.toggleFS(); return; }
     if (titleSel === 1 && !hasSave()) { sfx('menu_tick', 0.3); return; }
     sfx('select', 0.6); titleEl.classList.add('hide'); hud.classList.remove('titling');
     if (titleSel === 1) { loadSave(); await goLevel(S.level, S.pos); toast('Welcome back!'); setMode('field'); }
@@ -684,7 +714,7 @@ export async function start(man) {
   // ---------- mode + field
   G = { mode: 'boot', lock: null, lockNo: null, camIdle: 9, moveT: 0, zoom: 1, walk: false, cy: 0, cp: 0.32, py: 0, vy: 0, riding: false, swinging: false, flash: 0, closeup: null, introNext: null, noenc: !!Q.get('noenc'), bathCd: 0, stepT: 0 };
   function setMode(m) {
-    G.mode = m; const field = m === 'field' || m === 'battle'; input.menu = !field;
+    G.mode = m; G.modeAt = performance.now(); const field = m === 'field' || m === 'battle'; input.menu = !field; fsBtn.classList.toggle('hide', !field);
     for (const b of fieldBtns) b.classList.toggle('hide', !field);
     joy.classList.toggle('hide', !field); if (!field) { if (joyId !== null) joyEnd(); joyT = null; joyV = null; } if (m !== 'field') promptEl.classList.add('hide'); questEl.classList.toggle('hide', m !== 'field'); vit.classList.toggle('hide', m === 'title' || m === 'ending' || m === 'intro');
   }
@@ -838,9 +868,13 @@ export async function start(man) {
     for (let k of ks) {
       const m = G.mode, play = m === 'field' || m === 'battle';
       k = (play ? PADFIELD[k] : PADMENU[k]) || k;
+      if (k === 'Backquote' || k === 'Fullscreen') {  // ` key / Start+Select: fullscreen (undo a pause / map the combo's first button just opened)
+        if (k === 'Fullscreen' && (m === 'menu' || m === 'map') && performance.now() - G.modeAt < 900) { if (m === 'menu') closeMenu(); else closeMap(); }
+        display.toggleFS(); continue; }
       if (k === 'CamToggle' || k === 'KeyC') { if (play) toggleCam(); continue; }
       if (k === 'LockOn' || k === 'KeyT' || k === 'ClickLock') { if (play) lockPress(); continue; }
-      if (m === 'title') { if (['ArrowUp', 'ArrowDown', 'KeyW', 'KeyS'].includes(k)) { titleSel = 1 - titleSel; drawTitleSel(); sfx('menu_tick', 0.4); } if (['Enter', 'Space', 'KeyE'].includes(k)) titlePick(); continue; }
+      if (m === 'title') { const nT = titleEl.querySelectorAll('.mi').length || 2, dT = ['ArrowUp', 'KeyW', 'ArrowLeft', 'KeyA'].includes(k) ? -1 : ['ArrowDown', 'KeyS', 'ArrowRight', 'KeyD'].includes(k) ? 1 : 0;
+        if (dT) { titleSel = (titleSel + dT + nT) % nT; drawTitleSel(); sfx('menu_tick', 0.4); } if (['Enter', 'Space', 'KeyE'].includes(k)) titlePick(); continue; }
       if (m === 'intro' || m === 'ending') { if (['Enter', 'Space', 'KeyE', 'AltR'].includes(k)) G.introNext && G.introNext(); continue; }
       if (m === 'dialog') {
         const n = k.match(/^Digit([1-4])$/), no = dlgEl.querySelectorAll('.opt').length, ok = ['Enter', 'Space', 'KeyE', 'AltR', 'ClickAlt'].includes(k);
@@ -855,7 +889,7 @@ export async function start(man) {
       if (m === 'map') { if (['KeyM', 'Escape', 'KeyE', 'Space', 'Tab', 'Enter'].includes(k)) closeMap(); continue; }
       if (m === 'menu') {
         if (menuPage === 'settings') { settingsKey(k); continue; }
-        if (menuPage !== 'main') { if (['Escape', 'KeyP', 'Enter', 'Space', 'Backspace', 'KeyE'].includes(k)) { menuPage = 'main'; drawMenu(); } continue; }
+        if (menuPage !== 'main') { if (['Escape', 'KeyP', 'Enter', 'Space', 'Backspace', 'KeyE'].includes(k)) menuBack(); else if (['ArrowUp', 'ArrowDown'].includes(k)) { menuEl.scrollTop += k === 'ArrowUp' ? -40 : 40; } continue; }
         if (k === 'ArrowUp' || k === 'KeyW') { menuSel = (menuSel + MENU.length - 1) % MENU.length; drawMenu(); sfx('menu_tick', 0.3); }
         if (k === 'ArrowDown' || k === 'KeyS') { menuSel = (menuSel + 1) % MENU.length; drawMenu(); sfx('menu_tick', 0.3); }
         if (k === 'Enter' || k === 'Space' || k === 'KeyE') menuPick();
@@ -1032,6 +1066,7 @@ export async function start(man) {
   window.__game = { get S() { return S; }, get W() { return W; }, get mode() { return G.mode; }, get battle() { return B; }, get chase() { return C; }, fps: () => st.fps, game, springs };
   const dbg = () => ({ mode: G.mode, level: W && W.id, pos: player.position.toArray().map((v) => +v.toFixed(2)), anim: pA && pA.name, riding: G.riding, swinging: G.swinging,
     springs: nSprings(), quest: (currentQuest() || {}).id || 'done', battle: B ? B.foes.map((f) => [f.name, f.hp]) : null, chase: !!C, fps: +st.fps.toFixed(1), cam: +G.cy.toFixed(3), pitch: +G.cp.toFixed(3), face: +player.rotation.y.toFixed(3), joy: joyV ? [+joyV.x.toFixed(2), +joyV.y.toFixed(2)] : null,
+    disp: { res: display.res, set: { ...display.settings }, rw: display.rw, rh: display.rh, w: display.w, h: display.h, hk: display.hk, tv: display.tv, fs: display.isFS(), pad: padFirst() },
     lock: G.lock ? (G.lock.e.name || G.lock.e.id || 'foe') : null, lockPos: G.lock ? G.lock.e.obj.position.toArray().map((v) => +v.toFixed(3)) : null, camMode: input.settings.camMode === 'free' ? 'free' : 'follow', scheme: input.scheme, zoom: +G.zoom.toFixed(2), walk: G.walk, sel: selSpell, mp: S.mp, menuPage, setSel });
   window.__debug = Object.assign(dbg, {
     setFlag: (f) => { S.flags[f] = true; progress(); }, go: (id) => goLevel(id), teleport: (x, z) => { player.position.set(x, W.h(x, z), z); },
