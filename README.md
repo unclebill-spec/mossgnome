@@ -20,6 +20,8 @@ hidden bubbly springs behind waterfalls, in mossy caves, at the end of root tunn
 
 Progress saves to your browser (localStorage): pick **Continue** on the title screen.
 
+Developer tools (scene picker, texture filter toggle, spell VFX page) are hidden; add `?debug=1` to the URL to show them.
+
 ![screens](preview/shots/shots_sheet.png)
 
 Generated with n64-suite (seed 64). Third-party components and their licenses: see [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
