@@ -3,21 +3,27 @@
 A cozy N64-style gnome adventure: waddle around the mushroom village of Mossunder, ride Tansy the fox, and find the eight
 hidden bubbly springs behind waterfalls, in mossy caves, at the end of root tunnels and inside hollow logs. Then make friends with a grumpy dwarf.
 
-**Play:** https://unclebill-spec.github.io/mossgnome/ (desktop browser with WebGL; click once for sound)
+**Play:** https://unclebill-spec.github.io/mossgnome/ (computer, phone or tablet with WebGL; Bluetooth / USB controllers work too; tap or press a key once for sound)
 
 ## Controls
-| Key | Action |
-|---|---|
-| WASD / arrows (or drag the on-screen joystick) | waddle |
-| Space | jump |
-| E | talk / use / open |
-| R | ride the fox |
-| H | hint (nearest hidden spring) |
-| M | parchment map |
-| P / Esc | pause: resume, save, quest log, spells, controls |
-| Z / C or mouse-drag | turn the camera |
-| 1-6 / F (in a battle ring) | spells / hat bonk; step out of the ring to run away |
-| Phone / tablet | put a thumb down anywhere on the left third and slide to waddle (floating stick); drag on the right side to turn the camera; tap the round buttons to act |
+The on-screen prompts switch automatically to whatever you used last (keyboard & mouse, controller or touch). All three schemes are listed in the pause menu under **Controls**; **Settings** has camera mode, sensitivity, invert Y, mouse look and auto Target Lock (saved on the device).
+
+| Action | Keyboard & mouse | Controller (Xbox / PlayStation / Switch Pro / standard) | Touch |
+|---|---|---|---|
+| Waddle | WASD / arrows (Shift: walk / run) | left stick (click: walk) | slide a thumb on the left third |
+| Camera | mouse drag, or click-to-lock mouse look; wheel zooms | right stick | drag on the right side |
+| Camera mode (Follow / Free) | C | R3 (right-stick click) | camera button |
+| Target Lock (face + circle a critter) | T / middle-click | LT / L2 / ZL | reticle button |
+| Jump | Space | A / ✕ / B | arrow button |
+| Talk / use | E / right-click / Enter | Y / △ / X | hand button |
+| Hat bonk | F / left-click | X / □ / Y | hat button |
+| Spells (in a battle ring) | 1-6, or Q / R / wheel to pick + Enter | LB / RB to pick + RT | spell tiles / sparkle button |
+| Ride the fox | R | D-pad down | paw button |
+| Map / hint | M or Tab / H | Select / D-pad up | map / bulb buttons |
+| Pause / back | Esc | Start / B | pause button |
+
+Follow camera swings in behind you as you go (nudge it any time; it eases back after a moment). Free camera only moves when you move it.
+Target Lock grabs a cross critter when you get close (or press the lock control): you face it, strafe round it, the letterbox bars slide in; press again to switch targets or let go. Step out of a battle ring to run away.
 
 Progress saves to your browser (localStorage): pick **Continue** on the title screen.
 

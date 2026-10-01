@@ -5,6 +5,8 @@ import { THREE, Q, $, J, clamp, lerp, rng, makeRenderer, tex, load, animate, mix
   floatText, keys, takePressed, loop, canvasTex, puffTex, bubbleTex, reg, font, loaded } from './common.js';
 import { makeVFX } from './vfx.js';
 import { makeSpringPool } from './springfx.js';
+import { createInput } from './input.js';
+import { followYaw, lockFrame, strafe, pickTarget, wrapA } from './camrig.js';
 
 const P3 = (p) => new THREE.Vector3(p[0], p[1], p[2]);
 const SOLID = { toadstool_red: 0.55, toadstool_blue: 0.5, toadstool_purple: 0.5, rainbow_cap: 0.9, giant_trunk: 1.7, treehouse: 1.9, mushroom_house: 2.2, root_house: 2.4,
@@ -87,7 +89,7 @@ export async function start(man) {
   const promptEl = div('mg-prompt hide', hud);
   const joy = placeCircle(div('mg-joy', hud, `<img src="${U}joy_ring.png"><img class="knob" src="${U}joy_knob.png">`), layout.circles.joy);
   const fieldBtns = [btn('act', layout.circles.act, () => press('KeyE')), btn('jump', layout.circles.jump, () => press('Space')), btn('ride', layout.circles.ride, () => press('KeyR')),
-    btn('cast', layout.circles.cast, () => press('Digit1')), btn('bonk', layout.circles.bonk, () => press('KeyF'))];
+    btn('cast', layout.circles.cast, () => press('CastSel')), btn('bonk', layout.circles.bonk, () => press('KeyF'))];
   btn('pause', layout.circles.pause, () => press('KeyP')); btn('hint', layout.circles.hint, () => press('KeyH')); btn('map', layout.circles.map, () => press('KeyM'));
   const dlgEl = place(div('mg-dialog hide', hud, '<img class="por"><div class="who"></div><div class="txt"></div><div class="opts"></div><div class="more">&#9660;</div>'), layout.rects.dialogue);
   const menuEl = place(div('mg-menu hide', hud), layout.rects.menu);
@@ -95,6 +97,28 @@ export async function start(man) {
   const titleEl = div('mg-title hide', hud);
   const endEl = div('mg-ending hide', hud);
   const fadeEl = div('mg-fade', hud);
+  // Target Lock + camera-mode buttons (touch), letterbox bars and the bouncing lock reticle
+  const tbtn = (nm, svg, c, code) => { const b = placeCircle(div('mg-btn mg-tb', hud, `<span>${svg}</span><i></i>`), c); b.dataset.nm = nm; b.onpointerdown = (e) => { e.stopPropagation(); press(code); }; return b; };
+  fieldBtns.push(tbtn('lock', '<svg viewBox="-12 -12 24 24"><circle r="7.5"/><path d="M0 -11v6M0 11v-6M-11 0h6M11 0h-6"/><circle r="1.6" class="f"/></svg>', [0.915, 0.475, 0.044], 'LockOn'),
+    tbtn('cam', '<svg viewBox="-12 -12 24 24"><rect x="-9" y="-5.5" width="14" height="11" rx="2.5"/><path d="M5 -2.5l5 -3v11l-5 -3z" class="f"/></svg>', [0.06, 0.41, 0.042], 'CamToggle'));
+  for (const b of fieldBtns) b.classList.add('touch-only');
+  const lbTop = div('mg-lb top'), lbBot = div('mg-lb bot'); hud.prepend(lbBot); hud.prepend(lbTop);
+  const reticle = div('mg-reticle hide', hud, '<svg viewBox="-16 -16 32 40"><path d="M-9 2 L0 16 L9 2 L0 7 Z"/><path d="M-12 -6 L0 -14 L12 -6" class="o"/></svg>');
+  // shared input layer (controllers + keyboard/mouse + touch); prompts and badges follow whichever device was used last
+  const input = createInput({ storageKey: `${SAVE_KEY}.settings`, stickKeys: false, canvas: $('view'), binds: { LT: 'LockOn', R3: 'CamToggle', UP: 'PadUp', DOWN: 'PadDown', LEFT: 'PadLeft', RIGHT: 'PadRight' }, onToast: (m) => toast(m, 2000), onScheme: () => refreshGlyphs() });
+  const GL = { use: ['E', 'Y'], jump: ['Space', 'A'], back: ['Esc', 'B'], attack: ['F', 'X'], ride: ['R', 'D-pad down'], lock: ['T', 'LT'], camera: ['C', 'R3'], map: ['M', 'SELECT'], pause: ['Esc', 'START'], confirm: ['Enter', 'A'],
+    cast: ['Enter', 'RT'], prev: ['Q', 'LB'], next: ['R', 'RB'], hint: ['H', 'D-pad up'], move: ['WASD', 'LS'], cam: ['Mouse', 'RS'], walk: ['Shift', 'L3'] };
+  const BTN_ACT = { act: 'use', jump: 'jump', ride: 'ride', cast: 'cast', bonk: 'attack', pause: 'pause', hint: 'hint', map: 'map', lock: 'lock', cam: 'camera' };
+  const gk = (a) => (input.scheme === 'pad' ? input.glyph(GL[a][1]) : GL[a][0]);
+  const gl = (a) => (input.scheme === 'touch' ? '' : `<b class="gl ${input.scheme}">${gk(a)}</b>`);
+  const tapOr = (a) => (input.scheme === 'touch' ? 'tap' : gk(a));
+  function refreshGlyphs() {
+    for (const b of hud.querySelectorAll('.mg-btn')) { const a = BTN_ACT[b.dataset.nm], i = b.querySelector('i'); if (a && i) i.textContent = gk(a); }
+    if (!G) return; if (G.mode === 'title') drawTitleFoot(); if (G.mode === 'battle' && B) buildSpellBar(); if (G.mode === 'menu') drawMenu();
+    if (G.mode === 'intro' || G.mode === 'ending') { const f = endEl.querySelector('.foot'); if (f) f.innerHTML = f.innerHTML.replace(/^&#9660;.*|^▼.*/, `&#9660; ${tapOr('confirm')}`); }
+    if (G.mode === 'dialog') drawOpt();
+  }
+  refreshGlyphs();
   // floating thumbstick: a touch anywhere in the left third of the screen (or on the ring) re-centres the stick under the finger.
   // Tracked by pointerId, so it keeps steering when the finger slides off the ring and works alongside button / camera fingers.
   let joyV = null, joyT = null, joyId = null, joyC = null;
@@ -278,7 +302,7 @@ export async function start(man) {
     if (gv.item && !S.items.includes(gv.item)) { S.items.push(gv.item); toast(`<small>You got</small><br>${gv.item}`); sfx('chest_open', 0.5); }
     if (gv.spell) learn(gv.spell);
     if (gv.heal) healFull();
-    if (gv.ride) { S.flags.met_fox = true; fox.visible = true; toast(`Press R next to ${game.fox.name} to ride!`, 2600); sfx('fox_yip', 0.6); }
+    if (gv.ride) { S.flags.met_fox = true; fox.visible = true; toast(`${input.scheme === 'touch' ? 'Tap the paw button' : `Press ${gk('ride')}`} next to ${game.fox.name} to ride!`, 2600); sfx('fox_yip', 0.6); }
   }
   function setFlags(list) {
     for (const f of (list || [])) {
@@ -312,8 +336,10 @@ export async function start(man) {
     const n = D.node, last = D.line >= n.lines.length - 1;
     if (!last || !n.options) { dlgEl.querySelector('.more').classList.remove('hide'); return; }
     const box = dlgEl.querySelector('.opts'); box.innerHTML = '';
-    n.options.forEach((o, k) => { const b = div('opt', box, `<b>${k + 1}</b> ${o.text}`); b.onpointerdown = (e) => { e.stopPropagation(); choose(k); }; });
+    D.opt = 0; n.options.forEach((o, k) => { const b = div('opt', box, `<b>${k + 1}</b> ${o.text}`); b.onpointerdown = (e) => { e.stopPropagation(); choose(k); }; b.onpointerenter = (e) => { if (e.pointerType === 'mouse') { D.opt = k; drawOpt(); } }; });
+    drawOpt();
   }
+  function drawOpt() { dlgEl.querySelectorAll('.opt').forEach((el, k) => el.classList.toggle('sel', k === D.opt && input.scheme !== 'touch')); }
   function advance() {
     if (D.typing) return finishLine();
     const n = D.node;
@@ -357,7 +383,26 @@ export async function start(man) {
   function closeMap() { mapEl.classList.add('hide'); setMode('field'); }
 
   // ---------- pause menu (P)
-  const MENU = ['Resume', 'Save', 'Quest log', 'Spells', 'Controls', 'Title screen'];
+  const MENU = ['Resume', 'Save', 'Quest log', 'Spells', 'Controls', 'Settings', 'Title screen'];
+  let setSel = 0;
+  const SET_ROWS = [
+    { name: 'Camera', val: () => (input.settings.camMode === 'free' ? 'Free' : 'Follow'), adj: () => toggleCam(true) },
+    { name: 'Camera sensitivity', val: () => `${input.settings.sens.toFixed(2)}x`, step: true, adj: (d) => { input.settings.sens = clamp(Math.round((input.settings.sens + d * 0.25) * 4) / 4, 0.25, 3); } },
+    { name: 'Invert camera Y', val: () => (input.settings.invertY ? 'On' : 'Off'), adj: () => { input.settings.invertY = !input.settings.invertY; } },
+    { name: 'Mouse look', val: () => (input.settings.mouseLock ? 'Click to lock' : 'Click-drag'), adj: () => { input.settings.mouseLock = !input.settings.mouseLock; if (!input.settings.mouseLock) input.unlock(); } },
+    { name: 'Auto Target Lock', val: () => (input.settings.autoLock === false ? 'Off' : 'On'), adj: () => { input.settings.autoLock = input.settings.autoLock === false; } },
+    { name: 'Back', back: true }];
+  function settingsKey(k) {
+    const r = SET_ROWS[setSel];
+    if (k === 'ArrowUp' || k === 'KeyW') setSel = (setSel + SET_ROWS.length - 1) % SET_ROWS.length;
+    else if (k === 'ArrowDown' || k === 'KeyS') setSel = (setSel + 1) % SET_ROWS.length;
+    else if ((k === 'ArrowLeft' || k === 'KeyA') && r.adj) r.adj(-1);
+    else if ((k === 'ArrowRight' || k === 'KeyD') && r.adj) r.adj(1);
+    else if (['Enter', 'Space', 'KeyE'].includes(k)) { if (r.back) menuPage = 'main'; else r.adj(1); }
+    else if (['Escape', 'Backspace', 'KeyP'].includes(k)) menuPage = 'main';
+    else return;
+    input.save(); sfx('menu_tick', 0.3); drawMenu();
+  }
   let menuSel = 0, menuPage = 'main';
   function openMenu(page = 'main') { menuPage = page; menuEl.classList.remove('hide'); setMode('menu'); sfx('menu_tick', 0.5); drawMenu(); }
   function closeMenu() { menuEl.classList.add('hide'); setMode('field'); }
@@ -366,9 +411,24 @@ export async function start(man) {
     if (menuPage === 'main') h = `<h2>Paused</h2><div class="sub">${levelsMeta.find((l) => l.id === W.id).name} &middot; ${fmtTime(S.time)}</div>` + MENU.map((m, i) => `<div class="mi${i === menuSel ? ' sel' : ''}" data-i="${i}">${m}</div>`).join('');
     if (menuPage === 'quests') h = '<h2>Quest log</h2>' + game.quests.map((q) => { const d = cond(q.done), cur = q === currentQuest(); return (d || cur) ? `<div class="q${d ? ' done' : ''}"><b>${d ? '&#10003;' : '&#10148;'} ${q.title}</b>${cur ? `<br><small>${q.goal}</small>` : ''}</div>` : ''; }).join('') + '<div class="mi back">Back</div>';
     if (menuPage === 'spells') h = '<h2>Spellbook</h2>' + S.spells.map((id, i) => { const s = spellById[id]; return `<div class="q"><b style="color:${FAM_COL[s.family]}">${i + 1}. ${s.name}</b> <small>${s.family} &middot; ${s.mp_cost_at_min} MP</small></div>`; }).join('') + `<div class="q"><small>Items: ${S.items.join(', ') || 'none'}</small></div><div class="mi back">Back</div>`;
-    if (menuPage === 'controls') h = '<h2>Controls</h2><div class="ctl">' + [['WASD / arrows', 'waddle (or drag the joystick)'], ['Space', 'jump'], ['E', 'talk / use / open'], ['R', `ride ${game.fox.name}`], ['H', 'hint'], ['M', 'parchment map'], ['P / Esc', 'pause'], ['Z / C, mouse-drag', 'turn the camera'], ['1-6', 'spells (in the ring)'], ['F', 'hat bonk'], ['Leave the ring', 'run away']].map(([k, v]) => `<b>${k}</b> ${v}`).join('<br>') + '</div><div class="mi back">Back</div>';
+    if (menuPage === 'controls') h = controlsPage();
+    if (menuPage === 'settings') h = '<h2>Settings</h2>' + SET_ROWS.map((r, i) => `<div class="mi set${i === setSel ? ' sel' : ''}" data-s="${i}">${r.name}${r.back ? '' : ` <span class="val">${r.step ? '<u data-d="-1">-</u>' : ''}${r.val()}${r.step ? '<u data-d="1">+</u>' : ''}</span>`}</div>`).join('') + '<div class="q"><small>Saved on this device.</small></div>';
     menuEl.innerHTML = h;
-    menuEl.querySelectorAll('.mi').forEach((el) => { el.onpointerdown = (e) => { e.stopPropagation(); if (el.classList.contains('back')) { menuPage = 'main'; drawMenu(); } else { menuSel = +el.dataset.i; menuPick(); } }; });
+    menuEl.querySelectorAll('.mi').forEach((el) => { el.onpointerdown = (e) => { e.stopPropagation();
+      if (el.dataset.s !== undefined) { setSel = +el.dataset.s; const r = SET_ROWS[setSel]; if (r.back) menuPage = 'main'; else r.adj(+(e.target.dataset.d || 1)); input.save(); sfx('menu_tick', 0.3); drawMenu(); return; }
+      if (el.classList.contains('back')) { menuPage = 'main'; drawMenu(); } else { menuSel = +el.dataset.i; menuPick(); } }; });
+  }
+  function controlsPage() {
+    const P = (b) => input.glyph(b), fox = game.fox.name;
+    const kb = [['WASD / arrows', 'waddle'], ['Shift', 'walk / run'], ['Space', 'jump'], ['E / right-click', 'talk / use'], ['F / left-click', 'hat bonk'], ['T / middle-click', 'Target Lock'], ['1-6', 'cast a spell'],
+      ['Q R / wheel', 'pick a spell (ring)'], ['Enter', 'confirm / cast picked'], ['R', `ride ${fox}`], ['C', 'camera: follow / free'], ['M / Tab', 'map'], ['H', 'hint'], ['Esc', 'pause / back'], ['Mouse', 'drag or lock: look'], ['Wheel', 'zoom (field)']];
+    const pad = [[P('LS'), `waddle (${P('L3')}: walk)`], [P('RS'), `look (${P('R3')}: follow / free)`], [P('A'), 'jump / confirm'], [P('B'), 'back'], [P('X'), 'hat bonk'], [P('Y'), 'talk / use'],
+      [P('LT'), 'Target Lock'], [P('RT'), 'cast picked / use'], [`${P('LB')} ${P('RB')}`, 'pick a spell'], [`${P('DPAD')}`, 'menus; field: up hint, down ride'], [P('START'), 'pause'], [P('SELECT'), 'map']];
+    const tc = [['Left third', 'slide: waddle'], ['Right side', 'drag: look'], ['Hand', 'talk / use'], ['Arrow', 'jump'], ['Reticle', 'Target Lock'], ['Camera', 'follow / free'], ['Paw', `ride ${fox}`],
+      ['Sparkle', 'cast picked spell'], ['Hat', 'hat bonk'], ['Spell tiles', 'cast in the ring'], ['Tap', 'menus &amp; choices']];
+    const col = (t, rows, on) => `<div class="cc${on ? ' on' : ''}"><h3>${t}</h3>${rows.map(([k, v]) => `<div><b>${k}</b> ${v}</div>`).join('')}</div>`;
+    return '<h2>Controls</h2><div class="ctl3">' + col('Keyboard &amp; mouse', kb, input.scheme === 'kbm') + col('Controller', pad, input.scheme === 'pad') + col('Touch', tc, input.scheme === 'touch') +
+      '</div><div class="q"><small>Target Lock: face a critter, circle it with the stick / WASD; press again to switch or let go. Leave the ring to run away.</small></div><div class="mi back">Back</div>';
   }
   function menuPick() {
     sfx('select', 0.5);
@@ -378,6 +438,7 @@ export async function start(man) {
     else if (m === 'Quest log') { menuPage = 'quests'; drawMenu(); }
     else if (m === 'Spells') { menuPage = 'spells'; drawMenu(); }
     else if (m === 'Controls') { menuPage = 'controls'; drawMenu(); }
+    else if (m === 'Settings') { menuPage = 'settings'; setSel = 0; drawMenu(); }
     else if (m === 'Title screen') { save(true); closeMenu(); showTitle(); }
   }
   const fmtTime = (t) => `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
@@ -386,11 +447,17 @@ export async function start(man) {
   function showTitle() {
     setMode('title'); music.play('title');
     titleEl.innerHTML = `<div class="logo">${game.title.title}</div><div class="sub">${game.title.subtitle}</div>` +
-      `<div class="mi" data-k="new">${game.title.menu[0]}</div><div class="mi${hasSave() ? '' : ' off'}" data-k="cont">${game.title.menu[1]}</div><div class="foot">Enter / click &middot; arrows to choose<br>WASD waddle &middot; Space jump &middot; E talk &middot; R ride &middot; M map &middot; H hint &middot; P pause</div>`;
-    titleEl.classList.remove('hide'); hud.classList.add('titling'); titleSel = hasSave() ? 1 : 0; drawTitleSel();
+      `<div class="mi" data-k="new">${game.title.menu[0]}</div><div class="mi${hasSave() ? '' : ' off'}" data-k="cont">${game.title.menu[1]}</div><div class="foot"></div>`;
+    titleEl.classList.remove('hide'); hud.classList.add('titling'); titleSel = hasSave() ? 1 : 0; drawTitleSel(); drawTitleFoot();
     titleEl.querySelectorAll('.mi').forEach((el, i) => { el.onpointerdown = (e) => { e.stopPropagation(); titleSel = i; titlePick(); }; });
   }
   let titleSel = 0;
+  function drawTitleFoot() {
+    const f = titleEl.querySelector('.foot'); if (!f) return; const P = (b) => input.glyph(b);
+    f.innerHTML = input.scheme === 'pad' ? `${P('DPAD')} choose &middot; ${P('A')} start<br>${P('LS')} waddle &middot; ${P('RS')} camera &middot; ${P('A')} jump &middot; ${P('Y')} talk &middot; ${P('LT')} lock &middot; ${P('START')} pause`
+      : input.scheme === 'touch' ? 'Tap to choose<br>Slide on the left to waddle &middot; drag on the right to look &middot; round buttons to act'
+      : 'Enter / click &middot; arrows to choose<br>WASD waddle &middot; Space jump &middot; E talk &middot; F bonk &middot; T lock &middot; C camera &middot; M map &middot; Esc pause';
+  }
   function drawTitleSel() { titleEl.querySelectorAll('.mi').forEach((el, i) => el.classList.toggle('sel', i === titleSel)); }
   async function titlePick() {
     if (titleSel === 1 && !hasSave()) { sfx('menu_tick', 0.3); return; }
@@ -400,15 +467,15 @@ export async function start(man) {
   }
   function showIntro() {
     setMode('intro'); let i = 0;
-    const page = () => { endEl.innerHTML = `<div class="page">${game.title.intro[i]}</div><div class="foot">&#9660; E / click</div>`; };
+    const page = () => { endEl.innerHTML = `<div class="page">${game.title.intro[i]}</div><div class="foot">&#9660; ${tapOr('confirm')}</div>`; };
     endEl.classList.remove('hide'); endEl.classList.add('intro'); page();
     G.introNext = () => { i++; sfx('blip', 0.3); if (i >= game.title.intro.length) { endEl.classList.add('hide'); endEl.classList.remove('intro'); setMode('field'); progress(); toast(currentQuest().title); } else page(); };
   }
   function showEnding() {
     setMode('ending'); music.play('ending'); let i = 0; setAmbient(1.15); scene.fog.color.set('#c8d8b0'); scene.fog.far = 160;
     const pages = [...game.ending.pages];
-    const page = () => { endEl.innerHTML = i < pages.length ? `<div class="page">${pages[i]}</div><div class="foot">&#9660; E / click</div>` :
-      `<div class="page credits"><b>${game.title.title}</b><br><br>${game.ending.credits.join('<br>')}<br><br>Time ${fmtTime(S.time)} &middot; Springs ${nSprings()}/${springs.springs.length}</div><div class="foot">E / click: back to title</div>`; };
+    const page = () => { endEl.innerHTML = i < pages.length ? `<div class="page">${pages[i]}</div><div class="foot">&#9660; ${tapOr('confirm')}</div>` :
+      `<div class="page credits"><b>${game.title.title}</b><br><br>${game.ending.credits.join('<br>')}<br><br>Time ${fmtTime(S.time)} &middot; Springs ${nSprings()}/${springs.springs.length}</div><div class="foot">${tapOr('confirm')}: back to title</div>`; };
     endEl.classList.remove('hide'); page();
     G.introNext = () => { i++; sfx('blip', 0.3); if (i > pages.length) { endEl.classList.add('hide'); showTitle(); } else page(); };
   }
@@ -425,10 +492,19 @@ export async function start(man) {
     for (let k = 0; k < caps; k++) load(`models/${k % 3 ? 'toadstool_red' : 'toadstool_blue'}.glb`).then((t) => { const a = k / caps * Math.PI * 2; t.position.set(Math.cos(a) * r, 0, Math.sin(a) * r); t.scale.setScalar(0.35); g.add(t); });
     return g;
   }
+  let selSpell = 0;  // picked spell (LB/RB, Q/R, wheel, d-pad) cast with RT / Enter / right-click / the sparkle button
   function buildSpellBar() {
-    spellBar.innerHTML = S.spells.slice(0, 6).map((id, i) => { const s = spellById[id]; return `<div class="sp" data-i="${i}" style="border-color:${FAM_COL[s.family]}"><b>${i + 1}</b>${s.name}<small>${s.mp_cost_at_min}</small></div>`; }).join('');
+    const n = Math.min(6, S.spells.length); selSpell = clamp(selSpell, 0, Math.max(0, n - 1)); const pad = input.scheme === 'pad';
+    spellBar.innerHTML = S.spells.slice(0, 6).map((id, i) => { const s = spellById[id]; return `<div class="sp${i === selSpell ? ' sel' : ''}" data-i="${i}" style="border-color:${FAM_COL[s.family]}"><b>${pad ? '&nbsp;' : i + 1}</b>${s.name}<small>${s.mp_cost_at_min}</small></div>`; }).join('') +
+      (input.scheme === 'touch' ? '' : `<i class="cyc l">${gk('prev')}</i><i class="cyc r">${gk('next')} &middot; ${gk('cast')}</i>`);
     spellBar.querySelectorAll('.sp').forEach((el) => { el.onpointerdown = (e) => { e.stopPropagation(); press(`Digit${+el.dataset.i + 1}`); }; });
   }
+  function cycleSpell(d) {
+    const n = Math.min(6, S.spells.length); if (!n) return; selSpell = (selSpell + d + n) % n; sfx('menu_tick', 0.3);
+    if (B) buildSpellBar(); else toast(`Picked spell: ${spellById[S.spells[selSpell]].name}`, 900);
+  }
+  const battleHint = () => (input.scheme === 'pad' ? `${gk('prev')} ${gk('next')} pick &middot; ${gk('cast')} cast &middot; ${gk('attack')} bonk &middot; ${input.glyph('LT')} lock`
+    : input.scheme === 'touch' ? 'tap a spell &middot; hat to bonk &middot; reticle to lock' : '1-6 or Q/R + Enter spells &middot; F bonk &middot; T lock');
   function startBattle(first) {
     const c = first.obj.position.clone().add(player.position).multiplyScalar(0.5);
     const foes = W.critters.filter((k) => k.calm <= 0 && !k.gone && k.obj.position.distanceTo(c) < 7).slice(0, 3);
@@ -437,7 +513,7 @@ export async function start(man) {
     const ring = ringMesh(5.5, '#ffe080'); ring.position.set(c.x, W.h(c.x, c.z) + 0.05, c.z); W.g.add(ring);
     B = { c, r: 5.5, foes, ring, boss: false, t: 0, shield: 0 };
     setMode('battle'); sfx('arena_open', 0.6); music.play('battle'); buildSpellBar(); spellBar.classList.remove('hide'); foeEl.classList.remove('hide'); drawFoe();
-    toast(`${first.name}${foes.length > 1 ? ` and ${foes.length - 1} more` : ''} ${foes.length > 1 ? 'are' : 'is'} cross!<br><small>1-6 spells &middot; F bonk &middot; leave the ring to run</small>`, 2400);
+    toast(`${first.name}${foes.length > 1 ? ` and ${foes.length - 1} more` : ''} ${foes.length > 1 ? 'are' : 'is'} cross!<br><small>${battleHint()} &middot; leave the ring to run</small>`, 2600);
   }
   function startBossBattle() {
     const bs = game.boss, c = dwarf.position.clone();
@@ -606,9 +682,9 @@ export async function start(man) {
   }
 
   // ---------- mode + field
-  G = { mode: 'boot', cy: 0, cp: 0.32, py: 0, vy: 0, riding: false, swinging: false, flash: 0, closeup: null, introNext: null, noenc: !!Q.get('noenc'), bathCd: 0, stepT: 0 };
+  G = { mode: 'boot', lock: null, lockNo: null, camIdle: 9, moveT: 0, zoom: 1, walk: false, cy: 0, cp: 0.32, py: 0, vy: 0, riding: false, swinging: false, flash: 0, closeup: null, introNext: null, noenc: !!Q.get('noenc'), bathCd: 0, stepT: 0 };
   function setMode(m) {
-    G.mode = m; const field = m === 'field' || m === 'battle';
+    G.mode = m; const field = m === 'field' || m === 'battle'; input.menu = !field;
     for (const b of fieldBtns) b.classList.toggle('hide', !field);
     joy.classList.toggle('hide', !field); if (!field) { if (joyId !== null) joyEnd(); joyT = null; joyV = null; } if (m !== 'field') promptEl.classList.add('hide'); questEl.classList.toggle('hide', m !== 'field'); vit.classList.toggle('hide', m === 'title' || m === 'ending' || m === 'intro');
   }
@@ -619,7 +695,7 @@ export async function start(man) {
     for (const c of W.chests) if (!S.chests[c.id] && near(c.obj.position, 2)) return { k: 'chest', c, label: 'Open the chest' };
     if (W.id === 'BOSS' && dwarf.visible && S.flags.boss_beaten && near(dwarf.position, 3.4)) return { k: 'boss', label: 'Talk to Krogbold' };
     if (W.id === 'BOSS' && W.lid && S.flags.reconciled && near(W.lid.position, 4)) return { k: 'lid', label: 'Lift the great lid together!' };
-    if (S.flags.met_fox && !S.flags.rode_fox && fox.visible && !G.riding && near(fox.position, 2.4)) return { k: 'fox', label: `Ride ${game.fox.name} (R)` };
+    if (S.flags.met_fox && !S.flags.rode_fox && fox.visible && !G.riding && near(fox.position, 2.4)) return { k: 'fox', label: `Ride ${game.fox.name}` };
     return null;
   }
   function interact(t) {
@@ -638,9 +714,9 @@ export async function start(man) {
     if (!near(fox.position, 2.6)) { toast(`Stand next to ${game.fox.name} to hop on.`, 1400); return; }
     G.riding = true; S.flags.rode_fox = true; sfx('fox_yip', 0.7); pA && pA.play('ride', 0.2); progress();
   }
-  function mountSwing() { const sw = W.swing; G.swinging = true; sw.on = true; sw.ang = 0.25; sw.vel = 0; sfx('swing_creak', 0.6); toast('A/D or left/right to pump &middot; Space / E to let go', 2200); pA && pA.play('swing', 0.2); }
+  function mountSwing() { const sw = W.swing; G.swinging = true; sw.on = true; sw.ang = 0.25; sw.vel = 0; sfx('swing_creak', 0.6); toast(input.scheme === 'pad' ? `${gk('move')} left / right to pump &middot; ${gk('jump')} to let go` : input.scheme === 'touch' ? 'Slide left / right to pump &middot; jump to let go' : 'A/D or left/right to pump &middot; Space / E to let go', 2200); pA && pA.play('swing', 0.2); }
   function swingStep(dt) {
-    const sw = W.swing, ax = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0) + (joyV ? joyV.x : 0);
+    const sw = W.swing, ax = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0) + (joyV ? joyV.x : 0) + input.move.x;
     sw.vel += (-9.8 / sw.seat_drop * Math.sin(sw.ang) + ax * 1.6 * Math.sign(Math.cos(sw.ang) * (sw.vel || 1))) * dt; sw.vel *= 0.995; sw.ang = clamp(sw.ang + sw.vel * dt, -1.25, 1.25);
     if (Math.abs(sw.vel) > 1.2 && Math.abs(sw.ang) < 0.08) sfx('swing_creak', 0.35);
     sw.obj.rotation.set(sw.ang, sw.rot, 0, 'YXZ');
@@ -663,20 +739,25 @@ export async function start(man) {
   function moveField(dt) {
     let ix = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0), iz = (keys.KeyS || keys.ArrowDown ? 1 : 0) - (keys.KeyW || keys.ArrowUp ? 1 : 0);
     if (joyV) { ix += joyV.x; iz += joyV.y; }
+    ix += input.move.x; iz += input.move.y;
     const l = Math.hypot(ix, iz); if (l > 1) { ix /= l; iz /= l; }
     const fwd = new THREE.Vector3(-Math.sin(G.cy), 0, -Math.cos(G.cy)), right = new THREE.Vector3(-fwd.z, 0, fwd.x);
     const mv = new THREE.Vector3().addScaledVector(right, ix).addScaledVector(fwd, -iz);
-    const speed = (G.riding ? 5.2 * game.fox.speed : 5.0) * (W.id === 'L3' && W.h(player.position.x, player.position.z) < W.L.water_level && !G.riding ? 0.75 : 1);
+    const lockT = G.lock && !G.riding && !G.launch ? G.lock.e.obj.position : null;
+    const speed = (G.walk ? 0.45 : 1) * (G.riding ? 5.2 * game.fox.speed : 5.0) * (W.id === 'L3' && W.h(player.position.x, player.position.z) < W.L.water_level && !G.riding ? 0.75 : 1);
     if (G.launch) { mv.copy(G.launch).multiplyScalar(1 / speed); G.launch.multiplyScalar(0.985); }
     const moving = mv.lengthSq() > 0.01;
     if (moving) {
       const step = mv.clone().multiplyScalar(speed * dt); let nx = player.position.x + step.x, nz = player.position.z + step.z;
+      if (lockT) { const q = strafe(player.position, lockT, ix, iz, speed * dt, B ? 1.4 : 1.6); nx = q.x; nz = q.z; }  // circle the locked target
       const lim = W.L.size * 0.44; nx = clamp(nx, -lim, lim); nz = clamp(nz, -lim, lim);
       const wet = W.id !== 'L3' && W.L.water_level > -40 && W.h(nx, nz) < W.L.water_level - 0.35;
       if (!wet) { for (const c of W.cols) { const dx = nx - c.x, dz = nz - c.z, d = Math.hypot(dx, dz), rr = c.r + 0.35; if (d < rr && d > 1e-4) { nx = c.x + dx / d * rr; nz = c.z + dz / d * rr; } } player.position.x = nx; player.position.z = nz; }
-      if (!G.launch) player.rotation.y = Math.atan2(mv.x, mv.z);
+      if (!G.launch && !lockT) player.rotation.y = Math.atan2(mv.x, mv.z);
       G.stepT -= dt; if (G.stepT <= 0) { G.stepT = G.riding ? 0.22 : 0.34; sfx(G.riding ? 'footstep_moss' : 'waddle_step', 0.18); }
     }
+    G.moveT = moving ? G.moveT + dt : 0;
+    if (lockT) player.rotation.y = Math.atan2(lockT.x - player.position.x, lockT.z - player.position.z);  // always face the target
     G.vy -= 18 * dt; G.py = Math.max(0, G.py + G.vy * dt); if (G.py <= 0) { G.vy = 0; if (G.launch) G.launch = null; }
     const gy = Math.max(W.h(player.position.x, player.position.z), W.id === 'L3' ? W.L.water_level - 0.45 : -99);
     player.position.y = gy + G.py + (G.riding ? 0.62 : 0);
@@ -725,7 +806,7 @@ export async function start(man) {
     // boss forge: walk up to the dwarf to talk (first time)
     if (W.id === 'BOSS' && dwarf.visible && !S.flags.boss_beaten && near(dwarf.position, 7)) { dwarf.lookAt(player.position.x, dwarf.position.y, player.position.z); sfx('dwarf_grumble', 0.8); return talk('boss'); }
     const it = interactTarget();
-    promptEl.classList.toggle('hide', !it); if (it) promptEl.innerHTML = `<b>E</b> ${it.label}`;
+    promptEl.classList.toggle('hide', !it); if (it) { const h = `${gl(it.k === 'fox' ? 'ride' : 'use')} ${it.label}`; if (promptEl._h !== h) { promptEl._h = h; promptEl.innerHTML = h; } }
   }
   function animateWorld(dt, t) {
     for (const p of W.portals) { if (!p.fill) continue; const fr = Math.floor(t * portalsS.fps) % portalsS.frames; p.fill.material.map.offset.x = fr / portalsS.frames; if (p.spin) p.fill.rotation.z += dt * 0.4; if (p.gate) { const ok = (!p.requires_flag || S.flags[p.requires_flag]) && nSprings() >= (p.requires_springs || 0); p.fill.material.opacity = ok ? 0.95 : 0.25; } }
@@ -749,39 +830,93 @@ export async function start(man) {
   }
 
   // ---------- input dispatch
+  const PADMENU = { PadUp: 'ArrowUp', PadDown: 'ArrowDown', PadLeft: 'ArrowLeft', PadRight: 'ArrowRight' };
+  const PADFIELD = { PadUp: 'KeyH', PadDown: 'KeyR', PadLeft: 'SpellPrev', PadRight: 'SpellNext' };
+  const jump = () => { if (G.py <= 0.01) { G.vy = G.riding ? 7 : 6.2; sfx('jump', 0.4); pA && pA.play('jump', 0.05, true); } };
   function handleKeys() {
     const ks = [...takePressed(), ...injected.splice(0)];
-    for (const k of ks) {
-      const m = G.mode;
-      if (m === 'title') { if (k === 'ArrowUp' || k === 'ArrowDown' || k === 'KeyW' || k === 'KeyS') { titleSel = 1 - titleSel; drawTitleSel(); sfx('menu_tick', 0.4); } if (k === 'Enter' || k === 'Space' || k === 'KeyE') titlePick(); continue; }
-      if (m === 'intro' || m === 'ending') { if (['Enter', 'Space', 'KeyE'].includes(k)) G.introNext && G.introNext(); continue; }
-      if (m === 'dialog') { const n = k.match(/^Digit([1-4])$/); if (n) choose(+n[1] - 1); else if (['Enter', 'Space', 'KeyE'].includes(k)) advance(); continue; }
-      if (m === 'map') { if (['KeyM', 'Escape', 'KeyE', 'Space'].includes(k)) closeMap(); continue; }
+    for (let k of ks) {
+      const m = G.mode, play = m === 'field' || m === 'battle';
+      k = (play ? PADFIELD[k] : PADMENU[k]) || k;
+      if (k === 'CamToggle' || k === 'KeyC') { if (play) toggleCam(); continue; }
+      if (k === 'LockOn' || k === 'KeyT' || k === 'ClickLock') { if (play) lockPress(); continue; }
+      if (m === 'title') { if (['ArrowUp', 'ArrowDown', 'KeyW', 'KeyS'].includes(k)) { titleSel = 1 - titleSel; drawTitleSel(); sfx('menu_tick', 0.4); } if (['Enter', 'Space', 'KeyE'].includes(k)) titlePick(); continue; }
+      if (m === 'intro' || m === 'ending') { if (['Enter', 'Space', 'KeyE', 'AltR'].includes(k)) G.introNext && G.introNext(); continue; }
+      if (m === 'dialog') {
+        const n = k.match(/^Digit([1-4])$/), no = dlgEl.querySelectorAll('.opt').length, ok = ['Enter', 'Space', 'KeyE', 'AltR', 'ClickAlt'].includes(k);
+        if (n) choose(+n[1] - 1);
+        else if (no && ['ArrowUp', 'KeyW', 'ArrowLeft'].includes(k)) { D.opt = (D.opt + no - 1) % no; drawOpt(); sfx('menu_tick', 0.3); }
+        else if (no && ['ArrowDown', 'KeyS', 'ArrowRight'].includes(k)) { D.opt = (D.opt + 1) % no; drawOpt(); sfx('menu_tick', 0.3); }
+        else if (no && ok) choose(D.opt);
+        else if (ok) advance();
+        else if (k === 'Escape' && D.typing) finishLine();
+        continue;
+      }
+      if (m === 'map') { if (['KeyM', 'Escape', 'KeyE', 'Space', 'Tab', 'Enter'].includes(k)) closeMap(); continue; }
       if (m === 'menu') {
-        if (menuPage !== 'main') { if (['Escape', 'KeyP', 'Enter', 'Space', 'Backspace'].includes(k)) { menuPage = 'main'; drawMenu(); } continue; }
+        if (menuPage === 'settings') { settingsKey(k); continue; }
+        if (menuPage !== 'main') { if (['Escape', 'KeyP', 'Enter', 'Space', 'Backspace', 'KeyE'].includes(k)) { menuPage = 'main'; drawMenu(); } continue; }
         if (k === 'ArrowUp' || k === 'KeyW') { menuSel = (menuSel + MENU.length - 1) % MENU.length; drawMenu(); sfx('menu_tick', 0.3); }
         if (k === 'ArrowDown' || k === 'KeyS') { menuSel = (menuSel + 1) % MENU.length; drawMenu(); sfx('menu_tick', 0.3); }
         if (k === 'Enter' || k === 'Space' || k === 'KeyE') menuPick();
         if (k === 'KeyP' || k === 'Escape') closeMenu();
         continue;
       }
+      if (!play) continue;
+      if (k === 'WalkToggle' || k === 'ShiftLeft' || k === 'ShiftRight') { G.walk = !G.walk; toast(G.walk ? 'Walking' : 'Running', 700); continue; }
       if (m === 'battle') {
-        const n = k.match(/^Digit([1-6])$/); if (n) cast(+n[1] - 1);
-        if (k === 'KeyF') bonk();
-        if (k === 'Space') { if (G.py <= 0.01) { G.vy = 6.2; sfx('jump', 0.4); pA && pA.play('jump', 0.05, true); } }
-        if (k === 'KeyP') toast('No pausing mid-scuffle!', 900);
+        const n = k.match(/^Digit([1-6])$/); if (n) { selSpell = +n[1] - 1; cast(selSpell); if (B) buildSpellBar(); }
+        if (k === 'KeyF' || k === 'ClickAttack') bonk();
+        if (k === 'SpellPrev' || k === 'KeyQ') cycleSpell(-1);
+        if (k === 'SpellNext' || k === 'KeyR') cycleSpell(1);
+        if (['AltR', 'Enter', 'CastSel', 'ClickAlt', 'KeyE'].includes(k)) cast(selSpell);
+        if (k === 'Space') jump();
+        if (k === 'KeyP' || k === 'Escape') toast('No pausing mid-scuffle!', 900);
         continue;
       }
-      if (m !== 'field') continue;
-      if (G.swinging) { if (k === 'Space' || k === 'KeyE') leaveSwing(); continue; }
-      if (k === 'Space') { if (G.py <= 0.01) { G.vy = G.riding ? 7 : 6.2; sfx('jump', 0.4); pA && pA.play('jump', 0.05, true); } }
-      if (k === 'KeyE') interact(interactTarget());
+      if (G.swinging) { if (['Space', 'KeyE', 'AltR', 'Enter'].includes(k)) leaveSwing(); continue; }
+      if (k === 'Space') jump();
+      if (['KeyE', 'Enter', 'AltR', 'ClickAlt'].includes(k)) interact(interactTarget());
       if (k === 'KeyR') toggleRide();
-      if (k === 'KeyM') openMap();
+      if (k === 'KeyM' || k === 'Tab') openMap();
       if (k === 'KeyP' || k === 'Escape') openMenu();
       if (k === 'KeyH') hint();
-      if (k === 'KeyF' || /^Digit[1-6]$/.test(k)) toast('Spells and bonks are for cross critters.', 1000);
+      if (k === 'SpellPrev' || k === 'KeyQ') cycleSpell(-1);
+      if (k === 'SpellNext') cycleSpell(1);
+      if (k === 'KeyF' || /^Digit[1-6]$/.test(k) || k === 'CastSel') toast('Spells and bonks are for cross critters.', 1000);
     }
+  }
+  // ---------- Target Lock (auto when a cross critter comes close, or LT / T / middle-click / reticle button)
+  const LOCK_AUTO = 6, LOCK_RANGE = 12, LOCK_BREAK = 15;
+  const lockAlive = (e) => (B ? B.foes.includes(e) && e.hp > 0 : !e.gone && e.calm <= 0 && G.mode === 'field');
+  function lockCands() {
+    const list = B ? B.foes.filter((f) => f.hp > 0) : G.mode === 'field' ? W.critters.filter((k) => !k.gone && k.calm <= 0) : [];
+    return list.map((e) => ({ e, pos: e.obj.position }));
+  }
+  function setLock(e, manual) {
+    const was = G.lock; G.lock = e ? { e } : null; hud.classList.toggle('locked', !!e);
+    if (e && (!was || was.e !== e)) sfx('menu_tick', 0.5); if (!e && was && manual) { G.lockNo = was.e; G.lockQuiet = performance.now() + 2500; }  // letting go means letting go
+  }
+  function lockPress() {
+    const cands = lockCands(), cur = G.lock && cands.find((c) => c.e === G.lock.e);
+    const nx = pickTarget(player.position, cands, LOCK_RANGE, cur || null);
+    if (G.lock && !nx) return setLock(null, true);  // pressed again with nobody else in range: let go
+    if (!nx) { toast('Nothing to lock on to', 700); return; }
+    setLock(nx.e); G.lockNo = null;
+  }
+  function lockStep() {
+    if (G.mode !== 'field' && G.mode !== 'battle') { if (G.lock) setLock(null); reticle.classList.add('hide'); return; }
+    if (G.lock) { const e = G.lock.e; if (!lockAlive(e) || e.obj.position.distanceTo(player.position) > LOCK_BREAK) setLock(null); }
+    if (G.lockNo && (!lockAlive(G.lockNo) || G.lockNo.obj.position.distanceTo(player.position) > LOCK_AUTO + 2)) G.lockNo = null;
+    if (!G.lock && input.settings.autoLock !== false && !G.riding && !G.swinging && performance.now() > (G.lockQuiet || 0)) {
+      const n = pickTarget(player.position, lockCands().filter((q) => q.e !== G.lockNo), B ? LOCK_RANGE : LOCK_AUTO); if (n) setLock(n.e);
+    }
+    if (G.lock) { const e = G.lock.e, v = e.obj.position.clone().add(new THREE.Vector3(0, e.boss ? 3.4 : 1.8, 0)).project(camera);
+      reticle.style.left = `${(v.x + 1) * 50}%`; reticle.style.top = `${(1 - v.y) * 50}%`; reticle.classList.toggle('hide', v.z > 1); } else reticle.classList.add('hide');
+  }
+  function toggleCam(quiet) {
+    input.settings.camMode = input.settings.camMode === 'free' ? 'follow' : 'free'; input.save(); G.camIdle = 9;
+    if (!quiet) { toast(`Camera: ${input.settings.camMode === 'free' ? 'Free (moves only when you move it)' : 'Follow (swings in behind you)'}`, 1200); sfx('menu_tick', 0.4); }
   }
   function hint() {
     sfx('gnome_hum', 0.5);
@@ -798,17 +933,27 @@ export async function start(man) {
   addEventListener('pointerdown', (e) => {
     if (!window.__loaded || (e.target.closest && e.target.closest('#bar, #loading'))) return;
     if (G.mode === 'dialog') { advance(); return; } if (G.mode === 'intro' || G.mode === 'ending') { G.introNext && G.introNext(); return; }
+    if (e.pointerType === 'mouse') {
+      if (e.button === 1) { e.preventDefault(); press('ClickLock'); return; }
+      if (e.button === 2) { press('ClickAlt'); return; }
+      if (input.settings.mouseLock && !G.mode.match(/title|menu|map/)) { if (input.locked) press('ClickAttack'); return; }  // the click itself grabs the pointer
+    }
     if (e.pointerType !== 'mouse' && joyId === null && !joy.classList.contains('hide') && e.clientX < innerWidth / 3) { e.preventDefault(); joyStart(e, true); return; }
-    if (!drag) { drag = { id: e.pointerId, x: e.clientX, y: e.clientY }; try { e.target.setPointerCapture(e.pointerId); } catch (_) { /* synthetic */ } }
+    if (!drag) { drag = { id: e.pointerId, x: e.clientX, y: e.clientY, moved: 0, mouse: e.pointerType === 'mouse' && e.button === 0 }; try { e.target.setPointerCapture(e.pointerId); } catch (_) { /* synthetic */ } }
   });
-  for (const ev of ['pointerup', 'pointercancel']) addEventListener(ev, (e) => { if (drag && e.pointerId === drag.id) drag = null; });
-  addEventListener('pointermove', (e) => { if (!drag || e.pointerId !== drag.id) return; G.cy -= (e.clientX - drag.x) * 0.008; G.cp = clamp(G.cp + (e.clientY - drag.y) * 0.004, 0.05, 0.9); drag.x = e.clientX; drag.y = e.clientY; });
+  for (const ev of ['pointerup', 'pointercancel']) addEventListener(ev, (e) => { if (drag && e.pointerId === drag.id) { if (ev === 'pointerup' && drag.mouse && drag.moved < 6) press('ClickAttack'); drag = null; } });
+  addEventListener('mousedown', (e) => { if (e.button === 1) e.preventDefault(); });  // no autoscroll on middle-click
+  addEventListener('pointermove', (e) => { if (!drag || e.pointerId !== drag.id) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y, sn = input.settings.sens, inv = input.settings.invertY ? -1 : 1;
+    drag.moved += Math.abs(dx) + Math.abs(dy); if (drag.moved > 3) G.camIdle = 0; G.cy -= dx * 0.008 * sn; G.cp = clamp(G.cp + dy * 0.004 * sn * inv, 0.05, 0.9); drag.x = e.clientX; drag.y = e.clientY; });
   dlgEl.onpointerdown = (e) => { e.stopPropagation(); if (G.mode === 'dialog') advance(); };
   endEl.onpointerdown = (e) => { e.stopPropagation(); G.introNext && G.introNext(); };
   mapEl.onpointerdown = (e) => { e.stopPropagation(); closeMap(); };
   const camPos = new THREE.Vector3(), camLook = new THREE.Vector3();
   function updateCamera(dt, t) {
-    if (keys.KeyZ) G.cy += dt * 1.8; if (keys.KeyC) G.cy -= dt * 1.8;
+    const sn = input.settings.sens, inv = input.settings.invertY ? -1 : 1; G.camIdle += dt;
+    if (input.look.x || input.look.y) { G.cy -= input.look.x * 2.4 * sn * dt; G.cp = clamp(G.cp + input.look.y * 1.2 * sn * inv * dt, 0.05, 0.9); G.camIdle = 0; }
+    if (input.mouse.dx || input.mouse.dy) { G.cy -= input.mouse.dx * 0.004 * sn; G.cp = clamp(G.cp + input.mouse.dy * 0.0025 * sn * inv, 0.05, 0.9); input.mouse.dx = input.mouse.dy = 0; G.camIdle = 0; }
+    const lk = G.lock && (G.mode === 'field' || G.mode === 'battle') ? G.lock.e.obj.position : null;
     let pos, look;
     if (G.mode === 'title') { pos = new THREE.Vector3(Math.sin(t * 0.06) * 26, 13, Math.cos(t * 0.06) * 26 + 6); look = new THREE.Vector3(0, 4, 0); }
     else if (G.closeup) { const cu = G.closeup, s = cu.g.position, tight = cu.hide === 'hollow_log' || cu.hide === 'root_tunnel';
@@ -822,8 +967,17 @@ export async function start(man) {
     }
     else if (G.mode === 'ending' && W.mother) { const m = W.mother.g.position; pos = new THREE.Vector3(m.x + 5.5 + Math.sin(t * 0.1), m.y + 3.2, m.z + 8.5); look = new THREE.Vector3(m.x - 0.5, m.y + 0.2, m.z); }
     else if (G.mode === 'cutscene' && W.lid) { pos = new THREE.Vector3(W.lid.position.x + 7, W.lid.position.y + 4, W.lid.position.z + 9); look = W.lid.position.clone(); }
+    else if (lk) {  // Target Lock: from behind the player, framing player + target
+      const dist = (B && B.boss ? 9.5 : 6.4) * (B ? 1 : G.zoom), f = lockFrame(player.position, lk, { dist, height: B && B.boss ? 4.2 : 2.5 });
+      G.cy += wrapA(f.yaw - G.cy) * (1 - Math.exp(-dt * 5)); const p = player.position;
+      pos = new THREE.Vector3(p.x + Math.sin(G.cy) * dist, p.y + (B && B.boss ? 4.2 : 2.5), p.z + Math.cos(G.cy) * dist); look = new THREE.Vector3(f.look.x, f.look.y, f.look.z); }
     else if (B) { const c = B.c; const tp = B.boss ? dwarf.position : player.position; const dist = B.boss ? 12 : 7.8; pos = new THREE.Vector3(c.x + Math.sin(G.cy) * dist, W.h(c.x, c.z) + (B.boss ? 7 : 4.2), c.z + Math.cos(G.cy) * dist); look = c.clone().lerp(tp, 0.3).add(new THREE.Vector3(0, 1, 0)); }
-    else { const dist = G.swinging ? 7.5 : 6.8; const p = player.position; pos = new THREE.Vector3(p.x + Math.sin(G.cy) * dist * Math.cos(G.cp), p.y + 1.4 + dist * Math.sin(G.cp), p.z + Math.cos(G.cy) * dist * Math.cos(G.cp)); look = p.clone().add(new THREE.Vector3(0, 1.1, 0)); }
+    else {
+      if (input.settings.camMode !== 'free' && G.mode === 'field' && !G.swinging) {  // Follow: ease round behind the gnome
+        G.cy = followYaw(G.cy, { facing: player.rotation.y, moving: G.moveT > 0, moveT: G.moveT, idle: G.camIdle, dt });
+        if (G.camIdle > 1.5) G.cp += (0.32 - G.cp) * (1 - Math.exp(-dt * 1.2));
+      }
+      const dist = (G.swinging ? 7.5 : 6.8) * G.zoom; const p = player.position; pos = new THREE.Vector3(p.x + Math.sin(G.cy) * dist * Math.cos(G.cp), p.y + 1.4 + dist * Math.sin(G.cp), p.z + Math.cos(G.cy) * dist * Math.cos(G.cp)); look = p.clone().add(new THREE.Vector3(0, 1.1, 0)); }
     const gy = W.h(pos.x, pos.z) + 0.8; if (pos.y < gy) pos.y = gy;
     const k = G.snap ? 1 : 1 - Math.pow(0.002, dt); G.snap = false;
     camPos.lerp(pos, k); camLook.lerp(look, k); camera.position.copy(camPos); camera.lookAt(camLook);
@@ -834,7 +988,8 @@ export async function start(man) {
   const st = loop(renderer, scene, () => camera, (dt, t) => {
     if (!W) return;
     handleKeys();
-    joySmooth(dt);
+    joySmooth(dt); lockStep();
+    if (input.mouse.wheel) { const w = input.mouse.wheel; input.mouse.wheel = 0; if (G.mode === 'battle') cycleSpell(w > 0 ? 1 : -1); else if (G.mode === 'field') G.zoom = clamp(G.zoom * (w > 0 ? 1.1 : 0.9), 0.55, 1.7); }
     if (G.mode === 'field') { if (G.swinging) swingStep(dt); else moveField(dt); if (C) chaseStep(dt); if (G.mode === 'field' && !G.swinging) fieldChecks(dt); }
     else if (G.mode === 'battle' && B) { moveField(dt); battleStep(dt); }
     if (G.cut) G.cut(dt);
@@ -876,7 +1031,8 @@ export async function start(man) {
 
   window.__game = { get S() { return S; }, get W() { return W; }, get mode() { return G.mode; }, get battle() { return B; }, get chase() { return C; }, fps: () => st.fps, game, springs };
   const dbg = () => ({ mode: G.mode, level: W && W.id, pos: player.position.toArray().map((v) => +v.toFixed(2)), anim: pA && pA.name, riding: G.riding, swinging: G.swinging,
-    springs: nSprings(), quest: (currentQuest() || {}).id || 'done', battle: B ? B.foes.map((f) => [f.name, f.hp]) : null, chase: !!C, fps: +st.fps.toFixed(1), cam: +G.cy.toFixed(3), joy: joyV ? [+joyV.x.toFixed(2), +joyV.y.toFixed(2)] : null });
+    springs: nSprings(), quest: (currentQuest() || {}).id || 'done', battle: B ? B.foes.map((f) => [f.name, f.hp]) : null, chase: !!C, fps: +st.fps.toFixed(1), cam: +G.cy.toFixed(3), pitch: +G.cp.toFixed(3), face: +player.rotation.y.toFixed(3), joy: joyV ? [+joyV.x.toFixed(2), +joyV.y.toFixed(2)] : null,
+    lock: G.lock ? (G.lock.e.name || G.lock.e.id || 'foe') : null, lockPos: G.lock ? G.lock.e.obj.position.toArray().map((v) => +v.toFixed(3)) : null, camMode: input.settings.camMode === 'free' ? 'free' : 'follow', scheme: input.scheme, zoom: +G.zoom.toFixed(2), walk: G.walk, sel: selSpell, mp: S.mp, menuPage, setSel });
   window.__debug = Object.assign(dbg, {
     setFlag: (f) => { S.flags[f] = true; progress(); }, go: (id) => goLevel(id), teleport: (x, z) => { player.position.set(x, W.h(x, z), z); },
     discover: (id) => { const s = W.springs.find((q) => q.id === id); if (s && !s.found) discover(s); }, talk, startChase, startBossBattle, save, loadSave, scene: setupScene, cu: (o) => { G.cuOv = o; G.snap = true; },

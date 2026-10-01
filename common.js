@@ -141,9 +141,11 @@ export function sfx(name, vol = 0.6) { if (!audio.unlocked) return SILENT; const
 let armed = false;  // a touch that began during loading and lifts afterwards is not a deliberate tap
 for (const ev of ['pointerdown', 'touchstart']) addEventListener(ev, () => { if (audio.ready) armed = true; }, { capture: true, passive: true });
 function unlockAudio(e) {
-  if (!audio.ready || audio.unlocked || (e.type !== 'keydown' && !armed)) return; audio.unlocked = true;
-  const m = audio.music; if (m && m.a && m.a.paused) m.a.play().catch(() => {});
+  if (!audio.ready || audio.unlocked || (e.type !== 'keydown' && e.type !== 'gamepad' && !armed)) return; audio.unlocked = true;
+  const m = audio.music; if (m && m.a && m.a.paused) m.a.play().catch(() => { if (e.type === 'gamepad') audio.unlocked = false; });
 }
+// controller buttons are not DOM gestures; try to start audio anyway (browsers that refuse will start it on the next tap / key)
+export function audioKick() { if (audio.ready && !audio.unlocked) unlockAudio({ type: 'gamepad' }); }
 for (const ev of ['pointerup', 'touchend', 'click', 'keydown']) addEventListener(ev, unlockAudio, true);
 // called once the game is fully loaded: drop the input-swallowing loading overlay and allow audio on the next tap
 export function loaded() {
@@ -186,6 +188,7 @@ export const pressed = [];
 addEventListener('keydown', (e) => { if (!audio.ready) { e.preventDefault(); return; } if (!keys[e.code]) pressed.push(e.code); keys[e.code] = true; if (['Tab', 'Space', 'ArrowUp', 'ArrowDown'].includes(e.code)) e.preventDefault(); });
 addEventListener('keyup', (e) => { keys[e.code] = false; });
 export function takePressed() { return pressed.splice(0, pressed.length); }
+export function pressKey(code) { pressed.push(code); }  // virtual presses (controller buttons, mouse clicks)
 
 // ---------- 30 fps capped loop
 export function loop(renderer, scene, getCamera, update) {

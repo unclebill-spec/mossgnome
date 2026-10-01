@@ -75,3 +75,32 @@ body:has(#hud.mg) #bar { opacity: 0.18; transition: opacity 0.2s; top: 6px; bott
 body:has(#hud.mg) #bar:hover { opacity: 1; }
 .mg-menu .ctl { text-align: left; font-size: 2.5cqh; line-height: 1.35; }
 .mg-menu .ctl b { display: inline-block; min-width: 30%; color: #d6322a; }
+
+/* ---------- shared input layer: touch controls only while touch is the last input; glyph badges follow the device */
+html[data-input=pad] #hud.mg .mg-btn, html[data-input=pad] #hud.mg .mg-joy, html[data-input=kbm] #hud.mg .mg-joy, html[data-input=kbm] #hud.mg .mg-btn.touch-only { display: none; }
+html[data-input=touch] #hud.mg .mg-btn i { display: none; }
+.gl { display: inline-block; min-width: 1.1em; padding: 0 0.4em; margin-right: 0.35em; border-radius: 0.45em; background: #4a2a14; color: #fff8e8; font-style: normal; text-align: center; box-shadow: 0 0.2cqh 0 #2a1608; }
+.gl.pad { border-radius: 1em; background: #2b3550; box-shadow: 0 0.2cqh 0 #141a2a; }
+.mg-tb { border-radius: 50%; background: radial-gradient(circle at 40% 35%, #a8743f, #6b4220 70%); border: 0.45cqh solid #3e2410; box-sizing: border-box; display: flex; align-items: center; justify-content: center; }
+.mg-tb span { width: 62%; height: 62%; } .mg-tb svg { width: 100%; height: 100%; fill: none; stroke: #fff2c8; stroke-width: 2.2; stroke-linecap: round; } .mg-tb svg .f { fill: #fff2c8; stroke: none; }
+#hud.locked .mg-tb[data-nm=lock] { background: radial-gradient(circle at 40% 35%, #ffd860, #d08a20 70%); }
+/* focus highlights for controller / keyboard navigation */
+.mg-dialog .opt.sel { background: #fff3c4; border-color: #e0a040; box-shadow: 0 0 0 0.45cqh #ffd060; }
+.mg-dialog .opt.sel::before { content: '\25B6'; color: #d6322a; margin-right: 0.5cqh; }
+.mg-spells { position: absolute; }
+.mg-spells .sp.sel { outline: 0.55cqh solid #ffe060; outline-offset: 0.2cqh; transform: translateY(-0.8cqh); box-shadow: 0 0 1.6cqh #ffe06099; }
+.mg-spells .cyc { position: absolute; top: -3.6cqh; font-style: normal; font-size: 1.9cqh; background: rgba(74, 42, 20, 0.88); border-radius: 1cqh; padding: 0.1cqh 0.8cqh; color: #ffe080; }
+.mg-spells .cyc.l { left: 0; } .mg-spells .cyc.r { right: 0; }
+.mg-menu .mi.set { text-align: left; font-size: 3cqh; padding-left: 2cqh; } .mg-menu .mi.set .val { float: right; margin-right: 1.5cqh; }
+.mg-menu .mi.set u { text-decoration: none; display: inline-block; width: 3.4cqh; text-align: center; margin: 0 0.6cqh; border-radius: 1cqh; background: rgba(74, 42, 20, 0.2); }
+.mg-menu .ctl3 { display: grid; grid-template-columns: 1.08fr 1fr 0.92fr; gap: 1.2cqh; text-align: left; font-size: 1.75cqh; line-height: 1.28; margin-top: 0.4cqh; }
+.mg-menu .ctl3 h3 { margin: 0 0 0.4cqh; font-size: 2.3cqh; color: #2f6a1e; font-weight: normal; }
+.mg-menu .ctl3 .cc { background: rgba(255, 248, 232, 0.35); border-radius: 1.2cqh; padding: 0.6cqh 0.9cqh; } .mg-menu .ctl3 .cc.on { background: rgba(255, 236, 160, 0.75); box-shadow: 0 0 0 0.3cqh #e0a040; }
+.mg-menu .ctl3 b { color: #d6322a; font-weight: normal; margin-right: 0.4cqh; }
+.mg-menu:has(.ctl3) { padding: 3.4cqh 4cqh; } .mg-menu:has(.ctl3) h2 { font-size: 4.2cqh; margin-bottom: 0.2cqh; } .mg-menu:has(.ctl3) .mi { margin-top: 0.3cqh; font-size: 3cqh; }
+/* Target Lock: letterbox bars + bouncing reticle */
+.mg-lb { position: absolute; left: 0; right: 0; height: 0; background: #050806; transition: height 0.35s ease; pointer-events: none; }
+.mg-lb.top { top: 0; } .mg-lb.bot { bottom: 0; } #hud.locked .mg-lb { height: 7.5%; }
+.mg-reticle { position: absolute; width: 5.6cqh; height: 7cqh; transform: translate(-50%, -100%); pointer-events: none; animation: mgret 0.7s ease-in-out infinite alternate; z-index: 3; }
+.mg-reticle svg { width: 100%; height: 100%; } .mg-reticle path { fill: #ffd040; stroke: #6a3a08; stroke-width: 1.6; } .mg-reticle path.o { fill: none; stroke: #fff2a0; stroke-width: 2.4; }
+@keyframes mgret { from { margin-top: -1.2cqh; } to { margin-top: 0.4cqh; } }
