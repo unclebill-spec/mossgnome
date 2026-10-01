@@ -17,6 +17,7 @@ hidden bubbly springs behind waterfalls, in mossy caves, at the end of root tunn
 | P / Esc | pause: resume, save, quest log, spells, controls |
 | Z / C or mouse-drag | turn the camera |
 | 1-6 / F (in a battle ring) | spells / hat bonk; step out of the ring to run away |
+| Phone / tablet | put a thumb down anywhere on the left third and slide to waddle (floating stick); drag on the right side to turn the camera; tap the round buttons to act |
 
 Progress saves to your browser (localStorage): pick **Continue** on the title screen.
 

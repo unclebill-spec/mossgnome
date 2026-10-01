@@ -2,7 +2,7 @@
 // three regions + the dwarf's cold forge, HIDDEN BUBBLY SPRINGS (waterfall / cave / root tunnel / hollow log), ride-able fox,
 // multi-line dialogue trees with choices, ring-arena battles vs mushroom critters, the dwarf chase + boss + reconciliation, save/load.
 import { THREE, Q, $, J, clamp, lerp, rng, makeRenderer, tex, load, animate, mixers, setAmbient, terrain, pathStrip, sfx, Music, place, placeCircle, div,
-  floatText, keys, takePressed, loop, canvasTex, puffTex, bubbleTex, reg, font } from './common.js';
+  floatText, keys, takePressed, loop, canvasTex, puffTex, bubbleTex, reg, font, loaded } from './common.js';
 import { makeVFX } from './vfx.js';
 import { makeSpringPool } from './springfx.js';
 
@@ -95,11 +95,32 @@ export async function start(man) {
   const titleEl = div('mg-title hide', hud);
   const endEl = div('mg-ending hide', hud);
   const fadeEl = div('mg-fade', hud);
-  let joyV = null;  // on-screen joystick (mouse / touch)
-  joy.onpointerdown = (e) => { e.stopPropagation(); joyV = { x: 0, y: 0 }; joy.setPointerCapture(e.pointerId); joyMove(e); };
-  joy.onpointermove = (e) => { if (joyV) joyMove(e); };
-  joy.onpointerup = () => { joyV = null; joy.querySelector('.knob').style.transform = ''; };
-  function joyMove(e) { const r = joy.getBoundingClientRect(); let x = (e.clientX - r.left) / r.width * 2 - 1, y = (e.clientY - r.top) / r.height * 2 - 1; const l = Math.hypot(x, y); if (l > 1) { x /= l; y /= l; } joyV = { x, y }; joy.querySelector('.knob').style.transform = `translate(${x * 40}%, ${y * 40}%)`; }
+  // floating thumbstick: a touch anywhere in the left third of the screen (or on the ring) re-centres the stick under the finger.
+  // Tracked by pointerId, so it keeps steering when the finger slides off the ring and works alongside button / camera fingers.
+  let joyV = null, joyT = null, joyId = null, joyC = null;
+  const knob = joy.querySelector('.knob'), joyHome = { left: joy.style.left, top: joy.style.top }, JOY_DEAD = 0.08;
+  function joyStart(e, float) {
+    joyId = e.pointerId; const st = $('stage').getBoundingClientRect(), r = joy.getBoundingClientRect();
+    if (float) { joy.style.left = `${(e.clientX - st.left - r.width / 2) / st.width * 100}%`; joy.style.top = `${(e.clientY - st.top - r.height / 2) / st.height * 100}%`; joyC = { x: e.clientX, y: e.clientY }; }
+    else joyC = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    joy.classList.add('on'); try { e.target.setPointerCapture(e.pointerId); } catch (_) { /* synthetic */ }
+    joyMove(e);
+  }
+  function joyMove(e) {
+    const R = joy.getBoundingClientRect().width * 0.6;  // full throw (px), a bit beyond the ring
+    let x = (e.clientX - joyC.x) / R, y = (e.clientY - joyC.y) / R; const l = Math.hypot(x, y); if (l > 1) { x /= l; y /= l; }
+    const m = Math.min(1, l), k = m < JOY_DEAD ? 0 : (m - JOY_DEAD) / (1 - JOY_DEAD) / m;  // dead zone, then a linear ramp to full speed
+    joyT = { x: x * k, y: y * k }; knob.style.transform = `translate(${x * 80}%, ${y * 80}%)`;
+  }
+  function joyEnd() { joyId = null; joyT = null; knob.style.transform = ''; joy.classList.remove('on'); joy.style.left = joyHome.left; joy.style.top = joyHome.top; }
+  function joySmooth(dt) {  // smooth analog output (eases toward the finger, glides to rest on release)
+    if (!joyV) { if (!joyT) return; joyV = { x: 0, y: 0 }; }
+    const tx = joyT ? joyT.x : 0, ty = joyT ? joyT.y : 0, f = 1 - Math.exp(-dt * 20); joyV.x += (tx - joyV.x) * f; joyV.y += (ty - joyV.y) * f;
+    if (!joyT && Math.hypot(joyV.x, joyV.y) < 0.03) joyV = null;
+  }
+  joy.addEventListener('pointerdown', (e) => { e.stopPropagation(); e.preventDefault(); if (joyId === null) joyStart(e, e.pointerType !== 'mouse'); });
+  addEventListener('pointermove', (e) => { if (e.pointerId === joyId) joyMove(e); });
+  for (const ev of ['pointerup', 'pointercancel']) addEventListener(ev, (e) => { if (e.pointerId === joyId) joyEnd(); });
   function hudUpdate() {
     vit.querySelector('.hp i').style.width = `${100 * S.hp / S.maxHp}%`; vit.querySelector('.hpn').textContent = `${S.hp}`;
     vit.querySelector('.mp i').style.width = `${100 * S.mp / S.maxMp}%`; vit.querySelector('.mpn').textContent = `${S.mp}`;
@@ -372,7 +393,7 @@ export async function start(man) {
   let titleSel = 0;
   function drawTitleSel() { titleEl.querySelectorAll('.mi').forEach((el, i) => el.classList.toggle('sel', i === titleSel)); }
   async function titlePick() {
-    if (titleSel === 1 && !hasSave()) { sfx('miss', 0.5); return; }
+    if (titleSel === 1 && !hasSave()) { sfx('menu_tick', 0.3); return; }
     sfx('select', 0.6); titleEl.classList.add('hide'); hud.classList.remove('titling');
     if (titleSel === 1) { loadSave(); await goLevel(S.level, S.pos); toast('Welcome back!'); setMode('field'); }
     else { S = fresh(); await goLevel('HUB'); showIntro(); }
@@ -589,7 +610,7 @@ export async function start(man) {
   function setMode(m) {
     G.mode = m; const field = m === 'field' || m === 'battle';
     for (const b of fieldBtns) b.classList.toggle('hide', !field);
-    joy.classList.toggle('hide', !field); if (m !== 'field') promptEl.classList.add('hide'); questEl.classList.toggle('hide', m !== 'field'); vit.classList.toggle('hide', m === 'title' || m === 'ending' || m === 'intro');
+    joy.classList.toggle('hide', !field); if (!field) { if (joyId !== null) joyEnd(); joyT = null; joyV = null; } if (m !== 'field') promptEl.classList.add('hide'); questEl.classList.toggle('hide', m !== 'field'); vit.classList.toggle('hide', m === 'title' || m === 'ending' || m === 'intro');
   }
   const near = (o, r) => Math.hypot(o.x - player.position.x, o.z - player.position.z) < r;
   function interactTarget() {
@@ -773,9 +794,15 @@ export async function start(man) {
 
   // ---------- camera (third person; Z/C or mouse drag to orbit)
   let drag = null;
-  $('view').addEventListener('pointerdown', (e) => { drag = { x: e.clientX, y: e.clientY }; if (G.mode === 'dialog') advance(); else if (G.mode === 'intro' || G.mode === 'ending') G.introNext && G.introNext(); });
-  addEventListener('pointerup', () => { drag = null; });
-  addEventListener('pointermove', (e) => { if (!drag) return; G.cy -= (e.clientX - drag.x) * 0.008; G.cp = clamp(G.cp + (e.clientY - drag.y) * 0.004, 0.05, 0.9); drag = { x: e.clientX, y: e.clientY }; });
+  // HUD buttons / dialog / menus stop propagation, so this only sees touches on the 3D view or the letterbox around it
+  addEventListener('pointerdown', (e) => {
+    if (!window.__loaded || (e.target.closest && e.target.closest('#bar, #loading'))) return;
+    if (G.mode === 'dialog') { advance(); return; } if (G.mode === 'intro' || G.mode === 'ending') { G.introNext && G.introNext(); return; }
+    if (e.pointerType !== 'mouse' && joyId === null && !joy.classList.contains('hide') && e.clientX < innerWidth / 3) { e.preventDefault(); joyStart(e, true); return; }
+    if (!drag) { drag = { id: e.pointerId, x: e.clientX, y: e.clientY }; try { e.target.setPointerCapture(e.pointerId); } catch (_) { /* synthetic */ } }
+  });
+  for (const ev of ['pointerup', 'pointercancel']) addEventListener(ev, (e) => { if (drag && e.pointerId === drag.id) drag = null; });
+  addEventListener('pointermove', (e) => { if (!drag || e.pointerId !== drag.id) return; G.cy -= (e.clientX - drag.x) * 0.008; G.cp = clamp(G.cp + (e.clientY - drag.y) * 0.004, 0.05, 0.9); drag.x = e.clientX; drag.y = e.clientY; });
   dlgEl.onpointerdown = (e) => { e.stopPropagation(); if (G.mode === 'dialog') advance(); };
   endEl.onpointerdown = (e) => { e.stopPropagation(); G.introNext && G.introNext(); };
   mapEl.onpointerdown = (e) => { e.stopPropagation(); closeMap(); };
@@ -807,6 +834,7 @@ export async function start(man) {
   const st = loop(renderer, scene, () => camera, (dt, t) => {
     if (!W) return;
     handleKeys();
+    joySmooth(dt);
     if (G.mode === 'field') { if (G.swinging) swingStep(dt); else moveField(dt); if (C) chaseStep(dt); if (G.mode === 'field' && !G.swinging) fieldChecks(dt); }
     else if (G.mode === 'battle' && B) { moveField(dt); battleStep(dt); }
     if (G.cut) G.cut(dt);
@@ -848,7 +876,7 @@ export async function start(man) {
 
   window.__game = { get S() { return S; }, get W() { return W; }, get mode() { return G.mode; }, get battle() { return B; }, get chase() { return C; }, fps: () => st.fps, game, springs };
   const dbg = () => ({ mode: G.mode, level: W && W.id, pos: player.position.toArray().map((v) => +v.toFixed(2)), anim: pA && pA.name, riding: G.riding, swinging: G.swinging,
-    springs: nSprings(), quest: (currentQuest() || {}).id || 'done', battle: B ? B.foes.map((f) => [f.name, f.hp]) : null, chase: !!C, fps: +st.fps.toFixed(1) });
+    springs: nSprings(), quest: (currentQuest() || {}).id || 'done', battle: B ? B.foes.map((f) => [f.name, f.hp]) : null, chase: !!C, fps: +st.fps.toFixed(1), cam: +G.cy.toFixed(3), joy: joyV ? [+joyV.x.toFixed(2), +joyV.y.toFixed(2)] : null });
   window.__debug = Object.assign(dbg, {
     setFlag: (f) => { S.flags[f] = true; progress(); }, go: (id) => goLevel(id), teleport: (x, z) => { player.position.set(x, W.h(x, z), z); },
     discover: (id) => { const s = W.springs.find((q) => q.id === id); if (s && !s.found) discover(s); }, talk, startChase, startBossBattle, save, loadSave, scene: setupScene, cu: (o) => { G.cuOv = o; G.snap = true; },
@@ -860,7 +888,7 @@ export async function start(man) {
     await buildLevel('HUB'); progress();
     if (sc && sc !== 'title') await setupScene(sc); else { showTitle(); G.snap = true; }
     await new Promise((r) => setTimeout(r, 900));
-    window.__ready = true;
+    loaded(); window.__ready = true;
   };
   if (!Q.get('autostart')) G.start();
 }

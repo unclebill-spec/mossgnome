@@ -133,14 +133,30 @@ export function pathStrip(points, width, heightAt, url) {
 }
 
 // ---------- audio (HTMLAudio; muted until the first user gesture unless autoplay is allowed)
-export function sfx(name, vol = 0.6) { const a = new Audio(`sfx/${name}.wav`); a.volume = vol; a.play().catch(() => {}); return a; }
+// Nothing makes a sound until loading has finished AND the player has made a deliberate tap / key press after that
+// (mobile: touches during load used to fire title-menu sounds before anything was ready).
+export const audio = { ready: false, unlocked: false, music: null };
+const SILENT = { pause() {}, play() { return Promise.resolve(); }, volume: 0 };
+export function sfx(name, vol = 0.6) { if (!audio.unlocked) return SILENT; const a = new Audio(`sfx/${name}.wav`); a.volume = vol; a.play().catch(() => {}); return a; }
+let armed = false;  // a touch that began during loading and lifts afterwards is not a deliberate tap
+for (const ev of ['pointerdown', 'touchstart']) addEventListener(ev, () => { if (audio.ready) armed = true; }, { capture: true, passive: true });
+function unlockAudio(e) {
+  if (!audio.ready || audio.unlocked || (e.type !== 'keydown' && !armed)) return; audio.unlocked = true;
+  const m = audio.music; if (m && m.a && m.a.paused) m.a.play().catch(() => {});
+}
+for (const ev of ['pointerup', 'touchend', 'click', 'keydown']) addEventListener(ev, unlockAudio, true);
+// called once the game is fully loaded: drop the input-swallowing loading overlay and allow audio on the next tap
+export function loaded() {
+  if (audio.ready) return; audio.ready = true; window.__loaded = true;
+  const el = document.getElementById('loading'); if (el) { el.classList.add('done'); setTimeout(() => el.remove(), 400); }
+}
 export class Music {
-  constructor(man) { this.man = man; this.a = null; this.mood = null; }
+  constructor(man) { this.man = man; this.a = null; this.mood = null; audio.music = this; }
   play(mood, { loop = true, vol = 0.55 } = {}) {
     if (this.mood === mood) return; this.stop();
     const t = (this.man.music || []).find((m) => m.mood === mood); if (!t) return;
     this.a = new Audio(t.wav); this.a.loop = loop && t.loop !== false && (t.always_on !== false); this.a.volume = vol; this.mood = mood;
-    this.a.play().catch(() => {});
+    if (audio.unlocked) this.a.play().catch(() => {});  // otherwise starts on the first tap after load
   }
   stop() { if (this.a) { this.a.pause(); this.a = null; } this.mood = null; }
 }
@@ -167,7 +183,7 @@ export function floatText(camera, worldPos, text, cls = 'float') {
 // ---------- input
 export const keys = {};
 export const pressed = [];
-addEventListener('keydown', (e) => { if (!keys[e.code]) pressed.push(e.code); keys[e.code] = true; if (['Tab', 'Space', 'ArrowUp', 'ArrowDown'].includes(e.code)) e.preventDefault(); });
+addEventListener('keydown', (e) => { if (!audio.ready) { e.preventDefault(); return; } if (!keys[e.code]) pressed.push(e.code); keys[e.code] = true; if (['Tab', 'Space', 'ArrowUp', 'ArrowDown'].includes(e.code)) e.preventDefault(); });
 addEventListener('keyup', (e) => { keys[e.code] = false; });
 export function takePressed() { return pressed.splice(0, pressed.length); }
 
