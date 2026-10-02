@@ -7,6 +7,8 @@ Handoff notes for the next agent. Cursor reads this file automatically. Keep it 
 - **Local:** `/workspace/mossgnome-publish`
 
 ## Current state (2026-10-02)
+- **2026-10-02 16:45:** added `starter/` (a minimal complete game on the shared runtime), `docs/N64_GRAPHICS_GUIDE.md` and `docs/GROK_BUILD_PROMPT.md`. The game itself is unchanged. The starter's source of truth is the suite (`n64/web/starter/`, `n64 new`). Re-publish it with `__KIT__` set to `../` and `__ICONS__` set to `../icons/` (see `n64/starter.py::render`).
+- **The root runtime files are a public API now.** Outside builds (Grok build mode, other sites) import `common.js`, `input.js`, `camrig.js`, `display.js`, `minimap.js` and `lights/{glowkit,daynight,wisps}.js` from GitHub Pages. Keep their exports backward compatible, keep `vendor/three.module.js` at r160, and update the guide if an API changes.
 - Playable and deployed. The latest change is **day and night** (`grovelights.js` + `lights/`): a time-of-day cycle with torches, glow-fish lanterns, wisps, fireflies and butterflies in Bill's "gloom and glow" palette (neon blue cold fire, violet, red), a glow at every spring, Settings > Time of day and Lighting, Pause > Rest, and an Auto quality guard. Before that came a fix for invisible friends: NPC models were never added to the scene, and now they are, with a stand-in gnome if a model fails to load. It also adds an orange goal dot on the minimap once you reach the quest goal. Before that came the HUD layout: a bottom button row with the clock, a half-size HP/MP plaque, fullscreen at the left edge, the minimap top-right with a red quest chevron, and Settings > Install app. Before that came the minimap and the higher look-up camera (`109829c`), and before that `b7680db` (fullscreen, sideways-phone layout, display presets). See `CHANGELOG.md`.
 - **Inputs:** phone touch, gamepad and keyboard/mouse all work.
 - **Cameras:** Follow (default) and Free, plus Target Lock.
@@ -51,6 +53,8 @@ To ship a code change, copy the changed files from `n64-suite/n64/web/rpg/` into
 | `systems/game.json` | quests (each with a `target` list for the minimap chevron), dialogue, hints, items, ending |
 | `models/` `textures/` `sprites/` `skybox/` `music/` `sfx/` `fonts/` `ui/` `world/` `systems/` | generated assets (GLB, PNG, WAV, level JSON, spells/springs data) |
 | `vendor/` | three.js r160 + addons |
+| `starter/` | minimal complete game (`index.html`, `starter.js`, `sw.js`, `app.webmanifest`); imports the runtime via the `kit/` import map (`../`) |
+| `docs/` | `N64_GRAPHICS_GUIDE.md` (the guide) and `GROK_BUILD_PROMPT.md` (paste-in prompt); masters live in the suite's `docs/` |
 | `preview/` | model sheets and `shots/` screenshots (used in the README) |
 
 Useful URL flags: `?debug=1` (dev bar), `?hour=22.5` / `?tod=night` / `?cycle=1` (scenes otherwise start at noon, clock stopped), `?lightq=low|medium|high`, `?nolights=1`, `&guard=1`, `?scene=title|hub|spring|battle|boss_battle|map|pause|ending…&autostart=1`, `&noenc=1`, `?safearea=t,r,b,l` (simulate a notch).
@@ -77,6 +81,7 @@ All tests are headless Playwright (Chromium + SwiftShader) and live in the suite
 - **Against this repo locally:** `python3 /tmp/runpub.py t_display.py`. `t_night.py` covers day/night (settings, light levels, readability, palette, every spring at night, Auto guard, fallback). `t_npcs.py` checks (at noon and at 10:30 PM) that every friend is really on screen (in every level, using `__debug.npcCheck(id)`, which renders the frame with and without them) and the minimap goal dot. `t_hud.py` covers the HUD layout (bottom row, corners, Install app) on phones, desktop, TV and Retro, with screenshots in `/workspace/scratch/hud2/shots`. `t_mapcam.py` covers the minimap, quest chevron, settings, presets and the camera look-up on desktop and three phones; its screenshots go to `/workspace/scratch/mm/shots`. It serves `/tmp/pagesroot`; `t_pad.py`, `t_pad2.py`, `t_kbm.py` and `t_touch.py` work the same way.
 - **Against the live site:** pass the URL, e.g. `python3 t_pad.py https://unclebill-spec.github.io/mossgnome/`.
 - **Full run:** `bash /workspace/scratch/disp/runall.sh https://unclebill-spec.github.io/mossgnome/ live` (about 15 min). Results go to `/workspace/scratch/disp/all_live.log`. Expect `FAILS: []` in each section.
+- **Starter:** `python3 /workspace/n64-suite/tests/input/t_starter.py http://127.0.0.1:PORT/mossgnome/starter/` (or the live URL). Expect `0 failure(s)`. Screenshots go to `/workspace/scratch/starter-shots/`.
 - **Scratch tests:** `/workspace/scratch/mobiletest.py`, `pubtest.py` and `pubtest2.py` (smoke tests of every scene).
 - **Screenshot sheets** from the display tests: `/workspace/scratch/disp/sheets/`.
 

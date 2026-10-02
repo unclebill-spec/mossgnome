@@ -4,6 +4,18 @@ Mossgnome and the Hidden Springs (published build). Newest first. Times are US E
 Every entry is one commit on `main`; to roll back, `git checkout <hash>` (look) or `git revert <hash>` (undo on main).
 Live: https://unclebill-spec.github.io/mossgnome/
 
+## 2026-10-02 16:45: N64 graphics guide, a paste-in build prompt and a minimal starter game anyone can copy
+- **`starter/`: the smallest complete game** (play: https://unclebill-spec.github.io/mossgnome/starter/). One clearing, a gnome you steer, a friend to talk to, a quest to find a glowing spring, and two swirling violet portals, in a day/night cycle with "gloom and glow" lights (blue cold-fire torches, violet and red lanterns, wisps, fireflies).
+  - Everything you see is built from plain three.js shapes in about 450 lines (`starter/starter.js`); no model files. The gnome is 326 triangles, about 4,200 per frame.
+  - It has every standard feature: floating touch joystick, A/B buttons, gamepad, WASD and mouse; follow, free and lock-on cameras; Settings (resolution presets including Retro 320x240, aspect, scale, camera, time of day, lights, minimap, fullscreen, Install app); minimap with quest chevron and goal dot; bottom HUD row with clock; safe areas; rotate overlay; manifest and network-first service worker.
+  - It uses the same shared runtime files as Mossgnome (`common.js`, `input.js`, `camrig.js`, `display.js`, `minimap.js`, `lights/glowkit.js`, `lights/daynight.js`, `lights/wisps.js`) through a `kit/` import map. Other sites can import them from GitHub Pages (CORS on).
+  - URL flags: `?hour=22&cycle=0` (night, clock stopped), `?lightq=low|medium|high`, `?crisp=1` (nearest filtering), `?seed=N`, `?safearea=t,r,b,l`.
+- **`docs/N64_GRAPHICS_GUIDE.md`:** the N64 look in numbers (triangle budgets, 32 px textures, bilinear, vertex colours, fog, 320x240, 30 fps, 15 fps stepped rigid animation). Also covers the renderer, material, light and shadow settings, procedural low-poly models, terrain, every runtime module with copy-paste wiring, Bill's required-features checklist, 17 "why builds fail" lessons, the tests, and a 12-step build order.
+- **`docs/GROK_BUILD_PROMPT.md`:** about 2,200 words to paste into a chat builder (such as Grok build mode). It says exactly what to build, the rules in numbers, the required features, the build order and the failure checklist, and points at the public files as working reference code.
+- **`preview/starter_sheet.png`:** starter screenshots (day, night, spring at night, portal at night, phone with touch controls, Retro).
+- **The game itself is unchanged.**
+- **Tests:** the new suite test `t_starter.py` passed 43/43 locally (SwiftShader), both from `n64 new` output and from this repo's `starter/`. It covers keyboard, mouse, gamepad and touch; dialogue, quest, minimap and portal; settings and Retro; day vs night brightness; phone targets, safe area and overlaps; the portrait overlay; and console errors.
+
 ## 2026-10-02 07:51: Day and night: a time-of-day cycle with glowing torches, lanterns, wisps and butterflies ("gloom and glow")
 - **Time of day:** the world now has a day/night cycle, about 20 minutes per full day, with nights a bit longer than days. Dusk is short: about 6 to 7 PM in-game, roughly 50 seconds of real time.
   - The HUD clock shows the time of day (for example 10:30 PM). Play time is still in the pause menu and the credits.

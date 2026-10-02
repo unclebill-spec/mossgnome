@@ -42,6 +42,14 @@ Target Lock grabs a cross critter when you get close (or press the lock control)
 - **Settings → Time of day:** *Cycle*, *Always day* or *Always night*. **Settings → Lighting:** *Auto* (picks for your device and steps down if it runs slow), *Low*, *Medium* or *High*.
 - In the village, the pause menu has **Rest until nightfall / morning**.
 
+## Make your own N64-style game
+- **Starter game:** https://unclebill-spec.github.io/mossgnome/starter/ (source in [`starter/`](starter/)). It is a tiny complete game with every standard feature, built from plain three.js shapes. Copy it and grow it.
+- **Guide:** [`docs/N64_GRAPHICS_GUIDE.md`](docs/N64_GRAPHICS_GUIDE.md) covers the look in numbers, the renderer and material setup, procedural models, the shared input, camera, display, minimap, day/night and glow code, a checklist, why builds fail, and a build order.
+- **Paste-in prompt for chat builders:** [`docs/GROK_BUILD_PROMPT.md`](docs/GROK_BUILD_PROMPT.md).
+- The shared runtime files at the top of this repo can be imported straight from `https://unclebill-spec.github.io/mossgnome/` (see the guide's import map).
+
+![starter](preview/starter_sheet.png)
+
 Progress saves to your browser (localStorage): pick **Continue** on the title screen.
 
 Developer tools (scene picker, texture filter toggle, spell VFX page) are hidden; add `?debug=1` to the URL to show them.

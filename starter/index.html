@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="theme-color" content="#0a0c1a">
+<link rel="manifest" href="app.webmanifest"><link rel="apple-touch-icon" href="../icons/icon-180.png"><link rel="icon" type="image/png" href="../icons/icon-192.png">
+<title>N64 Starter</title>
+<style>
+html,body{margin:0;position:fixed;inset:0;overflow:hidden;overscroll-behavior:none;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;background:#000;font-family:system-ui,sans-serif}
+#loading{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:#0a0c1a;color:#cfe0ff;font:600 18px system-ui;transition:opacity .35s}#loading.done{opacity:0;pointer-events:none}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000}
+#stage{position:relative;overflow:hidden;container-type:size;background:#000}
+canvas#view{position:absolute;inset:0;width:100%;height:100%;display:block}
+#hud{position:absolute;inset:0;pointer-events:none;color:#f4ecd0;font-size:calc(2.6cqh * var(--hk,1))}
+#hud button{pointer-events:auto;min-width:48px;min-height:48px;border-radius:14px;border:3px solid #2a2f5a;background:rgba(20,24,52,.78);color:#e8f0ff;font:700 calc(max(15px,2.5cqh) * var(--hk,1)) system-ui;cursor:pointer;touch-action:none}
+#hud button:active{background:#3d4a9a}
+#fs{position:absolute;left:calc(var(--sal,0px) + 1.6cqh);top:calc(var(--sat,0px) + 1.6cqh)}
+#row{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sab,0px) + 1.6cqh);display:flex;gap:1.2cqh;align-items:center}
+#clock{pointer-events:none;min-width:5.5em;text-align:center;padding:.35em .6em;border-radius:12px;background:rgba(10,12,30,.7);font-weight:700}
+#acts{position:absolute;right:calc(var(--sar,0px) + 3cqh);bottom:calc(var(--sab,0px) + 4cqh);display:flex;gap:2cqh;align-items:flex-end}
+#acts button{width:calc(max(60px,13cqh) * var(--hk,1));height:calc(max(60px,13cqh) * var(--hk,1));border-radius:50%;font-size:calc(max(18px,4cqh) * var(--hk,1))}
+#acts #bA{background:rgba(61,155,255,.55)}#acts #bB{margin-bottom:8cqh;background:rgba(162,77,255,.5)}
+#joy{position:absolute;left:calc(var(--sal,0px) + 16%);top:74%;width:calc(max(96px,22cqh) * var(--hk,1));aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;border:3px solid rgba(220,230,255,.45);background:rgba(20,24,52,.35);pointer-events:none}
+#joy .knob{position:absolute;left:30%;top:30%;width:40%;height:40%;border-radius:50%;background:rgba(220,230,255,.75)}#joy.on{border-color:#7ab8ff}
+html:not([data-input=touch]) #joy,html:not([data-input=touch]) #acts{display:none}
+#prompt{position:absolute;left:50%;bottom:calc(var(--sab,0px) + 13cqh);transform:translateX(-50%);padding:.4em .9em;border-radius:12px;background:rgba(10,12,30,.8)}
+#prompt::after{content:'E: Talk'}html[data-input=touch] #prompt::after{content:'B: Talk'}html[data-input=pad] #prompt::after{content:'X: Talk'}
+#talk{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(var(--sab,0px) + 12cqh);width:min(80%,640px);padding:1em 1.2em;border-radius:16px;border:3px solid #a24dff;background:rgba(14,10,34,.92);pointer-events:auto;line-height:1.35}
+#talk b{display:block;color:#c8a8ff;margin-bottom:.3em}#talk small{display:block;opacity:.7;margin-top:.4em}
+#toast{position:absolute;left:50%;top:calc(var(--sat,0px) + 3cqh);transform:translate(-50%,-30px);opacity:0;transition:.25s;padding:.5em 1em;border-radius:14px;background:rgba(10,12,30,.85);text-align:center;max-width:80%}#toast.on{opacity:1;transform:translate(-50%,0)}
+#menu{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(86%,460px);max-height:84%;overflow:auto;padding:1em;border-radius:18px;border:3px solid #3d9bff;background:rgba(10,12,30,.94);pointer-events:auto;display:flex;flex-direction:column;gap:.45em}
+#menu b{text-align:center;font-size:1.2em}#menu button{display:flex;justify-content:space-between;gap:1em;padding:.4em .9em;text-align:left}#menu button span{opacity:.8}#menu button.sel{border-color:#3d9bff;background:#1c2a6a}
+#fade{position:absolute;inset:0;background:#1a0a30;opacity:0;pointer-events:none}
+.hide{display:none!important}
+</style>
+<script>addEventListener("beforeinstallprompt",(e)=>{e.preventDefault();window.__bip=e});
+for(const ev of["touchmove","gesturestart","contextmenu","dblclick"])document.addEventListener(ev,(e)=>{if(e.target.closest&&e.target.closest("#menu"))return;e.preventDefault()},{passive:false});
+if("serviceWorker"in navigator&&location.protocol==="https:")addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
+<script type="importmap">{"imports":{"three":"../vendor/three.module.js","kit/":"../"}}</script>
+</head><body>
+<div id="loading">Loading…</div>
+<div id="wrap"><div id="stage"><canvas id="view"></canvas>
+<div id="hud">
+  <div id="fade"></div>
+  <button id="fs" aria-label="Fullscreen">&#x26F6;</button>
+  <div id="joy"><div class="knob"></div></div>
+  <div id="row"><button data-k="KeyP" aria-label="Pause">&#10074;&#10074;</button><button data-k="KeyH" aria-label="Hint">?</button><button data-k="KeyM" aria-label="Map">Map</button><button data-k="KeyC" aria-label="Camera">Cam</button><span id="clock">--:--</span></div>
+  <div id="acts"><button id="bB" data-k="KeyE" aria-label="Talk">B</button><button id="bA" data-k="Space" aria-label="Jump">A</button></div>
+  <div id="prompt" class="hide"></div><div id="talk" class="hide"></div><div id="toast"></div>
+  <div id="menu" class="hide"></div>
+</div></div></div>
+<script type="module" src="starter.js"></script>
+</body></html>
