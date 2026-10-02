@@ -199,6 +199,22 @@ export async function start(man) {
   const sprite = (map, color, size, additive = true, opacity = 1) => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map, color: new THREE.Color(color), transparent: true, opacity, depthWrite: false, fog: false, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending })); s.scale.setScalar(size); return s; };
   const local = (o, lx, lz) => { const c = Math.cos(o.rot || 0), s = Math.sin(o.rot || 0); return [o.pos[0] + lx * c + lz * s, o.pos[2] - lx * s + lz * c]; };
   function addCol(x, z, r, tag) { W.cols.push({ x, z, r, tag }); }
+  // a friend placed inside a house / trunk collider steps out to its edge (Master Timble stood half inside the root house)
+  function clearOf(n) {
+    let x = n.pos[0], z = n.pos[2];
+    for (let it = 0; it < 3; it++) for (const c of W.cols) { if (c.tag && c.tag !== 'shell') continue; const d = Math.hypot(x - c.x, z - c.z); if (d >= c.r + 0.3) continue;
+      const k = (c.r + 0.45) / Math.max(d, 0.01), ax = d > 0.01 ? x - c.x : 0, az = d > 0.01 ? z - c.z : 1; x = c.x + ax * (d > 0.01 ? k : c.r + 0.45); z = c.z + az * (d > 0.01 ? k : c.r + 0.45); }
+    return x === n.pos[0] && z === n.pos[2] ? n : { ...n, pos: [x, n.pos[1], z] };
+  }
+  const hasMesh = (o) => { let k = 0; o.traverse((q) => { if (q.isMesh && q.geometry && q.geometry.attributes.position && q.geometry.attributes.position.count) k++; }); return k > 0; };
+  // stand-in gnome if a friend's model fails to load (keeps them findable and talkable): robe, face, beard, pointy hat
+  function standIn(i) {
+    const g = new THREE.Group(), robe = ['#3f7a3a', '#7a4a8a', '#3a5f9a', '#9a6a2a'][i % 4];
+    const part = (geo, col, y) => { const m = new THREE.Mesh(geo, reg(new THREE.MeshBasicMaterial({ color: col }))); m.position.y = y; g.add(m); return m; };
+    part(new THREE.CylinderGeometry(0.22, 0.38, 0.7, 10), robe, 0.35); part(new THREE.SphereGeometry(0.2, 10, 8), '#f0c8a0', 0.86);
+    part(new THREE.ConeGeometry(0.17, 0.32, 10), '#f4f0e8', 0.68).rotation.x = Math.PI; part(new THREE.ConeGeometry(0.24, 0.62, 10), '#c8302a', 1.25);
+    g.userData.clips = []; g.userData.standIn = true; return g;
+  }
   function particles(n, spread, y0, y1, map, color, size, additive = true, center = [0, 0]) {
     const out = [];
     for (let i = 0; i < n; i++) { const s = sprite(map, color, size * (0.6 + R() * 0.8), additive, 0.9); const x = center[0] + (R() - 0.5) * spread, z = center[1] + (R() - 0.5) * spread;
@@ -241,11 +257,13 @@ export async function start(man) {
     if (L.swing) jobs.push(load('models/rope_swing.glb').then((m) => { const sw = L.swing; const piv = new THREE.Group(); piv.position.copy(P3(sw.pivot)); piv.rotation.y = sw.rot;
       m.position.set(0, -sw.seat_drop, 0); piv.add(m); W.g.add(piv); W.swing = { ...sw, obj: piv, ang: 0, vel: 0, on: false }; }));
     if (L.fox) { fox.position.copy(P3(L.fox.pos)); fox.rotation.y = L.fox.rot; fox.visible = true; } else fox.visible = !!S.flags.met_fox;
-    for (const [i, n] of L.npcs.entries()) jobs.push(load(`models/${n.id}.glb`).then((m) => { m.position.copy(P3(n.pos)); m.position.y = W.h(n.pos[0], n.pos[2]); m.rotation.y = Math.PI;
+    for (const [i, n0] of L.npcs.entries()) { const n = clearOf(n0); jobs.push(load(`models/${n.id}.glb`).then((m) => {
+      if (!hasMesh(m)) { console.warn(`NPC model models/${n.id}.glb missing or empty: using a stand-in`); m = standIn(i); }
+      m.position.copy(P3(n.pos)); m.position.y = W.h(n.pos[0], n.pos[2]); m.rotation.y = Math.PI; m.visible = true; W.g.add(m);  // (NPCs were never added to the scene before 2026-10-01)
       const an = animate(m); if (an) { an.play('idle', 0); an.cur.time = i * 0.6; }
       const mk = sprite(bangT, '#ffffff', 0.55, false); mk.position.y = 1.9; m.add(mk);
       const lb = sprite(labelT(n.name.split(' ').slice(-1)[0]), '#ffffff', 1.6, false); lb.scale.set(2.2, 0.42, 1); lb.position.y = 2.35; m.add(lb);
-      W.npcs.push({ ...n, obj: m, anim: an, mark: mk, home: m.position.clone() }); addCol(n.pos[0], n.pos[2], 0.45, 'npc'); }));
+      W.npcs.push({ ...n, obj: m, anim: an, mark: mk, home: m.position.clone() }); addCol(n.pos[0], n.pos[2], 0.45, 'npc'); })); }
     for (const [i, e] of L.enemies.entries()) {
       if (e.rank === 'boss') { dwarf.visible = true; dwarf.position.copy(P3(e.pos)); dwarf.position.y = W.h(e.pos[0], e.pos[2]); dwarf.rotation.y = 0; continue; }
       jobs.push(load(`models/${e.id}.glb`).then((m) => { m.position.copy(P3(e.pos)); const an = animate(m); if (an) { an.play(an.has('move') ? 'move' : 'idle', 0); an.cur.time = i * 0.37; }
@@ -1103,12 +1121,34 @@ export async function start(man) {
     if (sc === 'caverns' || sc === 'marsh' || sc === 'forest') { at(L.spawn[0], L.spawn[2] - 3, Math.PI); G.cy = 0; }
   }
 
+  // test helper: is this friend really on screen? (in the scene, every parent visible, non-zero bounds, inside the view, and
+  // rendering him changes pixels: draw the frame twice into a small target, with and without him)
+  let npcRT = null;
+  function npcCheck(id) {
+    const n = W.npcs.find((q) => q.id === id); if (!n) return null;
+    const o = n.obj; let inScene = false, chain = true; for (let a = o; a; a = a.parent) { if (a.isScene) inScene = true; if (!a.visible) chain = false; }
+    o.updateMatrixWorld(true); const box = new THREE.Box3(); o.traverse((q) => { if (q.isMesh && !q.isSprite) box.expandByObject(q, true); }); const sz = box.getSize(new THREE.Vector3());
+    camera.updateMatrixWorld(); const fr = new THREE.Frustum().setFromProjectionMatrix(new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse));
+    const c = box.getCenter(new THREE.Vector3()), ndc = c.clone().project(camera);
+    const RW = 320, RH = 240; if (!npcRT) npcRT = new THREE.WebGLRenderTarget(RW, RH);
+    const read = () => { renderer.setRenderTarget(npcRT); renderer.clear(); renderer.render(scene, camera); const b = new Uint8Array(RW * RH * 4); renderer.readRenderTargetPixels(npcRT, 0, 0, RW, RH, b); renderer.setRenderTarget(null); return b; };
+    const hidden = []; o.traverse((q) => { if (q.isSprite && q.visible) hidden.push(q); });  // count the body, not the '!' / name tag,
+    for (const q of [player, fox]) if (q.visible) hidden.push(q);                          // and don't let the gnome stand in the way
+    hidden.forEach((q) => { q.visible = false; });
+    const a = read(); o.visible = false; const b = read(); o.visible = true; hidden.forEach((q) => { q.visible = true; });
+    let px = 0; for (let k = 0; k < a.length; k += 4) if (Math.abs(a[k] - b[k]) + Math.abs(a[k + 1] - b[k + 1]) + Math.abs(a[k + 2] - b[k + 2]) > 24) px++;
+    let meshes = 0; o.traverse((q) => { if (q.isMesh) meshes++; });
+    return { id, name: n.name, inScene, visibleChain: chain, meshes, standIn: !!o.userData.standIn, size: sz.toArray().map((v) => +v.toFixed(3)), inView: fr.intersectsBox(box), ndc: [+ndc.x.toFixed(2), +ndc.y.toFixed(2)], pixels: px,
+      prompt: promptEl.classList.contains('hide') ? null : promptEl.textContent, dist: +Math.hypot(o.position.x - player.position.x, o.position.z - player.position.z).toFixed(2) };
+  }
   window.__game = { get S() { return S; }, get W() { return W; }, get mode() { return G.mode; }, get battle() { return B; }, get chase() { return C; }, fps: () => st.fps, game, springs };
   const dbg = () => ({ mode: G.mode, level: W && W.id, pos: player.position.toArray().map((v) => +v.toFixed(2)), anim: pA && pA.name, riding: G.riding, swinging: G.swinging,
     springs: nSprings(), quest: (currentQuest() || {}).id || 'done', battle: B ? B.foes.map((f) => [f.name, f.hp]) : null, chase: !!C, fps: +st.fps.toFixed(1), cam: +G.cy.toFixed(3), pitch: +G.cp.toFixed(3), face: +player.rotation.y.toFixed(3), joy: joyV ? [+joyV.x.toFixed(2), +joyV.y.toFixed(2)] : null,
     disp: { res: display.res, set: { ...display.settings }, rw: display.rw, rh: display.rh, w: display.w, h: display.h, hk: display.hk, tv: display.tv, fs: display.isFS(), pad: padFirst() },
-    lock: G.lock ? (G.lock.e.name || G.lock.e.id || 'foe') : null, lockPos: G.lock ? G.lock.e.obj.position.toArray().map((v) => +v.toFixed(3)) : null, camMode: input.settings.camMode === 'free' ? 'free' : 'follow', mini: { on: mini.visible, arrow: mini.arrow, angle: mini.angle === null ? null : +mini.angle.toFixed(3), draws: mini.shown, heading: (() => { const h = W && questNav(); return h ? { x: +h.x.toFixed(2), z: +h.z.toFixed(2), via: h.via || null } : null; })() }, pitchUp: +upAmount(G.cp).toFixed(3), viewPitch: (() => { const v = camLook.clone().sub(camPos).normalize(); return +(Math.asin(v.y) * 57.2958).toFixed(1); })(), camY: +camera.position.y.toFixed(3), camPos: camera.position.toArray().map((v) => +v.toFixed(3)), camGround: W ? +(camera.position.y - W.h(camera.position.x, camera.position.z)).toFixed(3) : null, scheme: input.scheme, zoom: +G.zoom.toFixed(2), walk: G.walk, sel: selSpell, mp: S.mp, menuPage, setSel });
+    lock: G.lock ? (G.lock.e.name || G.lock.e.id || 'foe') : null, lockPos: G.lock ? G.lock.e.obj.position.toArray().map((v) => +v.toFixed(3)) : null, camMode: input.settings.camMode === 'free' ? 'free' : 'follow', mini: { on: mini.visible, arrow: mini.arrow, goal: mini.goal, angle: mini.angle === null ? null : +mini.angle.toFixed(3), draws: mini.shown, heading: (() => { const h = W && questNav(); return h ? { x: +h.x.toFixed(2), z: +h.z.toFixed(2), via: h.via || null } : null; })() }, pitchUp: +upAmount(G.cp).toFixed(3), viewPitch: (() => { const v = camLook.clone().sub(camPos).normalize(); return +(Math.asin(v.y) * 57.2958).toFixed(1); })(), camY: +camera.position.y.toFixed(3), camPos: camera.position.toArray().map((v) => +v.toFixed(3)), camGround: W ? +(camera.position.y - W.h(camera.position.x, camera.position.z)).toFixed(3) : null, scheme: input.scheme, zoom: +G.zoom.toFixed(2), walk: G.walk, sel: selSpell, mp: S.mp, menuPage, setSel });
   window.__debug = Object.assign(dbg, {
+    faceTo: (x, z) => { const a = Math.atan2(x - player.position.x, z - player.position.z); player.rotation.y = a; G.cy = a + Math.PI; G.cp = 0.3; G.snap = true; },
+    npcCheck: (id) => npcCheck(id),
     setFlag: (f) => { S.flags[f] = true; progress(); }, go: (id) => goLevel(id), teleport: (x, z) => { player.position.set(x, W.h(x, z), z); },
     discover: (id) => { const s = W.springs.find((q) => q.id === id); if (s && !s.found) discover(s); }, talk, startChase, startBossBattle, save, loadSave, scene: setupScene, cu: (o) => { G.cuOv = o; G.snap = true; },
 

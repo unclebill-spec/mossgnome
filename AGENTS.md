@@ -7,7 +7,7 @@ Handoff notes for the next agent. Cursor reads this file automatically. Keep it 
 - **Local:** `/workspace/mossgnome-publish`
 
 ## Current state (2026-10-01)
-- Playable and deployed. The latest change is the HUD layout: a bottom button row with the clock, a half-size HP/MP plaque, fullscreen at the left edge, the minimap top-right with a red quest chevron, and Settings > Install app. Before that came the minimap and the higher look-up camera (`109829c`), and before that `b7680db` (fullscreen, sideways-phone layout, display presets). See `CHANGELOG.md`.
+- Playable and deployed. The latest change is a fix for invisible friends: NPC models were never added to the scene, and now they are, with a stand-in gnome if a model fails to load. It also adds an orange goal dot on the minimap once you reach the quest goal. Before that came the HUD layout: a bottom button row with the clock, a half-size HP/MP plaque, fullscreen at the left edge, the minimap top-right with a red quest chevron, and Settings > Install app. Before that came the minimap and the higher look-up camera (`109829c`), and before that `b7680db` (fullscreen, sideways-phone layout, display presets). See `CHANGELOG.md`.
 - **Inputs:** phone touch, gamepad and keyboard/mouse all work.
 - **Cameras:** Follow (default) and Free, plus Target Lock.
 - **Settings:** Display / Aspect / Render scale, Minimap, Quest hint arrow (both On by default), Install app (`display.install()`: the stashed `beforeinstallprompt` event, or step-by-step instructions for iOS, Android or desktop).
@@ -34,7 +34,7 @@ To ship a code change, copy the changed files from `n64-suite/n64/web/rpg/` into
 | `common.js` | shared stage/HUD helpers (`place`/`placeCircle` in cqh units with safe-area vars) |
 | `input.js` | input layer: gamepad / keyboard+mouse / touch, `I.last` device, Start+Select → Fullscreen |
 | `camrig.js` | Follow / Free camera, Target Lock, pitch limits (`PITCH`) and the look-up helper `lookUp()` (sinks, slides in and tilts up; ground and line-of-sight safe) |
-| `minimap.js` | corner minimap (`createMinimap`, default top-right, red chevron via `arrowColor`), terrain bake from level data (`bakeMap`), and the quest heading (`questHeading`: in-level target or the portal/exit toward it) |
+| `minimap.js` | corner minimap (`createMinimap`, default top-right, red chevron via `arrowColor`; orange goal dot via `goalColor` once you are within `near` of the goal, `M.goal`), terrain bake from level data (`bakeMap`), and the quest heading (`questHeading`: in-level target or the portal/exit toward it) |
 | `display.js` | stage sizing, resolution presets, aspect, render scale, fullscreen, rotate overlay, iPhone tip, Install app (`installState` / `install` / `installSteps`) |
 | `sw.js` | tiny network-first service worker (offline copy of the small text files; needed for Chrome's install prompt); registered from `index.html` on https only |
 | `rpg.js`, `rpg.css`, `springfx.js`, `vfx.js`, `vfx.html` | shared RPG runtime, spring effects, spell VFX (`vfx.html` is the debug page) |
@@ -66,7 +66,7 @@ python3 -m http.server 8091 -d /tmp/pagesroot      # http://127.0.0.1:8091/mossg
 
 ## Tests
 All tests are headless Playwright (Chromium + SwiftShader) and live in the suite: `/workspace/n64-suite/tests/input/` (see its README).
-- **Against this repo locally:** `python3 /tmp/runpub.py t_display.py`. `t_hud.py` covers the HUD layout (bottom row, corners, Install app) on phones, desktop, TV and Retro, with screenshots in `/workspace/scratch/hud2/shots`. `t_mapcam.py` covers the minimap, quest chevron, settings, presets and the camera look-up on desktop and three phones; its screenshots go to `/workspace/scratch/mm/shots`. It serves `/tmp/pagesroot`; `t_pad.py`, `t_pad2.py`, `t_kbm.py` and `t_touch.py` work the same way.
+- **Against this repo locally:** `python3 /tmp/runpub.py t_display.py`. `t_npcs.py` checks that every friend is really on screen (in every level, using `__debug.npcCheck(id)`, which renders the frame with and without them) and the minimap goal dot. `t_hud.py` covers the HUD layout (bottom row, corners, Install app) on phones, desktop, TV and Retro, with screenshots in `/workspace/scratch/hud2/shots`. `t_mapcam.py` covers the minimap, quest chevron, settings, presets and the camera look-up on desktop and three phones; its screenshots go to `/workspace/scratch/mm/shots`. It serves `/tmp/pagesroot`; `t_pad.py`, `t_pad2.py`, `t_kbm.py` and `t_touch.py` work the same way.
 - **Against the live site:** pass the URL, e.g. `python3 t_pad.py https://unclebill-spec.github.io/mossgnome/`.
 - **Full run:** `bash /workspace/scratch/disp/runall.sh https://unclebill-spec.github.io/mossgnome/ live` (about 15 min). Results go to `/workspace/scratch/disp/all_live.log`. Expect `FAILS: []` in each section.
 - **Scratch tests:** `/workspace/scratch/mobiletest.py`, `pubtest.py` and `pubtest2.py` (smoke tests of every scene).

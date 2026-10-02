@@ -1,6 +1,7 @@
 // Shared corner minimap for n64-suite games: a small round parchment disc in a wooden rim, north up, showing the local
 // area around the player, a facing arrow, a few friendly markers, and (optionally) a faint chevron on the rim that points the
-// general way to the current quest step (red, so it reads at a glance). No distance, no exact marker, no beam: just a heading.
+// general way to the current quest step (red, so it reads at a glance). No distance and no beam: just a heading; once you
+// are there (within `near`, default 7) the chevron hides and an orange dot marks the goal itself (`goalColor`, M.goal).
 //   const mm = createMinimap({ parent: hud, view: () => ({ img, size, x, z, facing, marks, heading }) | null });
 //   mm.update(dt, t) every frame (draws at ~15 Hz); mm.el is the disc (CSS: .n64-mini; pointer-events: none).
 // Size / place it with CSS: --mmd (diameter); default top-right corner, inside the safe area; scales with --hk.
@@ -23,11 +24,11 @@ html[data-res=retro] .n64-mini { --mmk: 0.95; }
 const TAU = Math.PI * 2;
 const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
 
-export function createMinimap({ parent, view, radius = 22, cls = '', arrowColor = '#e8261c' }) {
+export function createMinimap({ parent, view, radius = 22, cls = '', arrowColor = '#e8261c', goalColor = '#ff8a1c' }) {
   if (!document.getElementById('n64-mini-css')) { const st = document.createElement('style'); st.id = 'n64-mini-css'; st.textContent = CSS; document.head.appendChild(st); }
   const el = document.createElement('div'); el.className = `n64-mini hide ${cls}`.trim(); el.innerHTML = '<canvas></canvas>'; parent.appendChild(el);
   const cv = el.querySelector('canvas'), g = cv.getContext('2d');
-  const M = { el, visible: false, arrow: false, angle: null, shown: 0, acc: 1, radius, last: null };
+  const M = { el, visible: false, arrow: false, goal: false, angle: null, shown: 0, acc: 1, radius, last: null };
   function size() {
     const retro = document.documentElement.dataset.res === 'retro', css = el.clientWidth || 80;
     const n = retro ? 56 : Math.max(48, Math.min(224, Math.round(css * Math.min(devicePixelRatio || 1, 2))));
@@ -56,7 +57,7 @@ export function createMinimap({ parent, view, radius = 22, cls = '', arrowColor 
       if (m.ring) { g.strokeStyle = '#4a2a14'; g.lineWidth = Math.max(1, 1.2 * u); g.stroke(); }
     }
     // faint quest heading: a small chevron just inside the rim (eased so it drifts, never snaps)
-    M.arrow = false;
+    M.arrow = false; M.goal = false;
     if (v.heading) {
       const want = Math.atan2(v.heading.z - v.z, v.heading.x - v.x), d = Math.hypot(v.heading.x - v.x, v.heading.z - v.z);
       M.angle = M.angle === null ? want : M.angle + wrap(want - M.angle) * 0.18;
@@ -67,6 +68,12 @@ export function createMinimap({ parent, view, radius = 22, cls = '', arrowColor 
         g.fillStyle = arrowColor; g.strokeStyle = 'rgba(255,248,232,0.95)'; g.lineWidth = Math.max(1, 1.2 * u);
         g.beginPath(); g.moveTo(6 * u, 0); g.lineTo(-4 * u, -6 * u); g.lineTo(-1.5 * u, 0); g.lineTo(-4 * u, 6 * u); g.closePath(); g.fill(); g.stroke();
         g.restore();
+      } else {  // arrived: the chevron hides and the goal itself gets an orange dot (gently pulsing, dark ring)
+        const [gx, gy] = P(v.heading.x, v.heading.z);
+        if (Math.hypot(gx - c, gy - c) < c - 4 * u) {
+          M.goal = true; g.fillStyle = goalColor; g.strokeStyle = '#4a2a14'; g.lineWidth = Math.max(1, 1.3 * u);
+          g.beginPath(); g.arc(gx, gy, (4.2 + 0.6 * Math.sin(t * 3)) * u, 0, TAU); g.fill(); g.stroke();
+        }
       }
     } else M.angle = null;
     // the player: a red arrow showing facing (same convention as the parchment map)

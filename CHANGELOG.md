@@ -4,6 +4,20 @@ Mossgnome and the Hidden Springs (published build). Newest first. Times are US E
 Every entry is one commit on `main`; to roll back, `git checkout <hash>` (look) or `git revert <hash>` (undo on main).
 Live: https://unclebill-spec.github.io/mossgnome/
 
+## 2026-10-01 23:36: Fix: villagers were invisible (Grandpa Femble and every other friend); orange goal dot on the minimap
+- **Bug (reported by Bill on his Android phone):** "Talk to Grandpa Femble" showed up on the village green, but nobody was there.
+  - **Cause:** the code that loads friends (NPCs) built each model, its "!" mark and its name tag, but never added them to the 3D scene. So all 9 friends (4 in the village, 2 in Toadstool Wood, 2 in the Caverns, 1 in the Marsh) were invisible on every device since the first build. Their talk spots and colliders still worked.
+  - **Fix:** friends are now added to the level.
+  - **Safety net:** if a friend's model ever fails to load or comes back empty, a simple stand-in gnome (robe, face, beard, red pointy hat) is shown instead, and a warning is logged. They stay findable and talkable.
+  - Master Timble was placed half inside the root house. Any friend standing inside a house, trunk or hideout collider now steps out to its edge when the level loads.
+  - Checked the other lists too: critters, chests, pickups, the fox and the dwarf were already in the scene.
+- **Minimap goal dot:** when you reach the current quest goal (the point where the red chevron hides), an orange dot now marks the goal itself on the minimap. It pulses gently and has a dark ring. Walk away and the chevron comes back.
+- **Tests:** the new `t_npcs.py` runs on Pixel 7 landscape (all levels) and desktop.
+  - For every friend it checks that they are not inside a house or tree collider.
+  - It walks up to them and faces them, then checks: in the scene, every parent visible, non-zero bounds, inside the camera view, and drawing them really changes pixels (the frame is rendered with and without them). The talk prompt must name them.
+  - It also checks that critters, chests and pickups are in the scene.
+  - Goal dot: far from the goal there is a chevron and no dot; near Grandpa Femble the chevron hides and the orange dot shows; walking away brings the chevron back.
+
 ## 2026-10-01 22:55: HUD layout: bottom button row, smaller HP/MP, minimap top-right, red quest arrow, Install app
 - **Bottom row:** the round Pause, Hint, Map and Camera buttons used to sit in a column on the left. They are now one row along the very bottom of the screen, with the clock right beside them.
   - On phones the row sits centred between the joystick and the action buttons, clear of both and above the home-bar safe area.
