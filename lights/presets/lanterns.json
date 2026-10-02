@@ -1,0 +1,442 @@
+{
+  "variants": [
+    {
+      "color": "cyan",
+      "neon": "#19f6ff",
+      "fish": [
+        {
+          "color": "cyan",
+          "radius": 0.15,
+          "loops": 1,
+          "dir": 1
+        },
+        {
+          "color": "cyan",
+          "radius": 0.14,
+          "loops": 2,
+          "dir": -1
+        },
+        {
+          "color": "cyan",
+          "radius": 0.106,
+          "loops": 2,
+          "dir": 1
+        },
+        {
+          "color": "cyan",
+          "radius": 0.117,
+          "loops": 1,
+          "dir": 1
+        },
+        {
+          "color": "cyan",
+          "radius": 0.127,
+          "loops": 2,
+          "dir": 1
+        }
+      ],
+      "orb_center": [
+        0,
+        1.238,
+        0
+      ],
+      "orb_radius": 0.3,
+      "light": {
+        "color": [
+          0.098,
+          0.9647,
+          1.0
+        ],
+        "intensity": 1.7,
+        "distance": 5.5,
+        "pulse": 0.18
+      },
+      "name": "glow_lantern_cyan",
+      "glb": "models/glow_lantern_cyan.glb",
+      "turntable": "models/glow_lantern_cyan_turntable.png",
+      "thumb": "models/glow_lantern_cyan_thumb.png",
+      "tris": 632,
+      "clips": [
+        "swim"
+      ]
+    },
+    {
+      "color": "magenta",
+      "neon": "#ff2ee6",
+      "fish": [
+        {
+          "color": "magenta",
+          "radius": 0.079,
+          "loops": 2,
+          "dir": 1
+        },
+        {
+          "color": "magenta",
+          "radius": 0.172,
+          "loops": 2,
+          "dir": -1
+        },
+        {
+          "color": "magenta",
+          "radius": 0.126,
+          "loops": 1,
+          "dir": 1
+        },
+        {
+          "color": "magenta",
+          "radius": 0.188,
+          "loops": 1,
+          "dir": 1
+        },
+        {
+          "color": "magenta",
+          "radius": 0.112,
+          "loops": 1,
+          "dir": 1
+        }
+      ],
+      "orb_center": [
+        0,
+        1.238,
+        0
+      ],
+      "orb_radius": 0.3,
+      "light": {
+        "color": [
+          1.0,
+          0.1804,
+          0.902
+        ],
+        "intensity": 1.7,
+        "distance": 5.5,
+        "pulse": 0.18
+      },
+      "name": "glow_lantern_magenta",
+      "glb": "models/glow_lantern_magenta.glb",
+      "turntable": "models/glow_lantern_magenta_turntable.png",
+      "thumb": "models/glow_lantern_magenta_thumb.png",
+      "tris": 632,
+      "clips": [
+        "swim"
+      ]
+    },
+    {
+      "color": "lime",
+      "neon": "#a6ff1f",
+      "fish": [
+        {
+          "color": "lime",
+          "radius": 0.078,
+          "loops": 1,
+          "dir": -1
+        },
+        {
+          "color": "lime",
+          "radius": 0.145,
+          "loops": 1,
+          "dir": 1
+        },
+        {
+          "color": "lime",
+          "radius": 0.095,
+          "loops": 2,
+          "dir": 1
+        },
+        {
+          "color": "lime",
+          "radius": 0.138,
+          "loops": 1,
+          "dir": -1
+        },
+        {
+          "color": "lime",
+          "radius": 0.139,
+          "loops": 1,
+          "dir": 1
+        }
+      ],
+      "orb_center": [
+        0,
+        1.238,
+        0
+      ],
+      "orb_radius": 0.3,
+      "light": {
+        "color": [
+          0.651,
+          1.0,
+          0.1216
+        ],
+        "intensity": 1.7,
+        "distance": 5.5,
+        "pulse": 0.18
+      },
+      "name": "glow_lantern_lime",
+      "glb": "models/glow_lantern_lime.glb",
+      "turntable": "models/glow_lantern_lime_turntable.png",
+      "thumb": "models/glow_lantern_lime_thumb.png",
+      "tris": 632,
+      "clips": [
+        "swim"
+      ]
+    },
+    {
+      "color": "amber",
+      "neon": "#ffaa12",
+      "fish": [
+        {
+          "color": "amber",
+          "radius": 0.104,
+          "loops": 1,
+          "dir": 1
+        },
+        {
+          "color": "amber",
+          "radius": 0.087,
+          "loops": 1,
+          "dir": -1
+        },
+        {
+          "color": "amber",
+          "radius": 0.125,
+          "loops": 2,
+          "dir": 1
+        },
+        {
+          "color": "amber",
+          "radius": 0.078,
+          "loops": 1,
+          "dir": -1
+        },
+        {
+          "color": "amber",
+          "radius": 0.109,
+          "loops": 1,
+          "dir": -1
+        }
+      ],
+      "orb_center": [
+        0,
+        1.238,
+        0
+      ],
+      "orb_radius": 0.3,
+      "light": {
+        "color": [
+          1.0,
+          0.6667,
+          0.0706
+        ],
+        "intensity": 1.7,
+        "distance": 5.5,
+        "pulse": 0.18
+      },
+      "name": "glow_lantern_amber",
+      "glb": "models/glow_lantern_amber.glb",
+      "turntable": "models/glow_lantern_amber_turntable.png",
+      "thumb": "models/glow_lantern_amber_thumb.png",
+      "tris": 632,
+      "clips": [
+        "swim"
+      ]
+    },
+    {
+      "color": "violet",
+      "neon": "#9d4dff",
+      "fish": [
+        {
+          "color": "violet",
+          "radius": 0.091,
+          "loops": 2,
+          "dir": -1
+        },
+        {
+          "color": "violet",
+          "radius": 0.074,
+          "loops": 1,
+          "dir": 1
+        },
+        {
+          "color": "violet",
+          "radius": 0.082,
+          "loops": 2,
+          "dir": 1
+        },
+        {
+          "color": "violet",
+          "radius": 0.09,
+          "loops": 2,
+          "dir": -1
+        },
+        {
+          "color": "violet",
+          "radius": 0.096,
+          "loops": 1,
+          "dir": 1
+        }
+      ],
+      "orb_center": [
+        0,
+        1.238,
+        0
+      ],
+      "orb_radius": 0.3,
+      "light": {
+        "color": [
+          0.6157,
+          0.302,
+          1.0
+        ],
+        "intensity": 1.7,
+        "distance": 5.5,
+        "pulse": 0.18
+      },
+      "name": "glow_lantern_violet",
+      "glb": "models/glow_lantern_violet.glb",
+      "turntable": "models/glow_lantern_violet_turntable.png",
+      "thumb": "models/glow_lantern_violet_thumb.png",
+      "tris": 632,
+      "clips": [
+        "swim"
+      ]
+    },
+    {
+      "color": "blue",
+      "neon": "#2a6bff",
+      "fish": [
+        {
+          "color": "blue",
+          "radius": 0.085,
+          "loops": 1,
+          "dir": -1
+        },
+        {
+          "color": "blue",
+          "radius": 0.105,
+          "loops": 1,
+          "dir": 1
+        },
+        {
+          "color": "blue",
+          "radius": 0.137,
+          "loops": 1,
+          "dir": -1
+        },
+        {
+          "color": "blue",
+          "radius": 0.077,
+          "loops": 1,
+          "dir": 1
+        },
+        {
+          "color": "blue",
+          "radius": 0.076,
+          "loops": 1,
+          "dir": -1
+        }
+      ],
+      "orb_center": [
+        0,
+        1.238,
+        0
+      ],
+      "orb_radius": 0.3,
+      "light": {
+        "color": [
+          0.1647,
+          0.4196,
+          1.0
+        ],
+        "intensity": 1.7,
+        "distance": 5.5,
+        "pulse": 0.18
+      },
+      "name": "glow_lantern_blue",
+      "glb": "models/glow_lantern_blue.glb",
+      "turntable": "models/glow_lantern_blue_turntable.png",
+      "thumb": "models/glow_lantern_blue_thumb.png",
+      "tris": 632,
+      "clips": [
+        "swim"
+      ]
+    },
+    {
+      "color": "mixed",
+      "neon": "#e8e8ff",
+      "fish": [
+        {
+          "color": "cyan",
+          "radius": 0.097,
+          "loops": 2,
+          "dir": -1
+        },
+        {
+          "color": "magenta",
+          "radius": 0.16,
+          "loops": 1,
+          "dir": 1
+        },
+        {
+          "color": "lime",
+          "radius": 0.106,
+          "loops": 2,
+          "dir": 1
+        },
+        {
+          "color": "amber",
+          "radius": 0.101,
+          "loops": 1,
+          "dir": 1
+        },
+        {
+          "color": "violet",
+          "radius": 0.109,
+          "loops": 2,
+          "dir": 1
+        },
+        {
+          "color": "blue",
+          "radius": 0.094,
+          "loops": 2,
+          "dir": -1
+        }
+      ],
+      "orb_center": [
+        0,
+        1.238,
+        0
+      ],
+      "orb_radius": 0.3,
+      "light": {
+        "color": [
+          0.9412,
+          0.9098,
+          1.0
+        ],
+        "intensity": 1.7,
+        "distance": 5.5,
+        "pulse": 0.18
+      },
+      "name": "glow_lantern_mixed",
+      "glb": "models/glow_lantern_mixed.glb",
+      "turntable": "models/glow_lantern_mixed_turntable.png",
+      "thumb": "models/glow_lantern_mixed_thumb.png",
+      "tris": 684,
+      "clips": [
+        "swim"
+      ]
+    }
+  ],
+  "neon": {
+    "cyan": "#19f6ff",
+    "magenta": "#ff2ee6",
+    "lime": "#a6ff1f",
+    "amber": "#ffaa12",
+    "violet": "#9d4dff",
+    "blue": "#2a6bff"
+  },
+  "sprites": {
+    "halo": "sprites/halo.png",
+    "caustics": "sprites/caustics.png"
+  }
+}

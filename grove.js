@@ -2,7 +2,7 @@
 // three regions + the dwarf's cold forge, HIDDEN BUBBLY SPRINGS (waterfall / cave / root tunnel / hollow log), ride-able fox,
 // multi-line dialogue trees with choices, ring-arena battles vs mushroom critters, the dwarf chase + boss + reconciliation, save/load.
 import { THREE, Q, $, J, clamp, lerp, rng, makeRenderer, tex, load, animate, mixers, setAmbient, terrain, pathStrip, sfx, Music, place, placeCircle, div,
-  floatText, keys, takePressed, loop, canvasTex, puffTex, bubbleTex, reg, font, loaded } from './common.js';
+  floatText, keys, takePressed, loop, canvasTex, puffTex, bubbleTex, reg, font, loaded, LIGHT, ensureNormals, castsShadow } from './common.js';
 import { makeVFX } from './vfx.js';
 import { makeSpringPool } from './springfx.js';
 import { createInput } from './input.js';
@@ -51,6 +51,20 @@ export async function start(man) {
   const skyT = tex(man.skybox.panorama, false); skyT.mapping = THREE.EquirectangularReflectionMapping;
   let world = new THREE.Group(); scene.add(world);
   const R = rng(man.game.seed * 13 + 5);
+  // ---------- night layer: day/night cycle + glow-kit lights (grovelights.js + lights/). Optional: without lights/ (or ?nolights=1)
+  // the game keeps its classic always-day look. It must exist before the first model loads (lit materials).
+  const savedSet = (() => { try { return JSON.parse(localStorage.getItem(`${SAVE_KEY}.settings`)) || {}; } catch (e) { return {}; } })();
+  let NL = null, TOD = null;
+  if (!Q.get('nolights')) {
+    try {
+      const mod = await import('./grovelights.js');
+      NL = await mod.createNightLayer({ scene, camera, renderer, quality: Q.get('lightq') || savedSet.lightQ || 'auto', phone: matchMedia('(pointer: coarse)').matches, startHour: mod.TOD.title,
+        guard: !Q.get('scene') || !!Q.get('guard'), onDowngrade: (q) => console.info('lighting auto-lowered to', q) });
+      TOD = mod.TOD; LIGHT.lit = true;
+    } catch (e) { console.warn('night layer off:', e && e.message); NL = null; }
+  }
+  const glowMats = new Set();  // gnome + friends get a soft self-glow at night (readability)
+  const glowUp = (o) => { if (!NL) return; o.traverse((m) => { const mt = m.material; if (mt && mt.isMeshLambertMaterial && mt.map) { mt.emissiveMap = mt.map; mt.emissive.setScalar(0); mt.needsUpdate = true; glowMats.add(mt); } }); };
 
   // ---------- canvas-drawn sprite textures
   const glowT = canvasTex(32, 32, (g) => { const gr = g.createRadialGradient(16, 16, 1, 16, 16, 15); gr.addColorStop(0, 'rgba(255,255,220,1)'); gr.addColorStop(0.3, 'rgba(255,240,140,0.8)'); gr.addColorStop(1, 'rgba(255,220,80,0)'); g.fillStyle = gr; g.fillRect(0, 0, 32, 32); });
@@ -63,14 +77,15 @@ export async function start(man) {
   function stripTex(name) { const st = portalsS.strips[name]; const t = tex(st.file, false).clone(); t.needsUpdate = true; t.repeat.set(1 / portalsS.frames, 1); t.wrapS = THREE.RepeatWrapping; return t; }
 
   // ---------- persistent actors (survive level changes)
-  const player = await load('models/player.glb'); const pA = animate(player); scene.add(player);
+  const player = await load('models/player.glb'); const pA = animate(player); scene.add(player); castsShadow(player);
   const fox = await load('models/fox.glb'); const fA = animate(fox); fox.scale.setScalar(1.15); scene.add(fox);
   const dwarf = await load('models/boss.glb'); const dA = animate(dwarf); dwarf.scale.setScalar(1.35); dwarf.visible = false; scene.add(dwarf);
   const keepMixers = [pA, fA, dA].filter(Boolean).map((a) => a.mixer);
+  glowUp(player); glowUp(dwarf);
 
   // ---------- state + save (localStorage)
   const fresh = () => ({ flags: {}, springs: {}, revealed: {}, spells: [...game.spellbook.start], items: [], hp: game.start_stats.hp, maxHp: game.start_stats.hp,
-    mp: game.start_stats.mp, maxMp: game.start_stats.mp, xp: 0, lv: 1, level: 'HUB', pos: null, time: 0, talked: {}, chests: {} });
+    mp: game.start_stats.mp, maxMp: game.start_stats.mp, xp: 0, lv: 1, level: 'HUB', pos: null, time: 0, talked: {}, chests: {}, hour: null });
   let S = fresh();
   const hasSave = () => { try { return !!localStorage.getItem(SAVE_KEY); } catch (e) { return false; } };
   function save(quiet) { S.pos = [player.position.x, player.position.y, player.position.z]; try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) { /* private mode */ } if (!quiet) { sfx('save_chime', 0.5); toast('Saved!'); } }
@@ -194,8 +209,8 @@ export async function start(man) {
 
   // ---------- level construction
   let W = null;   // current level runtime
-  const skyMat = new THREE.MeshBasicMaterial({ map: skyT, side: THREE.BackSide, fog: false, depthWrite: false });
-  const sky = new THREE.Mesh(new THREE.SphereGeometry(180, 24, 12), skyMat); scene.add(sky);
+  const skyMat = new THREE.MeshBasicMaterial({ map: skyT, side: THREE.BackSide, fog: false, depthWrite: false, transparent: !!NL });
+  const sky = new THREE.Mesh(new THREE.SphereGeometry(180, 24, 12), skyMat); sky.renderOrder = -9.5; scene.add(sky);
   const sprite = (map, color, size, additive = true, opacity = 1) => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map, color: new THREE.Color(color), transparent: true, opacity, depthWrite: false, fog: false, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending })); s.scale.setScalar(size); return s; };
   const local = (o, lx, lz) => { const c = Math.cos(o.rot || 0), s = Math.sin(o.rot || 0); return [o.pos[0] + lx * c + lz * s, o.pos[2] - lx * s + lz * c]; };
   function addCol(x, z, r, tag) { W.cols.push({ x, z, r, tag }); }
@@ -225,9 +240,9 @@ export async function start(man) {
     if (W) { scene.remove(W.g); W.g.traverse((o) => { if (o.geometry) o.geometry.dispose(); }); }
     mixers.splice(0, mixers.length, ...keepMixers);
     const L = LV[id];
-    W = { id, L, g: new THREE.Group(), cols: [], springs: [], falls: [], portals: [], npcs: [], critters: [], pick: [], chests: [], amb: {}, anims: [], lid: null, swing: null, exit: null, h: null };
+    W = { id, L, g: new THREE.Group(), cols: [], springs: [], falls: [], portals: [], npcs: [], critters: [], pick: [], chests: [], amb: {}, anims: [], lid: null, swing: null, exit: null, h: null, props: [] };
     scene.add(W.g);
-    const T = terrain(L, `textures/${L.ground_texture}_32.png`); W.g.add(T.mesh); W.h = T.heightAt;
+    const T = terrain(L, `textures/${L.ground_texture}_32.png`); W.g.add(T.mesh); W.h = T.heightAt; T.mesh.receiveShadow = LIGHT.lit;
     const a = L.ambience || {};
     scene.fog = new THREE.Fog(new THREE.Color(a.fog || '#cfe0c8'), a.near || 30, a.far || 140);
     sky.visible = id !== 'L2';
@@ -235,10 +250,10 @@ export async function start(man) {
     if (L.water_level > -40) { const wt = tex('textures/water_32.png').clone(); wt.needsUpdate = true; wt.repeat.set(L.size / 4, L.size / 4);
       const w = new THREE.Mesh(new THREE.PlaneGeometry(L.size * 3, L.size * 3), reg(new THREE.MeshBasicMaterial({ map: wt, transparent: true, opacity: id === 'L3' ? 0.62 : 0.8, depthWrite: false })));
       w.rotation.x = -Math.PI / 2; w.position.y = L.water_level; W.g.add(w); W.water = wt; }
-    for (const p of (L.paths || [])) W.g.add(pathStrip(p, 1.3, W.h, id === 'BOSS' ? 'textures/cobble_32.png' : 'textures/dirt_32.png'));
+    for (const p of (L.paths || [])) { const ps = pathStrip(p, 1.3, W.h, id === 'BOSS' ? 'textures/cobble_32.png' : 'textures/dirt_32.png'); ps.receiveShadow = LIGHT.lit; W.g.add(ps); }
     const jobs = [];
     const put = (model, o, extra) => jobs.push(load(`models/${model}.glb`).then((m) => { m.position.copy(P3(o.pos)); m.rotation.y = o.rot || 0;
-      if (Array.isArray(o.scale)) m.scale.set(...o.scale); else m.scale.setScalar(o.scale || 1); W.g.add(m); if (extra) extra(m); return m; }));
+      if (Array.isArray(o.scale)) m.scale.set(...o.scale); else m.scale.setScalar(o.scale || 1); m.userData.model = model; W.props.push(m); W.g.add(m); if (extra) extra(m); return m; }));
     for (const p of L.props) { put(p.model, p); if (SOLID[p.model]) addCol(p.pos[0], p.pos[2], SOLID[p.model] * (p.scale || 1)); }
     for (const b of (L.bridges || [])) put(b.model, b);
     for (const p of (L.set_pieces || [])) { put(p.model, p, (m) => { if (p.id === 'mother_lid') W.lid = m; }); if (p.model === 'forge') addCol(p.pos[0], p.pos[2], 2.4); if (p.model === 'anvil_stump') addCol(p.pos[0], p.pos[2], 1); }
@@ -260,7 +275,7 @@ export async function start(man) {
     for (const [i, n0] of L.npcs.entries()) { const n = clearOf(n0); jobs.push(load(`models/${n.id}.glb`).then((m) => {
       if (!hasMesh(m)) { console.warn(`NPC model models/${n.id}.glb missing or empty: using a stand-in`); m = standIn(i); }
       m.position.copy(P3(n.pos)); m.position.y = W.h(n.pos[0], n.pos[2]); m.rotation.y = Math.PI; m.visible = true; W.g.add(m);  // (NPCs were never added to the scene before 2026-10-01)
-      const an = animate(m); if (an) { an.play('idle', 0); an.cur.time = i * 0.6; }
+      const an = animate(m); if (an) { an.play('idle', 0); an.cur.time = i * 0.6; } glowUp(m);
       const mk = sprite(bangT, '#ffffff', 0.55, false); mk.position.y = 1.9; m.add(mk);
       const lb = sprite(labelT(n.name.split(' ').slice(-1)[0]), '#ffffff', 1.6, false); lb.scale.set(2.2, 0.42, 1); lb.position.y = 2.35; m.add(lb);
       W.npcs.push({ ...n, obj: m, anim: an, mark: mk, home: m.position.clone() }); addCol(n.pos[0], n.pos[2], 0.45, 'npc'); })); }
@@ -285,6 +300,9 @@ export async function start(man) {
     W.amb.em = a.embers ? particles(40, 40, 0.2, 4, sparkT, '#ff9a40', 0.22, true, [10, -26]) : [];
     await Promise.all([...jobs, ...(W.springJobs || [])]);
     setAmbient(W.light);
+    W.fogBase = scene.fog.color.clone();
+    if (LIGHT.lit) W.g.traverse((o) => { if (o.isMesh && !o.isSprite && o.material && o.material.isMeshLambertMaterial) ensureNormals(o); });  // built paths / ribbons too
+    if (NL) { NL.build({ id, L, group: W.g, h: W.h, cols: W.cols, addCol, props: W.props, springs: W.springs, exit: W.exit, seed: man.game.seed }); W.nightEnv = null; }
     return W;
   }
   function buildSpring(s, info, isMother = false) {
@@ -447,7 +465,25 @@ export async function start(man) {
   function closeMap() { mapEl.classList.add('hide'); setMode('field'); }
 
   // ---------- pause menu (P)
-  const MENU = ['Resume', 'Save', 'Quest log', 'Spells', 'Controls', 'Settings', 'Title screen'];
+  const MENU0 = ['Resume', 'Save', 'Quest log', 'Spells', 'Controls', 'Settings', 'Title screen'];
+  const canRest = () => !!NL && !!W && W.id === 'HUB' && todMode() === 'cycle' && !C;
+  const restLabel = () => (NL && NL.dn.night > 0.5 ? 'Rest until morning' : 'Rest until nightfall');
+  let MENU = MENU0;
+  const menuList = () => { MENU = canRest() ? [...MENU0.slice(0, 6), restLabel(), MENU0[6]] : MENU0; return MENU; };
+  // ---------- time of day (night layer)
+  const todMode = () => (['cycle', 'day', 'night'].includes(input.settings.tod) ? input.settings.tod : 'cycle');
+  const TOD_LABEL = { cycle: 'Cycle', day: 'Always day', night: 'Always night' };
+  const LQ = ['auto', 'low', 'medium', 'high'], LQ_LABEL = { low: 'Low', medium: 'Medium', high: 'High' };
+  const lightQ = () => (LQ.includes(input.settings.lightQ) ? input.settings.lightQ : 'auto');
+  const curHour = () => (G.mode === 'title' ? TOD.title : (S.hour ?? TOD.newGame));
+  function applyTod(hour) { if (NL) NL.setMode(todMode(), hour ?? curHour()); }
+  const clockStr = (h) => { const m = Math.floor(((h % 24) + 24) % 24 * 60), hh = Math.floor(m / 60), mm = m % 60; return `${(hh + 11) % 12 + 1}:${String(mm).padStart(2, '0')} ${hh < 12 ? 'AM' : 'PM'}`; };
+  function rest() {
+    const morning = NL.dn.night > 0.5, to = morning ? TOD.rest.morning : TOD.rest.night;
+    closeMenu(); fadeEl.classList.add('on'); G.mode = 'fade'; sfx('inn_rest', 0.5);
+    setTimeout(() => { S.hour = to; applyTod(to); healFull(); hudUpdate(); fadeEl.classList.remove('on'); setMode('field');
+      toast(morning ? 'You doze off by the brazier... Good morning, Mossunder!' : 'You rest a while. The lanterns are glowing: it\'s night.', 2600); }, 700);
+  }
   let setSel = 0;
   const SC = [0.5, 0.7, 0.85, 1];
   const SET_ROWS = [
@@ -462,6 +498,8 @@ export async function start(man) {
     { name: 'Auto Target Lock', val: () => (input.settings.autoLock === false ? 'Off' : 'On'), adj: () => { input.settings.autoLock = input.settings.autoLock === false; } },
     { name: 'Minimap', val: () => (input.settings.minimap === false ? 'Off' : 'On'), adj: () => { input.settings.minimap = input.settings.minimap === false; } },
     { name: 'Quest hint arrow', val: () => (input.settings.questArrow === false ? 'Off' : 'On'), adj: () => { input.settings.questArrow = input.settings.questArrow === false; } },
+    { name: 'Time of day', val: () => (NL ? TOD_LABEL[todMode()] : 'Day'), adj: (d) => { if (!NL) return; const M = ['cycle', 'day', 'night']; input.settings.tod = M[(M.indexOf(todMode()) + d + 3) % 3]; applyTod(); } },
+    { name: 'Lighting', val: () => (NL ? (lightQ() === 'auto' ? `Auto (${LQ_LABEL[NL.q]})` : LQ_LABEL[lightQ()]) : 'Classic'), adj: (d) => { if (!NL) return; input.settings.lightQ = LQ[(LQ.indexOf(lightQ()) + d + 4) % 4]; NL.setQuality(input.settings.lightQ); } },
     { name: 'Install app', install: true, val: () => display.installLabel(), adj: () => { display.install().then(() => setTimeout(() => G.mode === 'menu' && drawMenu(), 300)); } },
     { name: 'Back', back: true }];
   function settingsKey(k) {
@@ -482,7 +520,7 @@ export async function start(man) {
   function menuBack() { if (menuFrom === 'title') closeMenu(); else { menuPage = 'main'; drawMenu(); } }
   function drawMenu() {
     let h = '';
-    if (menuPage === 'main') h = `<h2>Paused</h2><div class="sub">${levelsMeta.find((l) => l.id === W.id).name} &middot; ${fmtTime(S.time)}</div>` + MENU.map((m, i) => `<div class="mi${i === menuSel ? ' sel' : ''}" data-i="${i}">${m}</div>`).join('');
+    if (menuPage === 'main') h = `<h2>Paused</h2><div class="sub">${levelsMeta.find((l) => l.id === W.id).name} &middot; ${fmtTime(S.time)}</div>` + menuList().map((m, i) => `<div class="mi${i === menuSel ? ' sel' : ''}" data-i="${i}">${m}</div>`).join('');
     if (menuPage === 'quests') h = '<h2>Quest log</h2>' + game.quests.map((q) => { const d = cond(q.done), cur = q === currentQuest(); return (d || cur) ? `<div class="q${d ? ' done' : ''}"><b>${d ? '&#10003;' : '&#10148;'} ${q.title}</b>${cur ? `<br><small>${q.goal}</small>` : ''}</div>` : ''; }).join('') + '<div class="mi back">Back</div>';
     if (menuPage === 'spells') h = '<h2>Spellbook</h2>' + S.spells.map((id, i) => { const s = spellById[id]; return `<div class="q"><b style="color:${FAM_COL[s.family]}">${i + 1}. ${s.name}</b> <small>${s.family} &middot; ${s.mp_cost_at_min} MP</small></div>`; }).join('') + `<div class="q"><small>Items: ${S.items.join(', ') || 'none'}</small></div><div class="mi back">Back</div>`;
     if (menuPage === 'controls') h = controlsPage();
@@ -520,12 +558,13 @@ export async function start(man) {
     else if (m === 'Controls') { menuPage = 'controls'; drawMenu(); }
     else if (m === 'Settings') { menuPage = 'settings'; setSel = 0; drawMenu(); }
     else if (m === 'Title screen') { save(true); closeMenu(); showTitle(); }
+    else if (/^Rest/.test(m || '')) rest();
   }
   const fmtTime = (t) => `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
 
   // ---------- title screen / intro / ending
   function showTitle() {
-    setMode('title'); music.play('title');
+    setMode('title'); music.play('title'); if (NL) applyTod(TOD.title);
     titleEl.innerHTML = `<div class="logo">${game.title.title}</div><div class="sub">${game.title.subtitle}</div>` +
       `<div class="tmenu"><div class="mi" data-k="new">${game.title.menu[0]}</div><div class="mi${hasSave() ? '' : ' off'}" data-k="cont">${game.title.menu[1]}</div>` +
       '<div class="mi" data-k="set">Settings</div><div class="mi" data-k="fs"></div></div><div class="foot"></div>';
@@ -549,8 +588,8 @@ export async function start(man) {
     if (tk === 'fs') { sfx('select', 0.6); display.toggleFS(); return; }
     if (titleSel === 1 && !hasSave()) { sfx('menu_tick', 0.3); return; }
     sfx('select', 0.6); titleEl.classList.add('hide'); hud.classList.remove('titling');
-    if (titleSel === 1) { loadSave(); await goLevel(S.level, S.pos); toast('Welcome back!'); setMode('field'); }
-    else { S = fresh(); await goLevel('HUB'); showIntro(); }
+    if (titleSel === 1) { loadSave(); if (S.hour == null) S.hour = TOD ? TOD.newGame : null; applyTod(S.hour); await goLevel(S.level, S.pos); toast('Welcome back!'); setMode('field'); }
+    else { S = fresh(); if (TOD) S.hour = TOD.newGame; applyTod(S.hour); await goLevel('HUB'); showIntro(); }
   }
   function showIntro() {
     setMode('intro'); let i = 0;
@@ -560,6 +599,7 @@ export async function start(man) {
   }
   function showEnding() {
     setMode('ending'); music.play('ending'); let i = 0; setAmbient(1.15); scene.fog.color.set('#c8d8b0'); scene.fog.far = 160;
+    if (NL) { NL.setMode('cycle', 8.2); W.fogBase = scene.fog.color.clone(); }  // the springs flow again: a bright morning
     const pages = [...game.ending.pages];
     const page = () => { endEl.innerHTML = i < pages.length ? `<div class="page">${pages[i]}</div><div class="foot">&#9660; ${tapOr('confirm')}</div>` :
       `<div class="page credits"><b>${game.title.title}</b><br><br>${game.ending.credits.join('<br>')}<br><br>Time ${fmtTime(S.time)} &middot; Springs ${nSprings()}/${springs.springs.length}</div><div class="foot">${tapOr('confirm')}: back to title</div>`; };
@@ -906,7 +946,7 @@ export async function start(man) {
       p.position.set(f.pos[0] + u.x * c, f.pos[1] + u.t * 1.6 - 0.2, f.pos[2] - u.x * sn + 0.4 * c); p.material.opacity = 0.55 * (1 - u.t); p.scale.setScalar(0.8 + u.t * 1.5); } }
     for (const s of W.amb.ff) { const u = s.userData; s.position.set(u.x + Math.sin(t * u.sp + u.ph) * 1.4, u.y + Math.sin(t * 1.3 + u.ph) * 0.5, u.z + Math.cos(t * u.sp * 0.8 + u.ph) * 1.4); s.material.opacity = 0.5 + 0.5 * Math.sin(t * 3 + u.ph); }
     for (const s of W.amb.sp) { const u = s.userData; s.position.set(u.x + Math.sin(t * 0.2 + u.ph) * 2, u.y + ((t * 0.15 * u.sp + u.ph) % 3), u.z + Math.cos(t * 0.17 + u.ph) * 2); }
-    for (const b of W.amb.sb) b.material.opacity = 0.08 + 0.05 * Math.sin(t * 0.6 + b.userData.ph);
+    for (const b of W.amb.sb) b.material.opacity = (0.08 + 0.05 * Math.sin(t * 0.6 + b.userData.ph)) * (G.beamK ?? 1);
     for (const m of W.amb.mist) { const u = m.userData; m.position.x = u.x + Math.sin(t * 0.05 + u.ph) * 4; }
     for (const e of W.amb.em) { const u = e.userData; e.position.set(u.x + Math.sin(t + u.ph) * 0.5, u.y + ((t * 0.8 * u.sp + u.ph) % 4), u.z); e.material.opacity = 0.9 - ((t * 0.8 * u.sp + u.ph) % 4) / 4.4; }
     for (const n of W.npcs) { n.mark.visible = !S.talked[n.id] || (currentQuest() && currentQuest().giver === n.id); n.mark.position.y = 1.9 + Math.sin(t * 3) * 0.08; }
@@ -1076,9 +1116,18 @@ export async function start(man) {
     sky.position.copy(camera.position);
   }
 
+  // night readability: mist tinted with the light, sunbeams fade, the gnome + friends glow softly
+  function nightEnv(e) {
+    G.beamK = 1 - e.night; G.night = e.night;
+    for (const m of W.amb.mist || []) m.material.color.set('#e0ece4').multiply(LIGHT.tint).multiplyScalar(Math.max(0.55, LIGHT.k));
+    for (const mt of glowMats) mt.emissive.setScalar(0.3 * e.night);
+    timerEl.classList.toggle('night', e.night > 0.5);
+  }
   // ---------- main loop
   const st = loop(renderer, scene, () => camera, (dt, t) => {
     if (!W) return;
+    if (G.lag) { const e = performance.now() + G.lag; while (performance.now() < e); }
+    if (G.freeze) return;  // test: hold the world still (screenshot diffs)
     handleKeys();
     joySmooth(dt); lockStep();
     if (input.mouse.wheel) { const w = input.mouse.wheel; input.mouse.wheel = 0; if (G.mode === 'battle') cycleSpell(w > 0 ? 1 : -1); else if (G.mode === 'field') G.zoom = clamp(G.zoom * (w > 0 ? 1.1 : 0.9), 0.55, 1.7); }
@@ -1087,9 +1136,14 @@ export async function start(man) {
     if (G.cut) G.cut(dt);
     if (W.swing && !W.swing.on) { W.swing.obj.rotation.set(Math.sin(t * 0.8) * 0.06, W.swing.rot, 0, 'YXZ'); }
     if (G.mode === 'field' || G.mode === 'battle') S.time += dt;
-    timerEl.querySelector('span').textContent = fmtTime(S.time);
     if (G.flash > 0) { G.flash -= dt; hud.style.boxShadow = `inset 0 0 ${60 * G.flash * 4}px rgba(232,72,60,${G.flash * 2})`; } else hud.style.boxShadow = '';
     animateWorld(dt, t); updateCamera(dt, t); mini.update(dt, t);
+    if (NL) {
+      const adv = (G.mode === 'field' || G.mode === 'battle') && !G.todFrozen;
+      NL.update(dt, t, { advance: adv, level: W.id, levelFog: W.fogBase, fog: scene.fog, sky, skyOn: W.id !== 'L2', playerPos: player.position, onEnv: nightEnv });
+      if (adv && NL.mode === 'cycle') S.hour = +NL.dn.hour.toFixed(4);
+    }
+    const clk = NL ? clockStr(NL.dn.hour) : fmtTime(S.time); if (timerEl._c !== clk) { timerEl._c = clk; timerEl.querySelector('span').textContent = clk; }
     hudUpdate.t = (hudUpdate.t || 0) + dt; if (hudUpdate.t > 0.25) { hudUpdate.t = 0; hudUpdate(); }
   });
 
@@ -1101,6 +1155,7 @@ export async function start(man) {
     for (const id of Object.keys(S.springs)) { const rw = springById[id].reward; if (rw.type === 'spell') S.spells.push(rw.spell_id); if (rw.type === 'map') S.revealed[rw.region] = true; if (rw.type === 'max_hp') S.maxHp += rw.amount; if (rw.type === 'max_mp') S.maxMp += rw.amount; }
     if (S.flags.met_lamp) S.spells.push(springs.spellbook.big); if (S.flags.forest_done) S.spells.push(springs.spellbook.water);
     S.hp = S.maxHp; S.mp = S.maxMp; S.time = 754;
+    G.todFrozen = !Q.get('cycle'); S.hour = Q.get('hour') !== null ? +Q.get('hour') : 12; if (Q.get('tod')) input.settings.tod = Q.get('tod'); applyTod(S.hour);
     await goLevel(lvl); G.snap = true; lastQuest = (currentQuest() || {}).id; toastEl.classList.add('hide');
     const L = W.L, at = (x, z, face) => { player.position.set(x, W.h(x, z), z); if (face !== undefined) { player.rotation.y = face; G.cy = face + Math.PI; } G.snap = true; };
     const sp1 = (id) => W.springs.find((s) => s.id === id);
@@ -1135,22 +1190,34 @@ export async function start(man) {
     const hidden = []; o.traverse((q) => { if (q.isSprite && q.visible) hidden.push(q); });  // count the body, not the '!' / name tag,
     for (const q of [player, fox]) if (q.visible) hidden.push(q);                          // and don't let the gnome stand in the way
     hidden.forEach((q) => { q.visible = false; });
+    read(); read();  // warm-up: the render-target shader variants compile on first use (a cold first frame can drop draws)
     const a = read(); o.visible = false; const b = read(); o.visible = true; hidden.forEach((q) => { q.visible = true; });
     let px = 0; for (let k = 0; k < a.length; k += 4) if (Math.abs(a[k] - b[k]) + Math.abs(a[k + 1] - b[k + 1]) + Math.abs(a[k + 2] - b[k + 2]) > 24) px++;
+    let mean = 0; for (let k = 0; k < a.length; k += 4) mean += a[k] + a[k + 1] + a[k + 2]; mean = +(mean / (a.length / 4) / 3).toFixed(1);
     let meshes = 0; o.traverse((q) => { if (q.isMesh) meshes++; });
-    return { id, name: n.name, inScene, visibleChain: chain, meshes, standIn: !!o.userData.standIn, size: sz.toArray().map((v) => +v.toFixed(3)), inView: fr.intersectsBox(box), ndc: [+ndc.x.toFixed(2), +ndc.y.toFixed(2)], pixels: px,
+    return { id, name: n.name, inScene, visibleChain: chain, meshes, standIn: !!o.userData.standIn, size: sz.toArray().map((v) => +v.toFixed(3)), inView: fr.intersectsBox(box), ndc: [+ndc.x.toFixed(2), +ndc.y.toFixed(2)], pixels: px, mean,
       prompt: promptEl.classList.contains('hide') ? null : promptEl.textContent, dist: +Math.hypot(o.position.x - player.position.x, o.position.z - player.position.z).toFixed(2) };
   }
   window.__game = { get S() { return S; }, get W() { return W; }, get mode() { return G.mode; }, get battle() { return B; }, get chase() { return C; }, fps: () => st.fps, game, springs };
   const dbg = () => ({ mode: G.mode, level: W && W.id, pos: player.position.toArray().map((v) => +v.toFixed(2)), anim: pA && pA.name, riding: G.riding, swinging: G.swinging,
     springs: nSprings(), quest: (currentQuest() || {}).id || 'done', battle: B ? B.foes.map((f) => [f.name, f.hp]) : null, chase: !!C, fps: +st.fps.toFixed(1), cam: +G.cy.toFixed(3), pitch: +G.cp.toFixed(3), face: +player.rotation.y.toFixed(3), joy: joyV ? [+joyV.x.toFixed(2), +joyV.y.toFixed(2)] : null,
     disp: { res: display.res, set: { ...display.settings }, rw: display.rw, rh: display.rh, w: display.w, h: display.h, hk: display.hk, tv: display.tv, fs: display.isFS(), pad: padFirst() },
-    lock: G.lock ? (G.lock.e.name || G.lock.e.id || 'foe') : null, lockPos: G.lock ? G.lock.e.obj.position.toArray().map((v) => +v.toFixed(3)) : null, camMode: input.settings.camMode === 'free' ? 'free' : 'follow', mini: { on: mini.visible, arrow: mini.arrow, goal: mini.goal, angle: mini.angle === null ? null : +mini.angle.toFixed(3), draws: mini.shown, heading: (() => { const h = W && questNav(); return h ? { x: +h.x.toFixed(2), z: +h.z.toFixed(2), via: h.via || null } : null; })() }, pitchUp: +upAmount(G.cp).toFixed(3), viewPitch: (() => { const v = camLook.clone().sub(camPos).normalize(); return +(Math.asin(v.y) * 57.2958).toFixed(1); })(), camY: +camera.position.y.toFixed(3), camPos: camera.position.toArray().map((v) => +v.toFixed(3)), camGround: W ? +(camera.position.y - W.h(camera.position.x, camera.position.z)).toFixed(3) : null, scheme: input.scheme, zoom: +G.zoom.toFixed(2), walk: G.walk, sel: selSpell, mp: S.mp, menuPage, setSel });
+    lock: G.lock ? (G.lock.e.name || G.lock.e.id || 'foe') : null, lockPos: G.lock ? G.lock.e.obj.position.toArray().map((v) => +v.toFixed(3)) : null, camMode: input.settings.camMode === 'free' ? 'free' : 'follow', mini: { on: mini.visible, arrow: mini.arrow, goal: mini.goal, angle: mini.angle === null ? null : +mini.angle.toFixed(3), draws: mini.shown, heading: (() => { const h = W && questNav(); return h ? { x: +h.x.toFixed(2), z: +h.z.toFixed(2), via: h.via || null } : null; })() }, pitchUp: +upAmount(G.cp).toFixed(3), viewPitch: (() => { const v = camLook.clone().sub(camPos).normalize(); return +(Math.asin(v.y) * 57.2958).toFixed(1); })(), camY: +camera.position.y.toFixed(3), camPos: camera.position.toArray().map((v) => +v.toFixed(3)), camGround: W ? +(camera.position.y - W.h(camera.position.x, camera.position.z)).toFixed(3) : null, scheme: input.scheme, zoom: +G.zoom.toFixed(2), walk: G.walk, sel: selSpell, mp: S.mp, menuPage, setSel, clock: timerEl._c || null, tod: NL ? NL.state() : null, lit: LIGHT.lit });
   window.__debug = Object.assign(dbg, {
     faceTo: (x, z) => { const a = Math.atan2(x - player.position.x, z - player.position.z); player.rotation.y = a; G.cy = a + Math.PI; G.cp = 0.3; G.snap = true; },
     npcCheck: (id) => npcCheck(id),
+    npcShow: (id, mode) => {  // test: 'solo' = hide the gnome, fox and the friend's '!' / name tag; 'none' = hide the friend too; 'restore'
+      const n = W.npcs.find((q) => q.id === id); if (!n) return false; const o = n.obj;
+      const hold = (on) => { G.freeze = on; for (const m of mixers) m.timeScale = on ? 0 : 1; };
+      if (mode === 'restore') { for (const q of G.npcHidden || []) q.visible = true; G.npcHidden = null; o.visible = true; hold(false); return true; }
+      hold(true);
+      if (!G.npcHidden) { G.npcHidden = []; o.traverse((q) => { if (q.isSprite && q.visible) G.npcHidden.push(q); }); for (const q of [player, fox]) if (q.visible) G.npcHidden.push(q); G.npcHidden.forEach((q) => { q.visible = false; }); }
+      o.visible = mode !== 'none'; return true; },
     setFlag: (f) => { S.flags[f] = true; progress(); }, go: (id) => goLevel(id), teleport: (x, z) => { player.position.set(x, W.h(x, z), z); },
     discover: (id) => { const s = W.springs.find((q) => q.id === id); if (s && !s.found) discover(s); }, talk, startChase, startBossBattle, save, loadSave, scene: setupScene, cu: (o) => { G.cuOv = o; G.snap = true; },
+    setHour: (h) => { S.hour = h; if (NL) NL.setMode(todMode(), h); }, setTod: (m) => { input.settings.tod = m; applyTod(); }, setLightQ: (q) => { input.settings.lightQ = q; if (NL) NL.setQuality(q); },
+    runClock: (on = true, scale = 1) => { G.todFrozen = !on; if (NL) NL.dn.timeScale = scale; },
+    lag: (ms) => { G.lag = ms; },  // test: simulate a slow device (busy-wait per frame) to exercise the Auto lighting guard
 
   });
   G.start = async () => {

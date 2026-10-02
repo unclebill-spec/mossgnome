@@ -1,0 +1,100 @@
+{
+  "flame": "warm",
+  "models": [
+    {
+      "kind": "wall_torch",
+      "flame": "warm",
+      "light": {
+        "distance": 7.0,
+        "intensity": 1.7,
+        "color": [
+          1.0,
+          0.6196,
+          0.2824
+        ],
+        "flicker": 0.22,
+        "castShadow": true
+      },
+      "flames": 1,
+      "name": "wall_torch",
+      "glb": "models/wall_torch.glb",
+      "turntable": "models/wall_torch_turntable.png",
+      "thumb": "models/wall_torch_thumb.png",
+      "tris": 156,
+      "clips": [
+        "flicker"
+      ]
+    },
+    {
+      "kind": "standing_torch",
+      "flame": "warm",
+      "light": {
+        "distance": 8.5,
+        "intensity": 2.8,
+        "color": [
+          1.0,
+          0.6196,
+          0.2824
+        ],
+        "flicker": 0.22,
+        "castShadow": true
+      },
+      "flames": 1,
+      "name": "standing_torch",
+      "glb": "models/standing_torch.glb",
+      "turntable": "models/standing_torch_turntable.png",
+      "thumb": "models/standing_torch_thumb.png",
+      "tris": 248,
+      "clips": [
+        "flicker"
+      ]
+    },
+    {
+      "kind": "brazier",
+      "flame": "warm",
+      "light": {
+        "distance": 10.0,
+        "intensity": 3.4,
+        "color": [
+          1.0,
+          0.6196,
+          0.2824
+        ],
+        "flicker": 0.22,
+        "castShadow": true
+      },
+      "flames": 4,
+      "name": "brazier",
+      "glb": "models/brazier.glb",
+      "turntable": "models/brazier_turntable.png",
+      "thumb": "models/brazier_thumb.png",
+      "tris": 488,
+      "clips": [
+        "flicker"
+      ]
+    }
+  ],
+  "quality": {
+    "low": {
+      "lights": 3,
+      "shadows": 0,
+      "shadow_map": 256
+    },
+    "medium": {
+      "lights": 4,
+      "shadows": 1,
+      "shadow_map": 256
+    },
+    "high": {
+      "lights": 8,
+      "shadows": 2,
+      "shadow_map": 512
+    }
+  },
+  "sprites": {
+    "flame_strip": "sprites/flame_strip.png",
+    "frames": 8,
+    "ember": "sprites/ember.png",
+    "halo": "sprites/halo.png"
+  }
+}

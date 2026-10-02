@@ -1,0 +1,91 @@
+{
+  "butterflies": {
+    "preset": "presets/butterflies.json",
+    "models": [
+      "models/butterfly_cyan.glb",
+      "models/butterfly_magenta.glb",
+      "models/butterfly_lime.glb",
+      "models/butterfly_amber.glb",
+      "models/butterfly_violet.glb",
+      "models/butterfly_blue.glb",
+      "models/butterfly_mixed.glb"
+    ],
+    "names": [
+      "grove",
+      "moonwings",
+      "neon_flutter",
+      "emberwings"
+    ]
+  },
+  "daynight": {
+    "preset": "presets/daynight.json",
+    "cycleSeconds": 240.0
+  },
+  "lanterns": {
+    "preset": "presets/lanterns.json",
+    "models": [
+      "models/glow_lantern_cyan.glb",
+      "models/glow_lantern_magenta.glb",
+      "models/glow_lantern_lime.glb",
+      "models/glow_lantern_amber.glb",
+      "models/glow_lantern_violet.glb",
+      "models/glow_lantern_blue.glb",
+      "models/glow_lantern_mixed.glb"
+    ]
+  },
+  "neon": {
+    "cyan": "#19f6ff",
+    "magenta": "#ff2ee6",
+    "lime": "#a6ff1f",
+    "amber": "#ffaa12",
+    "violet": "#9d4dff",
+    "blue": "#2a6bff"
+  },
+  "preview": "preview/lights_sheet.png",
+  "quality": {
+    "low": {
+      "lights": 3,
+      "shadows": 0,
+      "shadow_map": 256
+    },
+    "medium": {
+      "lights": 4,
+      "shadows": 1,
+      "shadow_map": 256
+    },
+    "high": {
+      "lights": 8,
+      "shadows": 2,
+      "shadow_map": 512
+    }
+  },
+  "runtime": [
+    "butterflies.js",
+    "daynight.js",
+    "glowkit.js",
+    "lanterns.js",
+    "torches.js",
+    "wisps.js"
+  ],
+  "seed": 64,
+  "theme": "mossgnome",
+  "torches": {
+    "preset": "presets/torches.json",
+    "models": [
+      "models/wall_torch.glb",
+      "models/standing_torch.glb",
+      "models/brazier.glb"
+    ]
+  },
+  "wisps": {
+    "presets": "presets/wisps.json",
+    "sprite": "sprites/glow_mote.png",
+    "names": [
+      "wisps",
+      "fireflies",
+      "neon_swarm",
+      "marsh",
+      "spirit"
+    ]
+  }
+}

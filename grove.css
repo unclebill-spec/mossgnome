@@ -121,7 +121,7 @@ html[data-input=touch] #hud.mg { --tmin: 48px; }
 .mg-fs .fs-out { display: none; } html[data-fs="1"] .mg-fs .fs-in { display: none; } html[data-fs="1"] .mg-fs .fs-out { display: block; }
 .mg-fs { opacity: 0.85; } .mg-fs svg { stroke-width: 2.6; }
 .mg-title .tmenu { display: flex; flex-direction: column; align-items: center; width: 100%; }
-.mg-menu .sgrid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, auto); grid-template-columns: 1fr 1fr; column-gap: 1.2cqh; }
+.mg-menu .sgrid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(8, auto); grid-template-columns: 1fr 1fr; column-gap: 1.2cqh; }
 .mg-menu .sgrid .mi.set { margin: 0.5cqh 0.6cqh; }
 #hud.mg .mg-menu.wide { left: calc(50% - min(45%, 62cqh)) !important; width: min(90%, 124cqh) !important; }
 html[data-input=touch] .mg-menu .mi, html[data-input=touch] .mg-title .mi { min-height: 44px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }

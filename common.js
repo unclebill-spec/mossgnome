@@ -51,7 +51,7 @@ export function load(url) {
   }, undefined, () => { const e = new THREE.Group(); e.userData.clips = []; res(e); }));
   return cache[url].then((s) => {
     const c = skClone(s);
-    c.traverse((o) => { if (o.isSkinnedMesh) o.frustumCulled = false; if (o.isMesh) { o.material = o.material.clone(); o.material.userData.base = o.material.color.clone(); allMaterials.add(o.material); } });
+    c.traverse((o) => { if (o.isSkinnedMesh) o.frustumCulled = false; if (o.isMesh) { o.material = LIGHT.lit ? litMaterial(o.material) : o.material.clone(); o.material.userData.base = o.material.color.clone(); allMaterials.add(o.material); if (LIGHT.lit) { ensureNormals(o); o.castShadow = !o.isSkinnedMesh; o.receiveShadow = true; } } });  // skinned: see castsShadow()
     c.userData.clips = s.userData.clips;
     return c;
   });
@@ -75,11 +75,32 @@ export function animate(obj) {
     } };
   return A;
 }
-// global light level (N64 vertex-light look): multiply every model + registered material colour
-export function setAmbient(v, tint) {
-  for (const m of allMaterials) { if (!m.userData.base) continue; m.color.copy(m.userData.base).multiplyScalar(v); if (tint) m.color.multiply(tint); }
+// global light level (N64 vertex-light look): multiply every model + registered material colour.
+// Lit mode (Mossgnome day/night): models, terrain and paths become flat MeshLambert lit by an AmbientLight of PI (identical
+// to the unlit look by day) plus the glow-kit point lights; LIGHT.k / LIGHT.tint then dim + tint the materials that stay
+// unlit (water, waterfalls...) the same way the ambient light dims the lit ones.
+export const LIGHT = { lit: false, k: 1, tint: new THREE.Color(1, 1, 1), v: 1, vt: null };
+// The GLBs ship without vertex normals (the unlit look never needed them). Lit (Lambert + shadow) shaders still read the
+// 'normal' attribute, and a missing one is undefined on the GPU: in testing the friends' bodies sometimes did not draw at all.
+// Skinned characters do not cast the torch (point-light) shadows: in testing, a friend's body that went through the cube shadow
+// pass sometimes stopped drawing at all afterwards (about half of the page loads, Medium / High only). The gnome keeps his.
+export function castsShadow(obj, on = true) { obj.traverse((o) => { if (o.isMesh && !o.isSprite) o.castShadow = on && LIGHT.lit; }); }
+export function ensureNormals(o) { const g = o.geometry; if (g && g.attributes.position && !g.attributes.normal) g.computeVertexNormals(); }
+export function litMaterial(b) {
+  if (!b || !b.isMeshBasicMaterial || (b.userData && b.userData.unlit)) return b.clone();
+  const m = new THREE.MeshLambertMaterial({ map: b.map, color: b.color.clone(), vertexColors: b.vertexColors, transparent: b.transparent, opacity: b.opacity, side: b.side,
+    alphaTest: b.alphaTest, depthWrite: b.depthWrite, fog: b.fog, flatShading: true, polygonOffset: b.polygonOffset, polygonOffsetFactor: b.polygonOffsetFactor, polygonOffsetUnits: b.polygonOffsetUnits });
+  m.name = b.name; m.userData = { ...b.userData }; return m;
 }
-export function reg(mat) { mat.userData.base = mat.color.clone(); allMaterials.add(mat); return mat; }
+export function setAmbient(v, tint) {
+  LIGHT.v = v; LIGHT.vt = tint || null;
+  for (const m of allMaterials) {
+    if (!m.userData.base) continue; m.color.copy(m.userData.base).multiplyScalar(v); if (tint) m.color.multiply(tint);
+    if (LIGHT.lit && !m.isMeshLambertMaterial) m.color.multiply(LIGHT.tint).multiplyScalar(LIGHT.k);
+  }
+}
+export const applyEnv = () => setAmbient(LIGHT.v, LIGHT.vt);
+export function reg(mat) { if (LIGHT.lit && mat.isMeshBasicMaterial && !mat.transparent && !mat.userData.unlit) { const o = mat; mat = litMaterial(o); o.dispose(); } mat.userData.base = mat.color.clone(); allMaterials.add(mat); return mat; }
 
 // ---------- heightmap terrain (baked vertex colours + directional shade)
 export function terrain(L, groundUrl) {

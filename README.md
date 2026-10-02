@@ -36,6 +36,12 @@ Target Lock grabs a cross critter when you get close (or press the lock control)
 - **Fullscreen:** the corner button, **Fullscreen** on the title screen or in Settings, or the ` key. Android also locks to landscape. iPhone Safari can't make a page fullscreen, so use **Share → Add to Home Screen**: the home-screen icon opens the game fullscreen and sideways (the game explains this once).
 - **Settings → Display:** *Auto* (phone resolution on touch devices, otherwise matches the window), *Phone (landscape)*, *720p TV/PC*, *1080p TV/PC* (bigger, sofa-readable HUD and controller-first prompts) or *Retro 320x240* (authentic N64 low res, chunky pixels). **Aspect:** Fit screen / 16:9 / 4:3 (black bars). **Render scale** 50-100% if a device runs slow. Changes apply instantly and are remembered.
 
+## Day and night
+- The world runs a day/night cycle (about 20 minutes per day). The clock in the bottom row shows the time.
+- At night, torches (some burn blue cold fire), glow-fish lanterns, wisps, fireflies and butterflies light the way, and every hidden spring glows.
+- **Settings → Time of day:** *Cycle*, *Always day* or *Always night*. **Settings → Lighting:** *Auto* (picks for your device and steps down if it runs slow), *Low*, *Medium* or *High*.
+- In the village, the pause menu has **Rest until nightfall / morning**.
+
 Progress saves to your browser (localStorage): pick **Continue** on the title screen.
 
 Developer tools (scene picker, texture filter toggle, spell VFX page) are hidden; add `?debug=1` to the URL to show them.

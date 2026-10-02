@@ -6,17 +6,23 @@ Handoff notes for the next agent. Cursor reads this file automatically. Keep it 
 - **Live:** https://unclebill-spec.github.io/mossgnome/
 - **Local:** `/workspace/mossgnome-publish`
 
-## Current state (2026-10-01)
-- Playable and deployed. The latest change is a fix for invisible friends: NPC models were never added to the scene, and now they are, with a stand-in gnome if a model fails to load. It also adds an orange goal dot on the minimap once you reach the quest goal. Before that came the HUD layout: a bottom button row with the clock, a half-size HP/MP plaque, fullscreen at the left edge, the minimap top-right with a red quest chevron, and Settings > Install app. Before that came the minimap and the higher look-up camera (`109829c`), and before that `b7680db` (fullscreen, sideways-phone layout, display presets). See `CHANGELOG.md`.
+## Current state (2026-10-02)
+- Playable and deployed. The latest change is **day and night** (`grovelights.js` + `lights/`): a time-of-day cycle with torches, glow-fish lanterns, wisps, fireflies and butterflies in Bill's "gloom and glow" palette (neon blue cold fire, violet, red), a glow at every spring, Settings > Time of day and Lighting, Pause > Rest, and an Auto quality guard. Before that came a fix for invisible friends: NPC models were never added to the scene, and now they are, with a stand-in gnome if a model fails to load. It also adds an orange goal dot on the minimap once you reach the quest goal. Before that came the HUD layout: a bottom button row with the clock, a half-size HP/MP plaque, fullscreen at the left edge, the minimap top-right with a red quest chevron, and Settings > Install app. Before that came the minimap and the higher look-up camera (`109829c`), and before that `b7680db` (fullscreen, sideways-phone layout, display presets). See `CHANGELOG.md`.
 - **Inputs:** phone touch, gamepad and keyboard/mouse all work.
 - **Cameras:** Follow (default) and Free, plus Target Lock.
-- **Settings:** Display / Aspect / Render scale, Minimap, Quest hint arrow (both On by default), Install app (`display.install()`: the stashed `beforeinstallprompt` event, or step-by-step instructions for iOS, Android or desktop).
+- **Settings:** Display / Aspect / Render scale, Minimap, Quest hint arrow (both On by default), Time of day (Cycle / Always day / Always night), Lighting (Auto / Low / Medium / High), Install app (`display.install()`: the stashed `beforeinstallprompt` event, or step-by-step instructions for iOS, Android or desktop).
 - **HUD layout** (the `#hud.mg` block at the end of `grove.css`):
   - `.mg-row` holds pause / hint / map / camera plus `.mg-timer`, along the bottom. On touch it sits between the stick zone (left 33.5cqh) and the action cluster, above `--sab`.
   - The buttons are `--rd`, at least 44px (`--tmin`). The row shows only when `#hud[data-mode]` is field or battle.
   - The fullscreen icon is at the left edge, with the vitals plaque after it (`--fsr`).
   - `.n64-mini` sits top-right (`--mmD` / `--mmR`), with the pearls and quest text to its left.
-- **Last verification:** on the live site, 393 checks passed and 1 flaky check failed (see Known issues).
+- **Night layer** (`grovelights.js`, `createNightLayer`, created before any model loads; `LIGHT.lit` is only set if it loaded):
+  - `TOD` sets the cycle (1200 s per day, `nightShare` 0.55; new game 16.6, title 20.3, Rest 20.6 / 7.0). `NIGHT` sets the floors (k 0.40 desktop, 0.50 phones, `lift.BOSS` +0.06), the tint, the fog and the moon.
+  - `GLOOM` / `PALETTE` hold Bill's neons; `LANTERN_MIX`, `SWARM_COLS` and `BF_COLS` do the weighting. `coldFire(torch)` swaps the flame sprites red and blue; `tintLantern` makes the cold-fire and red lanterns from the blue and magenta kit models.
+  - `DENS[quality]` sets density and cull radius, with the glowkit `QUALITY` caps for lights and shadows. The Auto guard steps down after two slow 6 s windows, outside `?scene=` (or with `&guard=1`).
+  - Springs get `springGlow` (halo, ground pool, pool light at priority 2.2, an inner glow for root tunnels and hollow logs). `state().level.springs` audits lantern, butterflies and glow per spring.
+  - Skinned meshes don't cast torch shadows, except the gnome (`castsShadow`). Leave it that way: friends vanished after the cube shadow pass.
+- **Last verification (2026-10-02, local, SwiftShader):** t_night 45/45 (its new springs-at-night check was added afterwards; the same per-spring audit passed for all 8 springs); t_npcs at noon and 10:30 PM all pass; t_hud 88/88; t_mapcam 59/60; mobiletest 80/80 unlit and 78/80 lit; t_display 94/95. All the misses are time-window checks that miss frames when lit rendering is slower in software GL: the jump sample at 120 ms passes 80/80 at 450 ms, the camera ease-back runs in a 3 s window, and the backtick fullscreen check (0.8 s) passes in 0.35 s alone. Before that, the live site passed 393 checks with 1 flaky failure.
 
 ## Where the code comes from
 This repo is a **curated copy** of a generated project. Don't treat it as the source of truth for code.
@@ -31,7 +37,9 @@ To ship a code change, copy the changed files from `n64-suite/n64/web/rpg/` into
 |---|---|
 | `index.html` | entry page: import map for three.js, loading screen, touch/zoom guards, PWA meta tags |
 | `grove.js`, `grove.css` | the Mossgnome game: world, HUD, menus, title, quests, battles, springs, ending |
-| `common.js` | shared stage/HUD helpers (`place`/`placeCircle` in cqh units with safe-area vars) |
+| `common.js` | shared stage/HUD helpers (`place`/`placeCircle` in cqh units with safe-area vars); lit-mode materials (`LIGHT`, `litMaterial`, `setAmbient`, `ensureNormals`, `castsShadow`) |
+| `grovelights.js` | day/night cycle + glow lights for the game (palette, placement per level, fades, culling, quality, Auto guard) |
+| `lights/` | glow kit runtime (`glowkit.js`, `torches.js`, `lanterns.js`, `wisps.js`, `butterflies.js`, `daynight.js`), models, sprites, presets (from the suite's `glowlights.pack(..., demo=False)`) |
 | `input.js` | input layer: gamepad / keyboard+mouse / touch, `I.last` device, Start+Select → Fullscreen |
 | `camrig.js` | Follow / Free camera, Target Lock, pitch limits (`PITCH`) and the look-up helper `lookUp()` (sinks, slides in and tilts up; ground and line-of-sight safe) |
 | `minimap.js` | corner minimap (`createMinimap`, default top-right, red chevron via `arrowColor`; orange goal dot via `goalColor` once you are within `near` of the goal, `M.goal`), terrain bake from level data (`bakeMap`), and the quest heading (`questHeading`: in-level target or the portal/exit toward it) |
@@ -45,7 +53,7 @@ To ship a code change, copy the changed files from `n64-suite/n64/web/rpg/` into
 | `vendor/` | three.js r160 + addons |
 | `preview/` | model sheets and `shots/` screenshots (used in the README) |
 
-Useful URL flags: `?debug=1` (dev bar), `?scene=title|hub|spring|battle|boss_battle|map|pause|ending…&autostart=1`, `&noenc=1`, `?safearea=t,r,b,l` (simulate a notch).
+Useful URL flags: `?debug=1` (dev bar), `?hour=22.5` / `?tod=night` / `?cycle=1` (scenes otherwise start at noon, clock stopped), `?lightq=low|medium|high`, `?nolights=1`, `&guard=1`, `?scene=title|hub|spring|battle|boss_battle|map|pause|ending…&autostart=1`, `&noenc=1`, `?safearea=t,r,b,l` (simulate a notch).
 
 ## Run locally
 ```bash
@@ -66,7 +74,7 @@ python3 -m http.server 8091 -d /tmp/pagesroot      # http://127.0.0.1:8091/mossg
 
 ## Tests
 All tests are headless Playwright (Chromium + SwiftShader) and live in the suite: `/workspace/n64-suite/tests/input/` (see its README).
-- **Against this repo locally:** `python3 /tmp/runpub.py t_display.py`. `t_npcs.py` checks that every friend is really on screen (in every level, using `__debug.npcCheck(id)`, which renders the frame with and without them) and the minimap goal dot. `t_hud.py` covers the HUD layout (bottom row, corners, Install app) on phones, desktop, TV and Retro, with screenshots in `/workspace/scratch/hud2/shots`. `t_mapcam.py` covers the minimap, quest chevron, settings, presets and the camera look-up on desktop and three phones; its screenshots go to `/workspace/scratch/mm/shots`. It serves `/tmp/pagesroot`; `t_pad.py`, `t_pad2.py`, `t_kbm.py` and `t_touch.py` work the same way.
+- **Against this repo locally:** `python3 /tmp/runpub.py t_display.py`. `t_night.py` covers day/night (settings, light levels, readability, palette, every spring at night, Auto guard, fallback). `t_npcs.py` checks (at noon and at 10:30 PM) that every friend is really on screen (in every level, using `__debug.npcCheck(id)`, which renders the frame with and without them) and the minimap goal dot. `t_hud.py` covers the HUD layout (bottom row, corners, Install app) on phones, desktop, TV and Retro, with screenshots in `/workspace/scratch/hud2/shots`. `t_mapcam.py` covers the minimap, quest chevron, settings, presets and the camera look-up on desktop and three phones; its screenshots go to `/workspace/scratch/mm/shots`. It serves `/tmp/pagesroot`; `t_pad.py`, `t_pad2.py`, `t_kbm.py` and `t_touch.py` work the same way.
 - **Against the live site:** pass the URL, e.g. `python3 t_pad.py https://unclebill-spec.github.io/mossgnome/`.
 - **Full run:** `bash /workspace/scratch/disp/runall.sh https://unclebill-spec.github.io/mossgnome/ live` (about 15 min). Results go to `/workspace/scratch/disp/all_live.log`. Expect `FAILS: []` in each section.
 - **Scratch tests:** `/workspace/scratch/mobiletest.py`, `pubtest.py` and `pubtest2.py` (smoke tests of every scene).
@@ -85,6 +93,7 @@ All tests are headless Playwright (Chromium + SwiftShader) and live in the suite
 - No eye patch and no soccer ball on anyone.
 - The big red-bearded figure is the **dwarf Krogbold Anvilbeard**, not a lumberjack.
 - Portals and rifts take their look from Bill's refs in `/workspace/gravewake/style/rift_refs`. These are for study only: read them, never modify them, and never ship them.
+- **"Gloom and glow" is Bill's favourite look:** dark environments full of glowing objects. His signature glow colours, in order: **neon blue cold fire** (top favourite), **violet neon**, **red neon**. Keep it playable and readable on phones.
 - Original content only: no Nintendo or other games' names, assets, text or melodies. The suite's originality test enforces this.
 
 **How Bill plays (all must keep working)**
@@ -105,6 +114,10 @@ All tests are headless Playwright (Chromium + SwiftShader) and live in the suite
 - Already-open tabs need a reload after a deploy.
 - **Minimap chevron:** it points straight at the in-level target (smoothed), not along paths, so around cliffs or water you may need to find the way. Only the current quest step is used.
 - **Full look-up:** the gnome's feet drop below the bottom of the frame; this is intentional, to see the canopy. The camera can still poke into tree trunks or houses, as before.
+
+- **Night lighting** performance was only measured in software GL (SwiftShader) and on emulated phones. The Auto guard steps quality down if a real device is slow.
+- At the two far path ends of the village (x ±27.5, z -12) the camera ends up inside a giant tree trunk, by day too.
+- t_kbm "left click bonks" is a sampling race like the hat-bonk one; it passes on rerun.
 
 ## Next steps (suggested)
 1. Have Bill test on his real phone (touch and Bluetooth controller) and on Add to Home Screen. Fix whatever differs from emulation.

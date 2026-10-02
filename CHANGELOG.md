@@ -4,6 +4,29 @@ Mossgnome and the Hidden Springs (published build). Newest first. Times are US E
 Every entry is one commit on `main`; to roll back, `git checkout <hash>` (look) or `git revert <hash>` (undo on main).
 Live: https://unclebill-spec.github.io/mossgnome/
 
+## 2026-10-02 07:51: Day and night: a time-of-day cycle with glowing torches, lanterns, wisps and butterflies ("gloom and glow")
+- **Time of day:** the world now has a day/night cycle, about 20 minutes per full day, with nights a bit longer than days. Dusk is short: about 6 to 7 PM in-game, roughly 50 seconds of real time.
+  - The HUD clock shows the time of day (for example 10:30 PM). Play time is still in the pause menu and the credits.
+  - **Settings > Time of day:** Cycle (default), Always day or Always night. The choice is remembered.
+  - **Pause > Rest until nightfall / Rest until morning:** in the village only, in Cycle mode, and not during the chase.
+  - A new game starts in the late afternoon. Continue restores the saved hour. The ending is always a bright morning.
+- **Lights at night:** torches with real shadows, glow-fish lanterns along the paths, wisps and fireflies that fade in at dusk, and glowing butterflies at the springs. Characters, the dwarf and friends glow faintly at night, so they stay easy to see.
+- **"Gloom and glow" (Bill's favourite look):** the night is dark blue-violet, so the glowing things carry the scene. Lanterns, wisps and butterflies lean on Bill's signature neons:
+  - neon blue cold fire first, then violet neon, then red neon (cyan rides along with the cold fire)
+  - Some torches burn **blue cold fire**: the village brazier, every other house torch, the cavern gate, one torch at each cave mouth, and the Cold Forge braziers. The rest stay warm orange for contrast.
+- **Every spring glows at night:** each one has its own lantern (in its colour), butterflies, a halo above it, a pool of light around it and its own light. Walk-through hideouts (root tunnels, hollow logs) also glow inside.
+- **Never too dark:** nights have an ambient floor (brighter on phones), plus moonlight. The Cold Forge's dark stone gets a little extra. The HUD, minimap, red quest arrow and orange goal dot look the same at night.
+- **Settings > Lighting:** Auto (default), Low, Medium or High. Auto picks per device: High on desktop, Medium on phones. The quality caps the real lights and shadows (Low 3 lights / 0 shadows, Medium 4 / 1, High 8 / 2) and the density of lanterns and swarms.
+  - **Auto guard:** if the game runs below about 21 fps for two 6-second stretches, Auto steps down one level (High to Medium to Low).
+- **Fix found on the way: friends could vanish with shadows on.** On Medium and High, a friend that went through the torch shadow pass sometimes stopped drawing at all (about half of page loads, in testing). Skinned characters other than the gnome no longer cast torch shadows. Lit meshes that arrive without normals get computed ones.
+- **Files:** `grovelights.js` (the night layer: cycle, palette, placement, fades, culling, quality and guard), plus the `lights/` folder (glow kit runtime, torch / lantern / butterfly models, sprites, presets; 1.8 MB, loaded at start). `common.js` gains lit materials (`LIGHT`, `litMaterial`, `ensureNormals`, `castsShadow`).
+- **URL and debug:** `?hour=22.5`, `?tod=night`, `?cycle=1` (scenes otherwise start at noon with the clock stopped), `?lightq=low|medium|high`, `?nolights=1` (the classic unlit look) and `&guard=1`. `__debug` gains `setHour`, `setTod`, `setLightQ`, `runClock`, `lag` and `npcShow`, and `__debug()` now includes `tod`, `clock` and `lit`.
+- **Tests:** the new `t_night.py` covers the cycle, settings, Rest, light levels, readability at night on desktop, Pixel 7 and Retro, the HUD at night, the palette weighting, every spring at night, the Auto guard and the `?nolights=1` fallback. `t_npcs.py` now also runs at 10:30 PM.
+- **Caveats:**
+  - Performance was measured only in software GL (SwiftShader) and on emulated phones, so real devices should do better. The Auto guard is the safety net.
+  - Already-open tabs need a reload to get the update (the service worker is network-first).
+  - The two path ends at the far village edge put the camera inside a giant tree trunk, by day as well as at night (the old camera issue).
+
 ## 2026-10-01 23:36: Fix: villagers were invisible (Grandpa Femble and every other friend); orange goal dot on the minimap
 - **Bug (reported by Bill on his Android phone):** "Talk to Grandpa Femble" showed up on the village green, but nobody was there.
   - **Cause:** the code that loads friends (NPCs) built each model, its "!" mark and its name tag, but never added them to the 3D scene. So all 9 friends (4 in the village, 2 in Toadstool Wood, 2 in the Caverns, 1 in the Marsh) were invisible on every device since the first build. Their talk spots and colliders still worked.
