@@ -12,7 +12,8 @@ html,body{position:fixed;inset:0;overflow:hidden;overscroll-behavior:none;touch-
 <script>if(new URLSearchParams(location.search).get("debug")==="1")document.documentElement.classList.add("debug");
 // no page scroll / bounce / pinch-zoom / long-press menus on phones
 for(const ev of ["touchmove","gesturestart","gesturechange","contextmenu","selectstart","dblclick"])document.addEventListener(ev,(e)=>{if(ev==="touchmove"&&e.target.closest&&e.target.closest(".n64-scroll"))return;e.preventDefault()},{passive:false});  // .n64-scroll panels (long menus) may still scroll</script><link rel="stylesheet" href="rpg.css">
-<script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script></head>
+<script>addEventListener("beforeinstallprompt",(e)=>{e.preventDefault();window.__bip=e});  // kept for Settings > Install app
+if("serviceWorker"in navigator&&location.protocol==="https:")addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script><script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script></head>
 <body>
 <div id="loading"><i></i>Loading…</div>
 <div id="bar"><select id="sceneSel"></select><button id="crisp">bilinear/crisp</button><a href="vfx.html">Spell VFX</a></div>

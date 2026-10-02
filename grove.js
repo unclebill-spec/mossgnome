@@ -110,7 +110,11 @@ export async function start(man) {
     tbtn('cam', '<svg viewBox="-12 -12 24 24"><rect x="-9" y="-5.5" width="14" height="11" rx="2.5"/><path d="M5 -2.5l5 -3v11l-5 -3z" class="f"/></svg>', [0.06, 0.41, 0.042], 'CamToggle', 3));
   for (const b of fieldBtns) b.classList.add('touch-only');
   const FS_ICO = '<svg class="ico" viewBox="-12 -12 24 24"><path d="M-9 -3v-6h6M3 -9h6v6M9 3v6h-6M-3 9h-6v-6"/></svg>';
-  const fsBtn = placeCircle(div('mg-btn mg-tb mg-fs', hud, `<span>${'<svg viewBox="-12 -12 24 24" class="fs-in"><path d="M-9 -3v-6h6M3 -9h6v6M9 3v6h-6M-3 9h-6v-6"/></svg><svg viewBox="-12 -12 24 24" class="fs-out"><path d="M-9 -3h6v-6M3 -9v6h6M9 3h-6v6M-3 9v-6h-6"/></svg>'}</span><i></i>`), [0.958, 0.068, 0.032]); fsBtn.dataset.nm = 'fs';
+  const fsBtn = placeCircle(div('mg-btn mg-tb mg-fs', hud, `<span>${'<svg viewBox="-12 -12 24 24" class="fs-in"><path d="M-9 -3v-6h6M3 -9h6v6M9 3v6h-6M-3 9h-6v-6"/></svg><svg viewBox="-12 -12 24 24" class="fs-out"><path d="M-9 -3h6v-6M3 -9v6h6M9 3h-6v6M-3 9v-6h-6"/></svg>'}</span><i></i>`), [0.03, 0.068, 0.032]); fsBtn.dataset.nm = 'fs';  // left edge, top
+  // one row across the bottom (pause / hint / map / camera + the clock), centred between the thumbstick and the action buttons (grove.css .mg-row)
+  const rowEl = div('mg-row', hud);
+  for (const nm of ['pause', 'hint', 'map', 'cam']) { const b = hud.querySelector(`.mg-btn[data-nm=${nm}]`); if (b) rowEl.appendChild(b); }
+  rowEl.appendChild(timerEl);
   // fullscreen needs a click (a user gesture on touch too), armed by a pointerdown on the same element so a tap that just opened / closed a panel can't fall through
   const armClick = (el, fn) => { el.onpointerdown = (e) => { e.stopPropagation(); el.armed = true; }; el.onclick = (e) => { e.stopPropagation(); if (!el.armed) return; el.armed = false; fn(); }; };
   armClick(fsBtn, () => display.toggleFS());
@@ -440,6 +444,7 @@ export async function start(man) {
     { name: 'Auto Target Lock', val: () => (input.settings.autoLock === false ? 'Off' : 'On'), adj: () => { input.settings.autoLock = input.settings.autoLock === false; } },
     { name: 'Minimap', val: () => (input.settings.minimap === false ? 'Off' : 'On'), adj: () => { input.settings.minimap = input.settings.minimap === false; } },
     { name: 'Quest hint arrow', val: () => (input.settings.questArrow === false ? 'Off' : 'On'), adj: () => { input.settings.questArrow = input.settings.questArrow === false; } },
+    { name: 'Install app', install: true, val: () => display.installLabel(), adj: () => { display.install().then(() => setTimeout(() => G.mode === 'menu' && drawMenu(), 300)); } },
     { name: 'Back', back: true }];
   function settingsKey(k) {
     const r = SET_ROWS[setSel];
@@ -466,10 +471,12 @@ export async function start(man) {
     if (menuPage === 'settings') h = '<h2>Settings</h2><div class="sgrid">' + SET_ROWS.map((r, i) => `<div class="mi set${i === setSel ? ' sel' : ''}" data-s="${i}">${r.name}${r.back ? '' : ` <span class="val">${r.step ? '<u data-d="-1">-</u>' : ''}${r.val()}${r.step ? '<u data-d="1">+</u>' : ''}</span>`}</div>`).join('') + `</div><div class="q"><small>Saved on this device &middot; rendering ${display.rw}&times;${display.rh}</small></div>`;
     menuEl.innerHTML = h; menuEl.classList.add('n64-scroll'); menuEl.classList.toggle('wide', menuPage === 'settings' || menuPage === 'controls'); menuEl.dataset.page = menuPage;
     menuEl.querySelectorAll('.mi').forEach((el) => { el.onpointerdown = (e) => { e.stopPropagation();
-      if (el.dataset.s !== undefined) { setSel = +el.dataset.s; const r = SET_ROWS[setSel]; if (r.fs) return; if (r.back) { menuBack(); return; } r.adj(+(e.target.dataset.d || 1)); input.save(); sfx('menu_tick', 0.3); drawMenu(); return; }
+      if (el.dataset.s !== undefined) { setSel = +el.dataset.s; const r = SET_ROWS[setSel]; if (r.fs || r.install) return; if (r.back) { menuBack(); return; } r.adj(+(e.target.dataset.d || 1)); input.save(); sfx('menu_tick', 0.3); drawMenu(); return; }
       if (el.classList.contains('back')) menuBack(); else { menuSel = +el.dataset.i; menuPick(); } }; });
     const fsRow = menuEl.querySelector(`.mi[data-s="${SET_ROWS.findIndex((r) => r.fs)}"]`);  // fullscreen needs a real click / tap (user gesture)
     if (fsRow) armClick(fsRow, () => { setSel = +fsRow.dataset.s; SET_ROWS[setSel].adj(1); });
+    const inRow = menuEl.querySelector(`.mi[data-s="${SET_ROWS.findIndex((r) => r.install)}"]`);  // the install prompt also needs a real click / tap
+    if (inRow) armClick(inRow, () => { setSel = +inRow.dataset.s; SET_ROWS[setSel].adj(1); });
     const sel = menuEl.querySelector('.mi.sel');  // keep the focused row in view in a scrolled panel (without scrolling the page)
     if (sel) { const t = sel.offsetTop, b = t + sel.offsetHeight; if (t < menuEl.scrollTop) menuEl.scrollTop = t - 8; else if (b > menuEl.scrollTop + menuEl.clientHeight) menuEl.scrollTop = b - menuEl.clientHeight + 8; }
   }
@@ -746,7 +753,7 @@ export async function start(man) {
   // ---------- mode + field
   G = { mode: 'boot', lock: null, lockNo: null, camIdle: 9, moveT: 0, zoom: 1, walk: false, cy: 0, cp: 0.32, py: 0, vy: 0, riding: false, swinging: false, flash: 0, closeup: null, introNext: null, noenc: !!Q.get('noenc'), bathCd: 0, stepT: 0 };
   function setMode(m) {
-    G.mode = m; G.modeAt = performance.now(); const field = m === 'field' || m === 'battle'; input.menu = !field; fsBtn.classList.toggle('hide', !field);
+    G.mode = m; G.modeAt = performance.now(); hud.dataset.mode = m; const field = m === 'field' || m === 'battle'; input.menu = !field; fsBtn.classList.toggle('hide', !field);
     for (const b of fieldBtns) b.classList.toggle('hide', !field);
     joy.classList.toggle('hide', !field); if (!field) { if (joyId !== null) joyEnd(); joyT = null; joyV = null; } if (m !== 'field') promptEl.classList.add('hide'); questEl.classList.toggle('hide', m !== 'field'); vit.classList.toggle('hide', m === 'title' || m === 'ending' || m === 'intro');
   }

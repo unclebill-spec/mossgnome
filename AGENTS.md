@@ -7,10 +7,15 @@ Handoff notes for the next agent. Cursor reads this file automatically. Keep it 
 - **Local:** `/workspace/mossgnome-publish`
 
 ## Current state (2026-10-01)
-- Playable and deployed. The latest features are the corner minimap with a faint quest-heading chevron, and a higher look-up camera. Before that came `b7680db` (fullscreen, sideways-phone layout, display presets). See `CHANGELOG.md`.
+- Playable and deployed. The latest change is the HUD layout: a bottom button row with the clock, a half-size HP/MP plaque, fullscreen at the left edge, the minimap top-right with a red quest chevron, and Settings > Install app. Before that came the minimap and the higher look-up camera (`109829c`), and before that `b7680db` (fullscreen, sideways-phone layout, display presets). See `CHANGELOG.md`.
 - **Inputs:** phone touch, gamepad and keyboard/mouse all work.
 - **Cameras:** Follow (default) and Free, plus Target Lock.
-- **Settings:** Display / Aspect / Render scale, Minimap, Quest hint arrow (both On by default).
+- **Settings:** Display / Aspect / Render scale, Minimap, Quest hint arrow (both On by default), Install app (`display.install()`: the stashed `beforeinstallprompt` event, or step-by-step instructions for iOS, Android or desktop).
+- **HUD layout** (the `#hud.mg` block at the end of `grove.css`):
+  - `.mg-row` holds pause / hint / map / camera plus `.mg-timer`, along the bottom. On touch it sits between the stick zone (left 33.5cqh) and the action cluster, above `--sab`.
+  - The buttons are `--rd`, at least 44px (`--tmin`). The row shows only when `#hud[data-mode]` is field or battle.
+  - The fullscreen icon is at the left edge, with the vitals plaque after it (`--fsr`).
+  - `.n64-mini` sits top-right (`--mmD` / `--mmR`), with the pearls and quest text to its left.
 - **Last verification:** on the live site, 393 checks passed and 1 flaky check failed (see Known issues).
 
 ## Where the code comes from
@@ -29,8 +34,9 @@ To ship a code change, copy the changed files from `n64-suite/n64/web/rpg/` into
 | `common.js` | shared stage/HUD helpers (`place`/`placeCircle` in cqh units with safe-area vars) |
 | `input.js` | input layer: gamepad / keyboard+mouse / touch, `I.last` device, Start+Select → Fullscreen |
 | `camrig.js` | Follow / Free camera, Target Lock, pitch limits (`PITCH`) and the look-up helper `lookUp()` (sinks, slides in and tilts up; ground and line-of-sight safe) |
-| `minimap.js` | corner minimap (`createMinimap`), terrain bake from level data (`bakeMap`), and the quest heading (`questHeading`: in-level target or the portal/exit toward it) |
-| `display.js` | stage sizing, resolution presets, aspect, render scale, fullscreen, rotate overlay, iPhone tip |
+| `minimap.js` | corner minimap (`createMinimap`, default top-right, red chevron via `arrowColor`), terrain bake from level data (`bakeMap`), and the quest heading (`questHeading`: in-level target or the portal/exit toward it) |
+| `display.js` | stage sizing, resolution presets, aspect, render scale, fullscreen, rotate overlay, iPhone tip, Install app (`installState` / `install` / `installSteps`) |
+| `sw.js` | tiny network-first service worker (offline copy of the small text files; needed for Chrome's install prompt); registered from `index.html` on https only |
 | `rpg.js`, `rpg.css`, `springfx.js`, `vfx.js`, `vfx.html` | shared RPG runtime, spring effects, spell VFX (`vfx.html` is the debug page) |
 | `app.webmanifest`, `icons/` | web app manifest (fullscreen, landscape) and home-screen icons |
 | `manifest.json` | the **game** manifest from the suite (not the PWA manifest) |
@@ -60,7 +66,7 @@ python3 -m http.server 8091 -d /tmp/pagesroot      # http://127.0.0.1:8091/mossg
 
 ## Tests
 All tests are headless Playwright (Chromium + SwiftShader) and live in the suite: `/workspace/n64-suite/tests/input/` (see its README).
-- **Against this repo locally:** `python3 /tmp/runpub.py t_display.py`. `t_mapcam.py` covers the minimap, quest chevron, settings, presets and the camera look-up on desktop and three phones; its screenshots go to `/workspace/scratch/mm/shots`. It serves `/tmp/pagesroot`; `t_pad.py`, `t_pad2.py`, `t_kbm.py` and `t_touch.py` work the same way.
+- **Against this repo locally:** `python3 /tmp/runpub.py t_display.py`. `t_hud.py` covers the HUD layout (bottom row, corners, Install app) on phones, desktop, TV and Retro, with screenshots in `/workspace/scratch/hud2/shots`. `t_mapcam.py` covers the minimap, quest chevron, settings, presets and the camera look-up on desktop and three phones; its screenshots go to `/workspace/scratch/mm/shots`. It serves `/tmp/pagesroot`; `t_pad.py`, `t_pad2.py`, `t_kbm.py` and `t_touch.py` work the same way.
 - **Against the live site:** pass the URL, e.g. `python3 t_pad.py https://unclebill-spec.github.io/mossgnome/`.
 - **Full run:** `bash /workspace/scratch/disp/runall.sh https://unclebill-spec.github.io/mossgnome/ live` (about 15 min). Results go to `/workspace/scratch/disp/all_live.log`. Expect `FAILS: []` in each section.
 - **Scratch tests:** `/workspace/scratch/mobiletest.py`, `pubtest.py` and `pubtest2.py` (smoke tests of every scene).
@@ -91,7 +97,9 @@ All tests are headless Playwright (Chromium + SwiftShader) and live in the suite
 ## Known issues
 - Phones were only tested **emulated** (headless Chromium device profiles; safe areas simulated via `?safearea`). Real iOS Safari and Android Chrome haven't been checked.
 - Some browsers block fullscreen when it starts from a gamepad button (Start+Select). The game shows a toast saying to use the corner button instead.
-- iPhone Safari can't make a page fullscreen, so true fullscreen there needs Share → Add to Home Screen.
+- iPhone Safari can't make a page fullscreen, so true fullscreen there needs Share → Add to Home Screen. Settings > Install app shows those steps.
+- **Install prompt:** Chrome only fires `beforeinstallprompt` once its engagement checks pass (and never in Firefox or Safari). Until then the Install app row shows the steps instead. iOS has no prompt API, so it always shows steps.
+- **Service worker:** `sw.js` is network-first, so a deploy shows up on the next load when online. If something seems stale, a hard reload or clearing site data resets it.
 - `t_pad2.py` "X swings a hat bonk" is flaky right after a spell cast (it failed once live and passed twice on rerun).
 - Keep-playing-upright mode uses the original 4:3 proportions without the 44px touch-target floor.
 - Already-open tabs need a reload after a deploy.

@@ -121,7 +121,7 @@ html[data-input=touch] #hud.mg { --tmin: 48px; }
 .mg-fs .fs-out { display: none; } html[data-fs="1"] .mg-fs .fs-in { display: none; } html[data-fs="1"] .mg-fs .fs-out { display: block; }
 .mg-fs { opacity: 0.85; } .mg-fs svg { stroke-width: 2.6; }
 .mg-title .tmenu { display: flex; flex-direction: column; align-items: center; width: 100%; }
-.mg-menu .sgrid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(5, auto); grid-template-columns: 1fr 1fr; column-gap: 1.2cqh; }
+.mg-menu .sgrid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, auto); grid-template-columns: 1fr 1fr; column-gap: 1.2cqh; }
 .mg-menu .sgrid .mi.set { margin: 0.5cqh 0.6cqh; }
 #hud.mg .mg-menu.wide { left: calc(50% - min(45%, 62cqh)) !important; width: min(90%, 124cqh) !important; }
 html[data-input=touch] .mg-menu .mi, html[data-input=touch] .mg-title .mi { min-height: 44px; display: flex; align-items: center; justify-content: center; box-sizing: border-box; }
@@ -163,9 +163,9 @@ html[data-tv="1"] .mg-menu .mi { font-size: 4cqh; } html[data-tv="1"] .mg-menu .
 html[data-tv="1"] .mg-title .foot { font-size: 2.7cqh; } html[data-tv="1"] .mg-map .leg { font-size: 2.6cqh; }
 svg.ico { width: 0.9em; height: 0.9em; vertical-align: -0.1em; margin-right: 0.35em; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; }
 /* a wide (settings / controls) or phone-sized menu hides the field HUD behind it */
-#hud.mg:has(> .mg-menu.wide:not(.hide)) > :is(.mg-btn, .mg-timer, .mg-pearls, .mg-vitals, .mg-quest, .mg-prompt),
-html[data-small="1"] #hud.mg:has(> .mg-menu:not(.hide)) > :is(.mg-btn, .mg-timer, .mg-pearls, .mg-vitals, .mg-quest, .mg-prompt),
-#hud.mg:has(> .mg-map:not(.hide)) > :is(.mg-btn, .mg-timer, .mg-pearls, .mg-vitals, .mg-quest, .mg-prompt) { visibility: hidden; }
+#hud.mg:has(> .mg-menu.wide:not(.hide)) > :is(.mg-btn, .mg-row, .mg-timer, .mg-pearls, .mg-vitals, .mg-quest, .mg-prompt),
+html[data-small="1"] #hud.mg:has(> .mg-menu:not(.hide)) > :is(.mg-btn, .mg-row, .mg-timer, .mg-pearls, .mg-vitals, .mg-quest, .mg-prompt),
+#hud.mg:has(> .mg-map:not(.hide)) > :is(.mg-btn, .mg-row, .mg-timer, .mg-pearls, .mg-vitals, .mg-quest, .mg-prompt) { visibility: hidden; }
 /* held upright ("keep playing anyway"): the 4:3 band is too short for 48px targets, so keep the original proportions */
 html[data-portrait="1"] #hud.mg { --tmin: 0px; --col0: 0px; --colgap: 0px; }
 /* phone panels stay inside the notch / home-bar safe area */
@@ -177,11 +177,33 @@ html[data-small="1"] #hud.mg .mg-menu { --pw: min(calc(90% - var(--sal, 0px) - v
 html[data-small="1"] #hud.mg .mg-spells { transform: none; left: calc(var(--sal, 0px) + 34cqh) !important; right: calc(var(--sar, 0px) + 43cqh + 28px); width: auto !important;
   top: auto !important; bottom: calc(1.5% + var(--sab, 0px)); height: max(12%, 50px) !important; }
 html[data-small="1"] .mg-spells .sp { font-size: max(1.7cqh, 10px); padding: 0.3cqh 0.2cqh; } html[data-small="1"] .mg-spells .sp b { font-size: max(2.4cqh, 12px); }
-html[data-small="1"] #hud.mg .mg-foe { left: calc(var(--sal, 0px) + 16cqh + 45.4cqh * var(--hk, 1) + 2.5cqh) !important; transform-origin: 0 0; }
+html[data-small="1"] #hud.mg .mg-foe { left: calc(var(--fsr) + 1.4cqh + 24cqh * var(--hk, 1) + 2.5cqh) !important; transform-origin: 0 0; }
 html[data-small="1"] .mg-foe { font-size: max(2.5cqh, 11px); } html[data-small="1"] .mg-foe .fn small { font-size: max(1.9cqh, 9.5px); }
 html[data-small="1"] .mg-spells .sp small { font-size: max(1.7cqh, 9.5px); }
-/* corner minimap (minimap.js): bottom-right with keyboard / controller; on touch it tucks under the HP/MP plaque, clear of the
-   left button column and the thumbstick (pointer-events: none, so a thumb there still grabs the floating stick) */
-html[data-input=touch] #hud.mg .n64-mini { right: auto; bottom: auto; left: calc(max(16cqh, 66px) + var(--sal, 0px)); top: calc(5.5cqh + 11.5cqh * var(--hk, 1) + var(--sat, 0px));
-  --mmd: calc(max(19cqh, 72px) * var(--mmk, 1)); }
-html[data-input=touch][data-portrait="1"] #hud.mg .n64-mini { --mmd: 17cqh; }
+/* ---------- HUD layout (2026-10-01): one bottom row (pause / hint / map / camera + clock) between the thumbstick and the action
+   buttons, small HP/MP plaque after the fullscreen icon at the left edge, minimap top-right with the springs counter and the
+   quest text beside it. --rd = row button size (>= 44-48px on touch), --fsr = right edge of the fullscreen icon. */
+#hud.mg { --rd: max(7.2cqh, var(--tmin, 0px)); --rgap: max(1.4cqh, 6px); --rb: calc(1.6cqh + var(--sab, 0px));
+  --fsd: max(6.4cqh, var(--tmin, 0px)); --fsr: calc(var(--sal, 0px) + max(4cqh, var(--fsd) / 2 + 4px) + var(--fsd) / 2);
+  --mmD: calc(max(18cqh, 76px) * var(--hk, 1) * var(--mmk, 1)); --mmR: calc(var(--mmD) + 4cqh + var(--sar, 0px)); }
+html[data-res=p1080] #hud.mg { --mmk: 1.15; } html[data-res=retro] #hud.mg { --mmk: 0.95; }
+#hud.mg .mg-row { position: absolute; z-index: 4; display: flex; align-items: center; justify-content: center; gap: var(--rgap); pointer-events: none;
+  height: var(--rd); bottom: var(--rb); left: calc(var(--sal, 0px) + 2cqh); right: calc(var(--sar, 0px) + 2cqh); }
+/* touch: between the thumbstick's home ring (right edge 32cqh) and the hat-bonk button (left edge 41.3cqh + r from the right) */
+html[data-input=touch] #hud.mg .mg-row { left: calc(var(--sal, 0px) + 33.5cqh); right: calc(var(--sar, 0px) + 41.3cqh + max(4.4cqh, 24px) + 1.5cqh); }
+#hud.mg .mg-row > .mg-btn { position: relative !important; left: auto !important; top: auto !important; margin: 0 !important; width: var(--rd) !important; height: var(--rd) !important; flex: none; pointer-events: auto; }
+#hud.mg .mg-row > .mg-timer { position: relative !important; left: auto !important; top: auto !important; transform: none; flex: none; width: auto !important;
+  height: calc(var(--rd) * 0.84) !important; min-width: max(calc(15cqh * var(--hk, 1)), 74px); padding: 0 max(1.4cqh, 6px); font-size: max(calc(3.1cqh * var(--hk, 1)), 14px); }
+#hud.mg:not([data-mode=field]):not([data-mode=battle]) > .mg-row { visibility: hidden; }
+#hud.mg[data-mode=battle] .mg-spells { top: auto !important; bottom: calc(var(--rb) + var(--rd) + 1.2cqh) !important; }
+/* HP / MP: half the old plaque, text floors so it stays readable on a phone */
+#hud.mg .mg-vitals { left: calc(var(--fsr) + 1.4cqh) !important; top: calc(2cqh + var(--sat, 0px)) !important; width: 23cqh !important; height: 6.2cqh !important;
+  grid-template-columns: max(2cqh, 9px) 1fr max(2.8cqh, 15px); column-gap: 0.5cqh; padding: 0.55cqh 1.3cqh; font-size: max(1.65cqh, 8.5px); }
+#hud.mg .mg-vitals .ic { width: max(2cqh, 9px); height: max(2cqh, 9px); }
+#hud.mg .mg-vitals .bar { height: max(0.85cqh, 4px); border-width: max(0.15cqh, 1px); }
+#hud.mg .mg-vitals b { text-shadow: 0 max(0.2cqh, 1px) 0 #4a2a14; }
+/* top-right: minimap in the corner; springs counter + quest text just left of it */
+#hud.mg .n64-mini { --mmd: var(--mmD); left: auto; bottom: auto; right: calc(2cqh + var(--sar, 0px)); top: calc(2cqh + var(--sat, 0px)); }
+#hud.mg .mg-pearls { left: auto !important; right: var(--mmR); top: calc(2.2cqh + var(--sat, 0px)) !important; transform: scale(var(--hk, 1)); transform-origin: 100% 0; }
+#hud.mg .mg-quest { right: var(--mmR); top: calc(3.6cqh + 7cqh * var(--hk, 1) + var(--sat, 0px)); width: min(34%, calc(38cqh * var(--hk, 1))); }
+html[data-input=touch][data-portrait="1"] #hud.mg { --mmD: 17cqh; }

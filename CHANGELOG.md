@@ -4,6 +4,24 @@ Mossgnome and the Hidden Springs (published build). Newest first. Times are US E
 Every entry is one commit on `main`; to roll back, `git checkout <hash>` (look) or `git revert <hash>` (undo on main).
 Live: https://unclebill-spec.github.io/mossgnome/
 
+## 2026-10-01 22:55: HUD layout: bottom button row, smaller HP/MP, minimap top-right, red quest arrow, Install app
+- **Bottom row:** the round Pause, Hint, Map and Camera buttons used to sit in a column on the left. They are now one row along the very bottom of the screen, with the clock right beside them.
+  - On phones the row sits centred between the joystick and the action buttons, clear of both and above the home-bar safe area.
+  - Each touch target is at least 44px (48px on the phones tested).
+  - The row only shows in the field and in battle. In battle the spell list sits above it.
+- **HP/MP plaque:** about half its old size. It sits at the top-left, just right of the fullscreen icon.
+- **Fullscreen button:** moved to the left edge.
+- **Minimap:** moved to the top-right corner. The pearl counter and quest text sit to its left.
+- **Quest arrow:** the chevron on the minimap rim is now red so it's easier to see. It is still vague, with no distance or exact marker.
+- **Settings > Install app:**
+  - On Android/Chrome it opens the browser's install prompt (`beforeinstallprompt`) when the browser offers one. Otherwise it shows the steps (⋮ menu > Install app / Add to Home screen).
+  - On iPhone/iPad it shows the Share > Add to Home Screen steps.
+  - On desktop it shows the steps for the address-bar install icon.
+  - It reads "Installed" when the game is running as an installed app.
+- **New `sw.js`:** a tiny network-first service worker. Chrome needs one before it will offer the install prompt. It always fetches fresh files when online and keeps a copy of the small page and script files for offline use. It is registered on https only.
+- Works in the sideways phone layout (including the iPhone notch), on desktop, with a controller, and in the 720p/1080p TV and Retro 320x240 presets.
+- Tests: the new `t_hud.py` (phones, desktop, TV, Retro: row geometry, 44px targets, clearances, corners, red chevron, Install app per platform, stubbed prompt). `t_mapcam.py` now expects the minimap top-right.
+
 ## 2026-10-01 21:41: Minimap with a quest-heading chevron; higher look-up camera
 - **Minimap** (new `minimap.js`):
   - a small round parchment disc in a wooden rim, north up (gold tick), showing the local area: paths, big houses and trees, friends, gates/exits and found springs

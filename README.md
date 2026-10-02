@@ -6,7 +6,9 @@ hidden bubbly springs behind waterfalls, in mossy caves, at the end of root tunn
 **Play:** https://unclebill-spec.github.io/mossgnome/ (computer, phone or tablet with WebGL; Bluetooth / USB controllers work too; tap or press a key once for sound)
 
 ## Controls
-The on-screen prompts switch automatically to whatever you used last (keyboard & mouse, controller or touch). All three schemes are listed in the pause menu under **Controls**; **Settings** has camera mode, sensitivity, invert Y, mouse look, auto Target Lock, **Minimap** and **Quest hint arrow** (saved on the device).
+The on-screen prompts switch automatically to whatever you used last (keyboard & mouse, controller or touch). All three schemes are listed in the pause menu under **Controls**; **Settings** has camera mode, sensitivity, invert Y, mouse look, auto Target Lock, **Minimap** and **Quest hint arrow** (saved on the device), plus **Install app** (Android: the install prompt; iPhone: the Add to Home Screen steps).
+
+The round Pause / Hint / Map / Camera buttons and the clock sit in one row along the bottom of the screen (on a phone, between the thumbstick and the action buttons). The fullscreen button is at the far left, with the small HP/MP bars beside it.
 
 | Action | Keyboard & mouse | Controller (Xbox / PlayStation / Switch Pro / standard) | Touch |
 |---|---|---|---|
@@ -26,7 +28,7 @@ The on-screen prompts switch automatically to whatever you used last (keyboard &
 Follow camera swings in behind you as you go (nudge it any time; it eases back after a moment). Free camera only moves when you move it.
 Push the camera up (drag up, mouse up, or right stick up) to look high into the treetops; in Follow it holds while you stand and eases back once you walk on.
 
-**Minimap:** a little parchment disc (bottom-right; on a phone, under your HP/MP) shows the nearby paths, houses, friends and gates, with your red arrow showing which way you face. A faint brown chevron on its rim nudges you the general way toward your current quest step (or the gate that leads there). Both can be turned off in Settings.
+**Minimap:** a little parchment disc in the top-right corner shows the nearby paths, houses, friends and gates, with your red arrow showing which way you face. A red chevron on its rim nudges you the general way toward your current quest step (or the gate that leads there). Both can be turned off in Settings.
 Target Lock grabs a cross critter when you get close (or press the lock control): you face it, strafe round it, the letterbox bars slide in; press again to switch targets or let go. Step out of a battle ring to run away.
 
 ## Phones, fullscreen and display

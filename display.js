@@ -7,6 +7,13 @@ export const SCALES = [1, 0.85, 0.7, 0.5];
 const SETTINGS = { res: 'auto', aspect: 'fit', scale: 1 };
 const coarse = () => matchMedia('(pointer: coarse)').matches;
 export const isIPhone = () => /iPhone|iPod/.test(navigator.userAgent);
+export const isIOS = () => isIPhone() || /iPad/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+export const isAndroid = () => /Android/i.test(navigator.userAgent);
+// "Install app": Chrome / Edge / Samsung fire beforeinstallprompt (index.html stashes it early in window.__bip); iPhone + iPad
+// Safari have no prompt, so we show the Add to Home Screen steps instead.
+let installed = false;
+addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); window.__bip = e; });
+addEventListener('appinstalled', () => { installed = true; window.__bip = null; });
 export const standalone = () => navigator.standalone === true || matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches;
 export const isFS = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
 export function canFS() {  // element fullscreen exists everywhere except iPhone Safari
@@ -86,6 +93,29 @@ export function createDisplay({ renderer, cameras = () => [], storageKey = 'n64.
     if (seen && !force) return; try { localStorage.setItem(key, '1'); } catch (e) { /* private */ }
     const t = document.createElement('div'); t.id = 'n64-tip';
     t.innerHTML = `<div class="card"><b>Play fullscreen on iPhone</b><br>Tap <b>Share</b> <span aria-hidden="true">&#x2B06;&#xFE0E;</span> then <b>Add to Home Screen</b>.<br><small>Open ${title.replace(/</g, '&lt;')} from your home screen and it fills the whole screen, sideways.</small></div><button>Got it</button>`;
+    const eat = (e) => e.stopPropagation(); for (const ev of ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'mousedown']) t.addEventListener(ev, eat);
+    t.querySelector('button').addEventListener('click', () => t.remove()); document.body.appendChild(t);
+  };
+  // ---- Install app (Settings): the real prompt where the browser offers one, otherwise the steps for this device
+  D.installState = () => (standalone() || installed ? 'installed' : window.__bip ? 'prompt' : isIOS() ? 'ios' : isAndroid() ? 'android' : 'desktop');
+  D.installLabel = () => ({ installed: 'Installed', prompt: 'Install', ios: 'How to', android: 'How to', desktop: 'How to' }[D.installState()]);
+  D.install = async () => {
+    const st = D.installState();
+    if (st === 'installed') { onToast && onToast('Already installed: open it from your home screen'); return st; }
+    if (st === 'prompt') {
+      const ev = window.__bip; window.__bip = null;
+      try { await ev.prompt(); const r = await ev.userChoice; if (r && r.outcome === 'accepted') installed = true; return r ? r.outcome : 'shown'; } catch (e) { window.__bip = ev; onToast && onToast('Tap or click Install app to open the install prompt'); return 'error'; }
+    }
+    D.installSteps(st); return 'steps';
+  };
+  D.installSteps = (st = D.installState()) => {
+    if (document.getElementById('n64-tip')) return;
+    const name = title.replace(/</g, '&lt;'), share = '<b>Share</b> <span aria-hidden="true">&#x2B06;&#xFE0E;</span>';
+    const body = st === 'ios' ? `In <b>Safari</b>: tap ${share}, scroll down, then tap <b>Add to Home Screen</b> and <b>Add</b>.<br><small>In Chrome on iPhone: tap ${share} in the address bar, then <b>Add to Home Screen</b>. Open ${name} from the new icon and it fills the whole screen, sideways.</small>`
+      : st === 'android' ? `In <b>Chrome</b>: tap the <b>&#8942;</b> menu (top right), then <b>Install app</b> or <b>Add to Home screen</b>.<br><small>Samsung Internet: tap <b>&#9776;</b> then <b>Add page to</b> &rarr; <b>Home screen</b>. Open ${name} from the new icon to play fullscreen.</small>`
+      : `In <b>Chrome</b> or <b>Edge</b>: click the install icon at the right end of the address bar, or open the <b>&#8942;</b> menu and choose <b>Install</b>.<br><small>On a phone or tablet this adds ${name} to your home screen.</small>`;
+    const t = document.createElement('div'); t.id = 'n64-tip'; t.dataset.kind = 'install-' + st;
+    t.innerHTML = `<div class="card"><b>Install ${name}</b><br>${body}</div><button>Got it</button>`;
     const eat = (e) => e.stopPropagation(); for (const ev of ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'click', 'mousedown']) t.addEventListener(ev, eat);
     t.querySelector('button').addEventListener('click', () => t.remove()); document.body.appendChild(t);
   };

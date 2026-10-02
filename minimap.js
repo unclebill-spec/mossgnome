@@ -1,14 +1,14 @@
 // Shared corner minimap for n64-suite games: a small round parchment disc in a wooden rim, north up, showing the local
 // area around the player, a facing arrow, a few friendly markers, and (optionally) a faint chevron on the rim that points the
-// general way to the current quest step. No distance, no exact marker, no beam: just a heading.
+// general way to the current quest step (red, so it reads at a glance). No distance, no exact marker, no beam: just a heading.
 //   const mm = createMinimap({ parent: hud, view: () => ({ img, size, x, z, facing, marks, heading }) | null });
 //   mm.update(dt, t) every frame (draws at ~15 Hz); mm.el is the disc (CSS: .n64-mini; pointer-events: none).
-// Size / place it with CSS: --mmd (diameter); default bottom-right corner, inside the safe area; scales with --hk.
+// Size / place it with CSS: --mmd (diameter); default top-right corner, inside the safe area; scales with --hk.
 // html[data-res=retro] draws it at a chunky 56 px; html[data-res=p1080] makes it a bit bigger for the sofa.
 const CSS = `
 .n64-mini { position: absolute; z-index: 6; pointer-events: none; box-sizing: border-box; border-radius: 50%;
   --mmd: calc(max(18cqh, 76px) * var(--hk, 1) * var(--mmk, 1)); width: var(--mmd); height: var(--mmd);
-  right: calc(2.5cqh + var(--sar, 0px)); bottom: calc(3cqh + var(--sab, 0px));
+  right: calc(2cqh + var(--sar, 0px)); top: calc(2cqh + var(--sat, 0px));
   border: calc(var(--mmd) * 0.055) solid #6b4423; background: #ecdcae;
   box-shadow: 0 0 0 calc(var(--mmd) * 0.016) #e7c66a inset, 0 0 0 calc(var(--mmd) * 0.012) #3a2412, 0 0.6cqh 1.4cqh rgba(30, 16, 6, 0.45);
   opacity: 0.92; transition: opacity 0.25s; }
@@ -23,7 +23,7 @@ html[data-res=retro] .n64-mini { --mmk: 0.95; }
 const TAU = Math.PI * 2;
 const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
 
-export function createMinimap({ parent, view, radius = 22, cls = '' }) {
+export function createMinimap({ parent, view, radius = 22, cls = '', arrowColor = '#e8261c' }) {
   if (!document.getElementById('n64-mini-css')) { const st = document.createElement('style'); st.id = 'n64-mini-css'; st.textContent = CSS; document.head.appendChild(st); }
   const el = document.createElement('div'); el.className = `n64-mini hide ${cls}`.trim(); el.innerHTML = '<canvas></canvas>'; parent.appendChild(el);
   const cv = el.querySelector('canvas'), g = cv.getContext('2d');
@@ -63,8 +63,8 @@ export function createMinimap({ parent, view, radius = 22, cls = '' }) {
       if (d > (v.near || 7)) {
         M.arrow = true; const a = M.angle, rr = c - 9 * u;
         g.save(); g.translate(c + Math.cos(a) * rr, c + Math.sin(a) * rr); g.rotate(a);
-        g.globalAlpha = 0.42 + 0.14 * Math.sin(t * 2.2);
-        g.fillStyle = '#7a4416'; g.strokeStyle = 'rgba(255,240,200,0.85)'; g.lineWidth = Math.max(1, 1.1 * u);
+        g.globalAlpha = 0.8 + 0.15 * Math.sin(t * 2.2);
+        g.fillStyle = arrowColor; g.strokeStyle = 'rgba(255,248,232,0.95)'; g.lineWidth = Math.max(1, 1.2 * u);
         g.beginPath(); g.moveTo(6 * u, 0); g.lineTo(-4 * u, -6 * u); g.lineTo(-1.5 * u, 0); g.lineTo(-4 * u, 6 * u); g.closePath(); g.fill(); g.stroke();
         g.restore();
       }
