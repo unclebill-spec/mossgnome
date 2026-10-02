@@ -7,10 +7,10 @@ Handoff notes for the next agent. Cursor reads this file automatically. Keep it 
 - **Local:** `/workspace/mossgnome-publish`
 
 ## Current state (2026-10-01)
-- Playable and deployed. The latest feature commit is `b7680db` (fullscreen, sideways-phone layout, display presets). See `CHANGELOG.md`.
+- Playable and deployed. The latest features are the corner minimap with a faint quest-heading chevron, and a higher look-up camera. Before that came `b7680db` (fullscreen, sideways-phone layout, display presets). See `CHANGELOG.md`.
 - **Inputs:** phone touch, gamepad and keyboard/mouse all work.
 - **Cameras:** Follow (default) and Free, plus Target Lock.
-- **Settings:** Display / Aspect / Render scale.
+- **Settings:** Display / Aspect / Render scale, Minimap, Quest hint arrow (both On by default).
 - **Last verification:** on the live site, 393 checks passed and 1 flaky check failed (see Known issues).
 
 ## Where the code comes from
@@ -28,11 +28,13 @@ To ship a code change, copy the changed files from `n64-suite/n64/web/rpg/` into
 | `grove.js`, `grove.css` | the Mossgnome game: world, HUD, menus, title, quests, battles, springs, ending |
 | `common.js` | shared stage/HUD helpers (`place`/`placeCircle` in cqh units with safe-area vars) |
 | `input.js` | input layer: gamepad / keyboard+mouse / touch, `I.last` device, Start+Select → Fullscreen |
-| `camrig.js` | Follow / Free camera and Target Lock |
+| `camrig.js` | Follow / Free camera, Target Lock, pitch limits (`PITCH`) and the look-up helper `lookUp()` (sinks, slides in and tilts up; ground and line-of-sight safe) |
+| `minimap.js` | corner minimap (`createMinimap`), terrain bake from level data (`bakeMap`), and the quest heading (`questHeading`: in-level target or the portal/exit toward it) |
 | `display.js` | stage sizing, resolution presets, aspect, render scale, fullscreen, rotate overlay, iPhone tip |
 | `rpg.js`, `rpg.css`, `springfx.js`, `vfx.js`, `vfx.html` | shared RPG runtime, spring effects, spell VFX (`vfx.html` is the debug page) |
 | `app.webmanifest`, `icons/` | web app manifest (fullscreen, landscape) and home-screen icons |
 | `manifest.json` | the **game** manifest from the suite (not the PWA manifest) |
+| `systems/game.json` | quests (each with a `target` list for the minimap chevron), dialogue, hints, items, ending |
 | `models/` `textures/` `sprites/` `skybox/` `music/` `sfx/` `fonts/` `ui/` `world/` `systems/` | generated assets (GLB, PNG, WAV, level JSON, spells/springs data) |
 | `vendor/` | three.js r160 + addons |
 | `preview/` | model sheets and `shots/` screenshots (used in the README) |
@@ -58,7 +60,7 @@ python3 -m http.server 8091 -d /tmp/pagesroot      # http://127.0.0.1:8091/mossg
 
 ## Tests
 All tests are headless Playwright (Chromium + SwiftShader) and live in the suite: `/workspace/n64-suite/tests/input/` (see its README).
-- **Against this repo locally:** `python3 /tmp/runpub.py t_display.py`. It serves `/tmp/pagesroot`; `t_pad.py`, `t_pad2.py`, `t_kbm.py` and `t_touch.py` work the same way.
+- **Against this repo locally:** `python3 /tmp/runpub.py t_display.py`. `t_mapcam.py` covers the minimap, quest chevron, settings, presets and the camera look-up on desktop and three phones; its screenshots go to `/workspace/scratch/mm/shots`. It serves `/tmp/pagesroot`; `t_pad.py`, `t_pad2.py`, `t_kbm.py` and `t_touch.py` work the same way.
 - **Against the live site:** pass the URL, e.g. `python3 t_pad.py https://unclebill-spec.github.io/mossgnome/`.
 - **Full run:** `bash /workspace/scratch/disp/runall.sh https://unclebill-spec.github.io/mossgnome/ live` (about 15 min). Results go to `/workspace/scratch/disp/all_live.log`. Expect `FAILS: []` in each section.
 - **Scratch tests:** `/workspace/scratch/mobiletest.py`, `pubtest.py` and `pubtest2.py` (smoke tests of every scene).
@@ -93,9 +95,12 @@ All tests are headless Playwright (Chromium + SwiftShader) and live in the suite
 - `t_pad2.py` "X swings a hat bonk" is flaky right after a spell cast (it failed once live and passed twice on rerun).
 - Keep-playing-upright mode uses the original 4:3 proportions without the 44px touch-target floor.
 - Already-open tabs need a reload after a deploy.
+- **Minimap chevron:** it points straight at the in-level target (smoothed), not along paths, so around cliffs or water you may need to find the way. Only the current quest step is used.
+- **Full look-up:** the gnome's feet drop below the bottom of the frame; this is intentional, to see the canopy. The camera can still poke into tree trunks or houses, as before.
 
 ## Next steps (suggested)
 1. Have Bill test on his real phone (touch and Bluetooth controller) and on Add to Home Screen. Fix whatever differs from emulation.
 2. De-flake the hat-bonk test (wait out the cast cooldown before pressing X).
 3. Add a small sync script (suite → project → this repo) so the copy step isn't manual.
 4. Optional: an offline service worker for the home-screen app, and a performance pass for low-end phones (the Render scale default).
+5. Minimap ideas, if Bill wants them: a zoom toggle, or a rotate-with-camera option. Keep the chevron vague.

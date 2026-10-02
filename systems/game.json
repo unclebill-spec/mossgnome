@@ -29,7 +29,13 @@
       "done": {
         "flag": "has_map"
       },
-      "hint": "Grandpa Femble is the gnome with the longest beard, near the middle of Mossunder. Press E to talk."
+      "hint": "Grandpa Femble is the gnome with the longest beard, near the middle of Mossunder. Press E to talk.",
+      "target": [
+        {
+          "level": "HUB",
+          "npc": "npc1"
+        }
+      ]
     },
     {
       "id": "q2",
@@ -39,7 +45,15 @@
       "done": {
         "flag": "spring1"
       },
-      "hint": "Look for a fallen log glowing like honey at the east edge of the village. Walk inside it."
+      "hint": "Look for a fallen log glowing like honey at the east edge of the village. Walk inside it.",
+      "target": [
+        {
+          "level": "HUB",
+          "springs": [
+            "spring1"
+          ]
+        }
+      ]
     },
     {
       "id": "q3",
@@ -49,7 +63,18 @@
       "done": {
         "flag": "rode_fox"
       },
-      "hint": "Little Toffle plays by the path south of the green. Once you've met Tansy, press R near the fox to ride."
+      "hint": "Little Toffle plays by the path south of the green. Once you've met Tansy, press R near the fox to ride.",
+      "target": [
+        {
+          "level": "HUB",
+          "npc": "npc4",
+          "until": "met_fox"
+        },
+        {
+          "level": "HUB",
+          "fox": true
+        }
+      ]
     },
     {
       "id": "q4",
@@ -59,7 +84,13 @@
       "done": {
         "flag": "met_forager"
       },
-      "hint": "The root arches stand at the north edge of the village. The swirling one on the left leads to the wood."
+      "hint": "The root arches stand at the north edge of the village. The swirling one on the left leads to the wood.",
+      "target": [
+        {
+          "level": "L1",
+          "npc": "npc5"
+        }
+      ]
     },
     {
       "id": "q5",
@@ -69,7 +100,16 @@
       "done": {
         "flag": "forest_done"
       },
-      "hint": "One spring hides behind a waterfall on the far cliff; another waits at the end of a root tunnel."
+      "hint": "One spring hides behind a waterfall on the far cliff; another waits at the end of a root tunnel.",
+      "target": [
+        {
+          "level": "L1",
+          "springs": [
+            "spring2",
+            "spring3"
+          ]
+        }
+      ]
     },
     {
       "id": "q6",
@@ -79,7 +119,21 @@
       "done": {
         "flag": "caverns_done"
       },
-      "hint": "Follow the fizzing sound: a mossy cave mound, and another waterfall on the west wall."
+      "hint": "Follow the fizzing sound: a mossy cave mound, and another waterfall on the west wall.",
+      "target": [
+        {
+          "level": "L2",
+          "npc": "npc6",
+          "until": "met_lamp"
+        },
+        {
+          "level": "L2",
+          "springs": [
+            "spring4",
+            "spring5"
+          ]
+        }
+      ]
     },
     {
       "id": "q7",
@@ -89,7 +143,22 @@
       "done": {
         "flag": "chase_escaped"
       },
-      "hint": "When the stomping starts, run for the swirling rift on the cliff behind where you arrived. Ride the fox if you can."
+      "hint": "When the stomping starts, run for the swirling rift on the cliff behind where you arrived. Ride the fox if you can.",
+      "target": [
+        {
+          "level": "L3",
+          "springs": [
+            "spring6",
+            "spring7",
+            "spring8"
+          ],
+          "any": true
+        },
+        {
+          "level": "L3",
+          "exit": true
+        }
+      ]
     },
     {
       "id": "q8",
@@ -99,7 +168,13 @@
       "done": {
         "flag": "elder_ring"
       },
-      "hint": "Talk to Grandpa Femble. The fairy ring west of the village wakes once five springs are bubbling again."
+      "hint": "Talk to Grandpa Femble. The fairy ring west of the village wakes once five springs are bubbling again.",
+      "target": [
+        {
+          "level": "HUB",
+          "npc": "npc1"
+        }
+      ]
     },
     {
       "id": "q9",
@@ -109,7 +184,13 @@
       "done": {
         "flag": "boss_beaten"
       },
-      "hint": "Walk up to Krogbold beside the great lid and press E. Mushroom spells (Button Lance) are strong against his cold iron."
+      "hint": "Walk up to Krogbold beside the great lid and press E. Mushroom spells (Button Lance) are strong against his cold iron.",
+      "target": [
+        {
+          "level": "BOSS",
+          "boss": true
+        }
+      ]
     },
     {
       "id": "q10",
@@ -119,7 +200,13 @@
       "done": {
         "flag": "ending"
       },
-      "hint": "Talk to Krogbold again and listen to him. Kindness opens more lids than hammers do."
+      "hint": "Talk to Krogbold again and listen to him. Kindness opens more lids than hammers do.",
+      "target": [
+        {
+          "level": "BOSS",
+          "boss": true
+        }
+      ]
     }
   ],
   "trees": {

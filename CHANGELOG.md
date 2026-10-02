@@ -4,6 +4,22 @@ Mossgnome and the Hidden Springs (published build). Newest first. Times are US E
 Every entry is one commit on `main`; to roll back, `git checkout <hash>` (look) or `git revert <hash>` (undo on main).
 Live: https://unclebill-spec.github.io/mossgnome/
 
+## 2026-10-01 21:41: Minimap with a quest-heading chevron; higher look-up camera
+- **Minimap** (new `minimap.js`):
+  - a small round parchment disc in a wooden rim, north up (gold tick), showing the local area: paths, big houses and trees, friends, gates/exits and found springs
+  - a red arrow shows which way you face
+  - it is drawn from the level data, so hidden springs and chests are never revealed
+  - placement: bottom-right with keyboard/mouse or a controller; on touch it tucks under the HP/MP plaque, clear of the left buttons and thumbstick (it ignores touches, so the floating stick still works under it)
+  - hidden in menus, the map, dialogue, battles and the title
+  - scales with Display: bigger on 1080p TV, a chunky 56px pixelated disc on Retro 320x240
+- **Quest hint arrow:** a faint, gently pulsing chevron on the minimap rim points the general way to the current quest step. There is no distance, beam or exact marker, and it fades once you're there. If the step is in another region it points to the gate or exit that leads there.
+- **Quest targets:** `systems/game.json` quests now carry a `target` list (level + npc / springs / fox / boss / exit).
+- **Settings:** new **Minimap** and **Quest hint arrow** rows, both On by default and saved.
+- **Camera look-up:** you can look much higher into the trees, with the same limits in Follow, Free and Target Lock, via touch drag, mouse or the right stick.
+  - the upward pitch limit went from 0.05 to -0.62 rad; the top of the view now reaches about 51° above the horizon (was about 24°)
+  - below the old limit the camera sinks to just above the grass, slides in and tilts up, so it never digs into the ground and keeps a clear line to the gnome
+  - in Follow mode the look-up now holds while you stand still and eases back once you walk on
+
 ## 2026-10-01 18:11: Project docs
 - Added `CHANGELOG.md` (this file) and `AGENTS.md` (handoff notes for the next agent / Cursor). No game changes.
 

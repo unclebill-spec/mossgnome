@@ -7,7 +7,8 @@ import { makeVFX } from './vfx.js';
 import { makeSpringPool } from './springfx.js';
 import { createInput } from './input.js';
 import { createDisplay, RES, ASPECTS } from './display.js';
-import { followYaw, lockFrame, strafe, pickTarget, wrapA } from './camrig.js';
+import { followYaw, lockFrame, strafe, pickTarget, wrapA, PITCH, clampPitch, upAmount, lookUp } from './camrig.js';
+import { createMinimap, questHeading, bakeMap } from './minimap.js';
 
 const P3 = (p) => new THREE.Vector3(p[0], p[1], p[2]);
 const SOLID = { toadstool_red: 0.55, toadstool_blue: 0.5, toadstool_purple: 0.5, rainbow_cap: 0.9, giant_trunk: 1.7, treehouse: 1.9, mushroom_house: 2.2, root_house: 2.4,
@@ -391,6 +392,35 @@ export async function start(man) {
     const found = W.springs.filter((s) => !s.isMother && s.found).length, tot = W.springs.filter((s) => !s.isMother).length;
     mapEl.querySelector('.leg').innerHTML = `<span style="color:#d6322a">&#9650;</span> you &nbsp; <span style="color:#3fb8e8">&#9679;</span> springs ${found}/${tot}${rev ? ' &nbsp; ? = secrets' : ''} &nbsp; <span style="color:#9a6ad0">&#9679;</span> gates`;
   }
+  // ---------- corner minimap (local area, facing arrow) + a faint rim chevron toward the current quest step
+  function questNav() {
+    const q = currentQuest(), st = q && q.target; if (!st) return null;
+    const links = W.portals.filter((p) => p.gate).map((p) => ({ to: p.level, x: p.pos[0], z: p.pos[2] }));
+    if (W.exit) links.push({ to: W.exit.to || 'HUB', x: W.exit.x, z: W.exit.z });
+    const at = (o) => ({ x: o.position.x, z: o.position.z });
+    return questHeading(st, { level: W.id, hub: 'HUB', flag: (k) => !!S.flags[k], found: (id) => !!S.springs[id], links, from: player.position,
+      where: (step, id) => {
+        if (id) { const sp = W.springs.find((o) => o.id === id); return sp ? { x: sp.pos[0], z: sp.pos[2] } : null; }
+        if (step.npc) { const n = W.npcs.find((o) => o.id === step.npc); return n ? at(n.obj) : null; }
+        if (step.fox) return fox.visible ? at(fox) : null;
+        if (step.boss) return dwarf.visible ? at(dwarf) : null;
+        if (step.exit) return W.exit ? { x: W.exit.x, z: W.exit.z } : null;
+        return null; } });
+  }
+  function miniView() {
+    if (!W || G.mode !== 'field' || G.closeup || input.settings.minimap === false) return null;
+    const marks = [];
+    for (const p of W.portals) if (p.gate) marks.push({ x: p.pos[0], z: p.pos[2], c: '#9a6ad0', r: 3.6, ring: true });
+    if (W.exit) marks.push({ x: W.exit.x, z: W.exit.z, c: '#5aa832', r: 3.6, ring: true });
+    for (const n of W.npcs) marks.push({ x: n.obj.position.x, z: n.obj.position.z, c: '#d6322a', r: 2.6 });
+    for (const sp of W.springs) if (sp.found && !sp.isMother) marks.push({ x: sp.pos[0], z: sp.pos[2], c: sp.info.water, r: 3.4, ring: true });
+    if (!W.mini) W.mini = miniMap(W.L);
+    return { img: W.mini, size: W.L.size, x: player.position.x, z: player.position.z, facing: player.rotation.y, marks,
+      heading: input.settings.questArrow === false ? null : questNav() };
+  }
+  const MINI_BIG = ['treehouse', 'giant_trunk', 'mushroom_house', 'root_house', 'rainbow_cap', 'shelf_stump', 'toadstool_red', 'lantern_cap'];
+  const miniMap = (L) => bakeMap({ size: L.size, h: W.h, water: L.water_level, paths: L.paths, props: L.props, big: MINI_BIG });
+  const mini = createMinimap({ parent: hud, view: miniView, cls: 'mg-mini' });
   function openMap() { if (!S.flags.has_map) { toast('You have no map yet.<br><small>Grandpa Femble has one.</small>'); return; } sfx('map_unfold', 0.6); drawMap(); mapEl.classList.remove('hide'); setMode('map'); }
   function closeMap() { mapEl.classList.add('hide'); setMode('field'); }
 
@@ -408,6 +438,8 @@ export async function start(man) {
     { name: 'Invert camera Y', val: () => (input.settings.invertY ? 'On' : 'Off'), adj: () => { input.settings.invertY = !input.settings.invertY; } },
     { name: 'Mouse look', val: () => (input.settings.mouseLock ? 'Click to lock' : 'Click-drag'), adj: () => { input.settings.mouseLock = !input.settings.mouseLock; if (!input.settings.mouseLock) input.unlock(); } },
     { name: 'Auto Target Lock', val: () => (input.settings.autoLock === false ? 'Off' : 'On'), adj: () => { input.settings.autoLock = input.settings.autoLock === false; } },
+    { name: 'Minimap', val: () => (input.settings.minimap === false ? 'Off' : 'On'), adj: () => { input.settings.minimap = input.settings.minimap === false; } },
+    { name: 'Quest hint arrow', val: () => (input.settings.questArrow === false ? 'Off' : 'On'), adj: () => { input.settings.questArrow = input.settings.questArrow === false; } },
     { name: 'Back', back: true }];
   function settingsKey(k) {
     const r = SET_ROWS[setSel];
@@ -978,17 +1010,17 @@ export async function start(man) {
   for (const ev of ['pointerup', 'pointercancel']) addEventListener(ev, (e) => { if (drag && e.pointerId === drag.id) { if (ev === 'pointerup' && drag.mouse && drag.moved < 6) press('ClickAttack'); drag = null; } });
   addEventListener('mousedown', (e) => { if (e.button === 1) e.preventDefault(); });  // no autoscroll on middle-click
   addEventListener('pointermove', (e) => { if (!drag || e.pointerId !== drag.id) return; const dx = e.clientX - drag.x, dy = e.clientY - drag.y, sn = input.settings.sens, inv = input.settings.invertY ? -1 : 1;
-    drag.moved += Math.abs(dx) + Math.abs(dy); if (drag.moved > 3) G.camIdle = 0; G.cy -= dx * 0.008 * sn; G.cp = clamp(G.cp + dy * 0.004 * sn * inv, 0.05, 0.9); drag.x = e.clientX; drag.y = e.clientY; });
+    drag.moved += Math.abs(dx) + Math.abs(dy); if (drag.moved > 3) G.camIdle = 0; G.cy -= dx * 0.008 * sn; G.cp = clampPitch(G.cp + dy * 0.004 * sn * inv); drag.x = e.clientX; drag.y = e.clientY; });
   dlgEl.onpointerdown = (e) => { e.stopPropagation(); if (G.mode === 'dialog') advance(); };
   endEl.onpointerdown = (e) => { e.stopPropagation(); G.introNext && G.introNext(); };
   mapEl.onpointerdown = (e) => { e.stopPropagation(); closeMap(); };
   const camPos = new THREE.Vector3(), camLook = new THREE.Vector3();
   function updateCamera(dt, t) {
     const sn = input.settings.sens, inv = input.settings.invertY ? -1 : 1; G.camIdle += dt;
-    if (input.look.x || input.look.y) { G.cy -= input.look.x * 2.4 * sn * dt; G.cp = clamp(G.cp + input.look.y * 1.2 * sn * inv * dt, 0.05, 0.9); G.camIdle = 0; }
-    if (input.mouse.dx || input.mouse.dy) { G.cy -= input.mouse.dx * 0.004 * sn; G.cp = clamp(G.cp + input.mouse.dy * 0.0025 * sn * inv, 0.05, 0.9); input.mouse.dx = input.mouse.dy = 0; G.camIdle = 0; }
+    if (input.look.x || input.look.y) { G.cy -= input.look.x * 2.4 * sn * dt; G.cp = clampPitch(G.cp + input.look.y * 1.2 * sn * inv * dt); G.camIdle = 0; }
+    if (input.mouse.dx || input.mouse.dy) { G.cy -= input.mouse.dx * 0.004 * sn; G.cp = clampPitch(G.cp + input.mouse.dy * 0.0025 * sn * inv); input.mouse.dx = input.mouse.dy = 0; G.camIdle = 0; }
     const lk = G.lock && (G.mode === 'field' || G.mode === 'battle') ? G.lock.e.obj.position : null;
-    let pos, look;
+    let pos, look, orbit = false;
     if (G.mode === 'title') { pos = new THREE.Vector3(Math.sin(t * 0.06) * 26, 13, Math.cos(t * 0.06) * 26 + 6); look = new THREE.Vector3(0, 4, 0); }
     else if (G.closeup) { const cu = G.closeup, s = cu.g.position, tight = cu.hide === 'hollow_log' || cu.hide === 'root_tunnel';
       const log = cu.hide === 'hollow_log', tun = cu.hide === 'root_tunnel';
@@ -1004,14 +1036,15 @@ export async function start(man) {
     else if (lk) {  // Target Lock: from behind the player, framing player + target
       const dist = (B && B.boss ? 9.5 : 6.4) * (B ? 1 : G.zoom), f = lockFrame(player.position, lk, { dist, height: B && B.boss ? 4.2 : 2.5 });
       G.cy += wrapA(f.yaw - G.cy) * (1 - Math.exp(-dt * 5)); const p = player.position;
-      pos = new THREE.Vector3(p.x + Math.sin(G.cy) * dist, p.y + (B && B.boss ? 4.2 : 2.5), p.z + Math.cos(G.cy) * dist); look = new THREE.Vector3(f.look.x, f.look.y, f.look.z); }
+      pos = new THREE.Vector3(p.x + Math.sin(G.cy) * dist, p.y + (B && B.boss ? 4.2 : 2.5), p.z + Math.cos(G.cy) * dist); look = new THREE.Vector3(f.look.x, f.look.y, f.look.z); orbit = true; }
     else if (B) { const c = B.c; const tp = B.boss ? dwarf.position : player.position; const dist = B.boss ? 12 : 7.8; pos = new THREE.Vector3(c.x + Math.sin(G.cy) * dist, W.h(c.x, c.z) + (B.boss ? 7 : 4.2), c.z + Math.cos(G.cy) * dist); look = c.clone().lerp(tp, 0.3).add(new THREE.Vector3(0, 1, 0)); }
     else {
       if (input.settings.camMode !== 'free' && G.mode === 'field' && !G.swinging) {  // Follow: ease round behind the gnome
         G.cy = followYaw(G.cy, { facing: player.rotation.y, moving: G.moveT > 0, moveT: G.moveT, idle: G.camIdle, dt });
-        if (G.camIdle > 1.5) G.cp += (0.32 - G.cp) * (1 - Math.exp(-dt * 1.2));
+        if (G.camIdle > 1.5 && (G.moveT > 0 || G.cp > PITCH.low)) G.cp += (PITCH.rest - G.cp) * (1 - Math.exp(-dt * 1.2));  // a look up into the trees holds until you walk on
       }
-      const dist = (G.swinging ? 7.5 : 6.8) * G.zoom; const p = player.position; pos = new THREE.Vector3(p.x + Math.sin(G.cy) * dist * Math.cos(G.cp), p.y + 1.4 + dist * Math.sin(G.cp), p.z + Math.cos(G.cy) * dist * Math.cos(G.cp)); look = p.clone().add(new THREE.Vector3(0, 1.1, 0)); }
+      const dist = (G.swinging ? 7.5 : 6.8) * G.zoom; const p = player.position; pos = new THREE.Vector3(p.x + Math.sin(G.cy) * dist * Math.cos(G.cp), p.y + 1.4 + dist * Math.sin(G.cp), p.z + Math.cos(G.cy) * dist * Math.cos(G.cp)); look = p.clone().add(new THREE.Vector3(0, 1.1, 0)); orbit = true; }
+    if (orbit && G.cp < PITCH.low) { const r = lookUp(pos, look, player.position, upAmount(G.cp), { h: W.h, tilt: lk ? 0.3 : 0.4 /* lock: a little less; the letterbox bars eat the frame edges */ }); pos.set(r.pos.x, r.pos.y, r.pos.z); look.set(r.look.x, r.look.y, r.look.z); }
     const gy = W.h(pos.x, pos.z) + 0.8; if (pos.y < gy) pos.y = gy;
     const k = G.snap ? 1 : 1 - Math.pow(0.002, dt); G.snap = false;
     camPos.lerp(pos, k); camLook.lerp(look, k); camera.position.copy(camPos); camera.lookAt(camLook);
@@ -1031,7 +1064,7 @@ export async function start(man) {
     if (G.mode === 'field' || G.mode === 'battle') S.time += dt;
     timerEl.querySelector('span').textContent = fmtTime(S.time);
     if (G.flash > 0) { G.flash -= dt; hud.style.boxShadow = `inset 0 0 ${60 * G.flash * 4}px rgba(232,72,60,${G.flash * 2})`; } else hud.style.boxShadow = '';
-    animateWorld(dt, t); updateCamera(dt, t);
+    animateWorld(dt, t); updateCamera(dt, t); mini.update(dt, t);
     hudUpdate.t = (hudUpdate.t || 0) + dt; if (hudUpdate.t > 0.25) { hudUpdate.t = 0; hudUpdate(); }
   });
 
@@ -1067,7 +1100,7 @@ export async function start(man) {
   const dbg = () => ({ mode: G.mode, level: W && W.id, pos: player.position.toArray().map((v) => +v.toFixed(2)), anim: pA && pA.name, riding: G.riding, swinging: G.swinging,
     springs: nSprings(), quest: (currentQuest() || {}).id || 'done', battle: B ? B.foes.map((f) => [f.name, f.hp]) : null, chase: !!C, fps: +st.fps.toFixed(1), cam: +G.cy.toFixed(3), pitch: +G.cp.toFixed(3), face: +player.rotation.y.toFixed(3), joy: joyV ? [+joyV.x.toFixed(2), +joyV.y.toFixed(2)] : null,
     disp: { res: display.res, set: { ...display.settings }, rw: display.rw, rh: display.rh, w: display.w, h: display.h, hk: display.hk, tv: display.tv, fs: display.isFS(), pad: padFirst() },
-    lock: G.lock ? (G.lock.e.name || G.lock.e.id || 'foe') : null, lockPos: G.lock ? G.lock.e.obj.position.toArray().map((v) => +v.toFixed(3)) : null, camMode: input.settings.camMode === 'free' ? 'free' : 'follow', scheme: input.scheme, zoom: +G.zoom.toFixed(2), walk: G.walk, sel: selSpell, mp: S.mp, menuPage, setSel });
+    lock: G.lock ? (G.lock.e.name || G.lock.e.id || 'foe') : null, lockPos: G.lock ? G.lock.e.obj.position.toArray().map((v) => +v.toFixed(3)) : null, camMode: input.settings.camMode === 'free' ? 'free' : 'follow', mini: { on: mini.visible, arrow: mini.arrow, angle: mini.angle === null ? null : +mini.angle.toFixed(3), draws: mini.shown, heading: (() => { const h = W && questNav(); return h ? { x: +h.x.toFixed(2), z: +h.z.toFixed(2), via: h.via || null } : null; })() }, pitchUp: +upAmount(G.cp).toFixed(3), viewPitch: (() => { const v = camLook.clone().sub(camPos).normalize(); return +(Math.asin(v.y) * 57.2958).toFixed(1); })(), camY: +camera.position.y.toFixed(3), camPos: camera.position.toArray().map((v) => +v.toFixed(3)), camGround: W ? +(camera.position.y - W.h(camera.position.x, camera.position.z)).toFixed(3) : null, scheme: input.scheme, zoom: +G.zoom.toFixed(2), walk: G.walk, sel: selSpell, mp: S.mp, menuPage, setSel });
   window.__debug = Object.assign(dbg, {
     setFlag: (f) => { S.flags[f] = true; progress(); }, go: (id) => goLevel(id), teleport: (x, z) => { player.position.set(x, W.h(x, z), z); },
     discover: (id) => { const s = W.springs.find((q) => q.id === id); if (s && !s.found) discover(s); }, talk, startChase, startBossBattle, save, loadSave, scene: setupScene, cu: (o) => { G.cuOv = o; G.snap = true; },

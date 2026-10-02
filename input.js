@@ -20,7 +20,7 @@ export function padType(id = '') {
   if (/pro controller|nintendo|switch|057e|joy-con/i.test(id)) return 'switch';
   return 'generic';
 }
-const SETTINGS = { sens: 1, invertY: false, mouseLock: false };
+const SETTINGS = { sens: 1, invertY: false, mouseLock: false, minimap: true, questArrow: true };
 const coarse = () => typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
 
 export function createInput({ storageKey = 'n64.input', stickKeys = true, binds = {}, onToast = null, onScheme = null, canvas = null } = {}) {

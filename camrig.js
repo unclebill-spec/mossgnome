@@ -34,3 +34,27 @@ export function pickTarget(p, cands, range, after = null) {
   if (!after) return list[0] || null;
   const i = list.indexOf(after); return i < 0 ? list[0] || null : list[i + 1] || null;  // past the last one -> release
 }
+
+// ---- pitch + look-up into the canopy (shared by follow / free / target-lock cameras)
+// cp is the orbit pitch in radians (+ = camera above, looking down). Below PITCH.low the camera stops orbiting under the
+// player (it would dig into the ground) and instead sinks to just above the grass, slides in a little and tilts its view up,
+// so you can look up into the trees while the player stays in the bottom of the frame.
+export const PITCH = { min: -0.62, low: 0.05, max: 0.9, rest: 0.32 };
+export const clampPitch = (cp) => Math.min(PITCH.max, Math.max(PITCH.min, cp));
+export const upAmount = (cp) => Math.min(1, Math.max(0, (PITCH.low - cp) / (PITCH.low - PITCH.min)));
+const ease = (u) => u * u * (3 - 2 * u);
+// pos / look / pivot: {x,y,z} (pivot = the player's feet). h(x, z) = ground height (optional).
+// Returns new {pos, look}; with u = 0 it returns the inputs unchanged.
+export function lookUp(pos, look, pivot, u, { pull = 0.32, camLow = 0.75, tilt = 0.4, h = null, clear = 0.75 } = {}) {
+  if (!(u > 0)) return { pos, look };
+  const e = ease(u), vx = pos.x - pivot.x, vz = pos.z - pivot.z, hd0 = Math.hypot(vx, vz) || 1e-3;
+  const k = 1 - pull * e, cam = { x: pivot.x + vx * k, y: pos.y + (pivot.y + camLow - pos.y) * e, z: pivot.z + vz * k };
+  if (h) {  // never inside the ground, and keep the line of sight to the player's head above it
+    cam.y = Math.max(cam.y, h(cam.x, cam.z) + clear);
+    for (const f of [0.25, 0.5, 0.75]) { const gx = cam.x + (pivot.x - cam.x) * f, gz = cam.z + (pivot.z - cam.z) * f, need = h(gx, gz) + 0.25;
+      const ly = cam.y + (pivot.y + 1.1 - cam.y) * f; if (ly < need) cam.y += (need - ly) / (1 - f); }
+  }
+  const hd = hd0 * k, base = Math.atan2(look.y - pos.y, Math.hypot(look.x - pos.x, look.z - pos.z) || hd0);
+  const ang = base + (tilt - base) * e, lx = look.x, lz = look.z, lh = Math.hypot(lx - cam.x, lz - cam.z) || hd;
+  return { pos: cam, look: { x: lx, y: cam.y + lh * Math.tan(ang), z: lz } };
+}

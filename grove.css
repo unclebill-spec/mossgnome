@@ -180,3 +180,8 @@ html[data-small="1"] .mg-spells .sp { font-size: max(1.7cqh, 10px); padding: 0.3
 html[data-small="1"] #hud.mg .mg-foe { left: calc(var(--sal, 0px) + 16cqh + 45.4cqh * var(--hk, 1) + 2.5cqh) !important; transform-origin: 0 0; }
 html[data-small="1"] .mg-foe { font-size: max(2.5cqh, 11px); } html[data-small="1"] .mg-foe .fn small { font-size: max(1.9cqh, 9.5px); }
 html[data-small="1"] .mg-spells .sp small { font-size: max(1.7cqh, 9.5px); }
+/* corner minimap (minimap.js): bottom-right with keyboard / controller; on touch it tucks under the HP/MP plaque, clear of the
+   left button column and the thumbstick (pointer-events: none, so a thumb there still grabs the floating stick) */
+html[data-input=touch] #hud.mg .n64-mini { right: auto; bottom: auto; left: calc(max(16cqh, 66px) + var(--sal, 0px)); top: calc(5.5cqh + 11.5cqh * var(--hk, 1) + var(--sat, 0px));
+  --mmd: calc(max(19cqh, 72px) * var(--mmk, 1)); }
+html[data-input=touch][data-portrait="1"] #hud.mg .n64-mini { --mmd: 17cqh; }
